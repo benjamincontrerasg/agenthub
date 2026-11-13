@@ -108,7 +108,7 @@ export const mcpService = {
       updatedAt: now,
     }).run();
 
-    const logId = `log-${Date.now()}`;
+    const logId = `log-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
     db.insert(schema.mcpLogs).values({
       id: logId,
       serverId: id,
@@ -163,7 +163,7 @@ export const mcpService = {
       .where(eq(schema.mcpServers.id, id))
       .run();
 
-    const logId = `log-${Date.now()}`;
+    const logId = `log-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
     db.insert(schema.mcpLogs).values({
       id: logId,
       serverId: id,
@@ -201,7 +201,7 @@ export const mcpService = {
       .where(eq(schema.mcpServers.id, id))
       .run();
 
-    const logId = `log-${Date.now()}`;
+    const logId = `log-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
     db.insert(schema.mcpLogs).values({
       id: logId,
       serverId: id,
