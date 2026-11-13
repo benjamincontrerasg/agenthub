@@ -43,6 +43,14 @@ agenthub/
 │   │   └── types/                 # Interfaces TypeScript del dominio
 │   └── package.json
 │
+├── bridge/                        # Local Agent CLI Bridge (Ejecución segura de MCP STDIO)
+│   ├── src/
+│   │   ├── cli.ts                 # CLI ejecutable con argumentos y banner ASCII
+│   │   ├── server.ts              # API HTTP local en puerto 8765
+│   │   ├── sandbox.ts             # Validación Zero-Trust de binarios y rutas autorizadas
+│   │   └── process-manager.ts     # Gestión de procesos hijos STDIO y canal JSON-RPC
+│   └── package.json
+│
 └── package.json                   # Scripts unificados de ejecución
 ```
 
@@ -69,10 +77,18 @@ npm install
 npm run dev        # Inicia Vite en http://localhost:5173
 ```
 
+### 3. Iniciar el Local Agent Bridge (Opcional para servidores MCP STDIO locales)
+```bash
+cd bridge
+npm install
+npm run dev        # Escucha en http://127.0.0.1:8765
+```
+
 O desde la raíz del proyecto:
 ```bash
 npm run dev:backend
 npm run dev:frontend
+npm run dev:bridge
 ```
 
 ---

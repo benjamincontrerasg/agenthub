@@ -1,0 +1,26 @@
+{
+  "name": "@agenthub/bridge",
+  "version": "0.1.0",
+  "description": "AgentHub Local Agent Bridge - Ejecutor seguro de procesos MCP STDIO en el host local",
+  "type": "module",
+  "bin": {
+    "agenthub-bridge": "./dist/cli.js"
+  },
+  "scripts": {
+    "dev": "tsx watch src/cli.ts",
+    "build": "tsc",
+    "start": "node dist/cli.js",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "fastify": "^5.2.1",
+    "@fastify/cors": "^10.0.2",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3",
+    "tsx": "^4.19.3",
+    "@types/node": "^22.13.4",
+    "vitest": "^3.0.5"
+  }
+}

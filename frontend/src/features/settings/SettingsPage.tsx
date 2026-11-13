@@ -44,8 +44,26 @@ export const SettingsPage: React.FC = () => {
   >('security');
 
   const [testResult, setTestResult] = useState<string | null>(null);
+  const [bridgeTestResult, setBridgeTestResult] = useState<string | null>(null);
   const [isTesting, setIsTesting] = useState(false);
+  const [isTestingBridge, setIsTestingBridge] = useState(false);
   const [saveFeedback, setSaveFeedback] = useState<string | null>(null);
+
+  const handleTestBridge = async () => {
+    setIsTestingBridge(true);
+    setBridgeTestResult(null);
+    try {
+      const port = settings.localAgent.bridgePort || 8765;
+      const res = await fetch(`http://127.0.0.1:${port}/status`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      setBridgeTestResult(`✓ Local Bridge conectado en puerto ${port} (${data.platform}) - Procesos activos: ${data.activeProcessesCount}`);
+    } catch (e: any) {
+      setBridgeTestResult(`✗ Local Bridge no detectado en puerto ${settings.localAgent.bridgePort || 8765}. Inicia 'npm run dev:bridge' en tu terminal.`);
+    } finally {
+      setIsTestingBridge(false);
+    }
+  };
 
   const handleTestBackend = async () => {
     setIsTesting(true);
@@ -360,6 +378,30 @@ export const SettingsPage: React.FC = () => {
                       })
                     }
                   />
+                </div>
+
+                <div className="pt-2 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-t border-slate-800/80">
+                  <div className="text-xs">
+                    {bridgeTestResult && (
+                      <span
+                        className={`font-mono text-[11px] ${
+                          bridgeTestResult.startsWith('✓') ? 'text-emerald-400' : 'text-rose-400'
+                        }`}
+                      >
+                        {bridgeTestResult}
+                      </span>
+                    )}
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleTestBridge}
+                    disabled={isTestingBridge}
+                    className="shrink-0"
+                  >
+                    {isTestingBridge ? 'Comprobando Bridge...' : 'Probar Conexión con Local Bridge'}
+                  </Button>
                 </div>
               </CardContent>
             </Card>
