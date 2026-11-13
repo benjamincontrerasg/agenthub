@@ -4,6 +4,8 @@ import { eq } from 'drizzle-orm';
 import { Conversation, Message, Approval, ToolExecution } from '../types.js';
 import { NotFoundError } from '../lib/errors.js';
 import { wsManager } from './websocket.service.js';
+import { aiEngine } from './ai-engine.js';
+import { agentService } from './agent.service.js';
 
 export const chatService = {
   async getConversations(): Promise<Conversation[]> {
@@ -249,14 +251,15 @@ export const chatService = {
     await new Promise((r) => setTimeout(r, 800));
 
     // Determine delegation target based on prompt
-    const isCode = userPrompt.toLowerCase().includes('código') || userPrompt.toLowerCase().includes('script') || userPrompt.toLowerCase().includes('implement');
-    const isArch = userPrompt.toLowerCase().includes('arquitectura') || userPrompt.toLowerCase().includes('diseñ') || userPrompt.toLowerCase().includes('sistema');
+    const p = userPrompt.toLowerCase();
+    const isCode = p.includes('código') || p.includes('script') || p.includes('implement') || p.includes('typescript') || p.includes('función') || p.includes('funcion') || p.includes('escribe') || p.includes('crea') || p.includes('desarroll');
+    const isArch = p.includes('arquitectura') || p.includes('diseñ') || p.includes('sistema') || p.includes('esquema') || p.includes('db');
 
     const targetAgent = isCode
       ? agents.find((a) => a.role === 'Developer') || coordinator
       : isArch
       ? agents.find((a) => a.role === 'Architect') || coordinator
-      : agents.find((a) => a.role === 'Reviewer') || coordinator;
+      : agents.find((a) => a.role === 'Developer') || coordinator;
 
     const coordMsgId = `msg-coord-${Date.now()}`;
     const coordNow = new Date().toISOString();
@@ -296,9 +299,10 @@ export const chatService = {
     });
 
     if (targetAgent.id !== coordinator.id) {
-      await new Promise((r) => setTimeout(r, 1000));
+      // 3. Delegate to specialized agent & call real AI engine
+      const fullAgent = await agentService.getById(targetAgent.id);
+      const aiResult = await aiEngine.generateAgentResponse(fullAgent, conv.messages, userPrompt);
 
-      // Target agent responds
       const targetMsgId = `msg-agent-${Date.now()}`;
       const targetNow = new Date().toISOString();
 
@@ -309,11 +313,32 @@ export const chatService = {
         senderId: targetAgent.id,
         senderName: targetAgent.name,
         senderRole: targetAgent.role,
-        content: `He recibido la asignación de ${coordinator.name}. Procedo con el análisis detallado y la propuesta de solución para "${userPrompt}". El entorno multi-agente y los servidores MCP asociados se encuentran sincronizados.`,
+        content: aiResult.content,
         timestamp: targetNow,
         status: 'done',
-        thoughtTrace: `Validando restricciones de entorno, herramientas asignadas y políticas de seguridad Zero-Trust.`,
+        thoughtTrace: aiResult.thoughtTrace,
       }).run();
+
+      // Record real token usage
+      if (aiResult.tokensUsed > 0) {
+        db.insert(schema.tokenUsage).values({
+          id: `usage-${Date.now()}`,
+          providerId: targetAgent.providerId,
+          agentId: targetAgent.id,
+          tokens: aiResult.tokensUsed,
+          costUsd: aiResult.costUsd,
+          timestamp: targetNow,
+        }).run();
+
+        // Increment agent stats
+        db.update(schema.agents)
+          .set({
+            totalRuns: (fullAgent.stats.totalRuns || 0) + 1,
+            totalTokens: (fullAgent.stats.totalTokens || 0) + aiResult.tokensUsed,
+          })
+          .where(eq(schema.agents.id, targetAgent.id))
+          .run();
+      }
 
       wsManager.broadcast('agent.message', {
         id: targetMsgId,
@@ -322,10 +347,10 @@ export const chatService = {
         senderId: targetAgent.id,
         senderName: targetAgent.name,
         senderRole: targetAgent.role,
-        content: `He recibido la asignación de ${coordinator.name}. Procedo con el análisis detallado y la propuesta de solución para "${userPrompt}". El entorno multi-agente y los servidores MCP asociados se encuentran sincronizados.`,
+        content: aiResult.content,
         timestamp: targetNow,
         status: 'done',
-        thoughtTrace: `Validando restricciones de entorno, herramientas asignadas y políticas de seguridad Zero-Trust.`,
+        thoughtTrace: aiResult.thoughtTrace,
       });
     }
 
