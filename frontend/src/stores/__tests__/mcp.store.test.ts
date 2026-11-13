@@ -33,3 +33,4 @@ describe('MCP Hub Store', () => {
     expect(updated?.isActivated).toBe(true);
   });
 });
+

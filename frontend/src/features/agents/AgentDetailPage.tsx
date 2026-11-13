@@ -315,3 +315,4 @@ export const AgentDetailPage: React.FC = () => {
     </div>
   );
 };
+

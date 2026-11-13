@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { useProvidersStore } from '@/stores/providers.store';
+import { toast } from '@/stores/toast.store';
 import { KeyRound, ShieldAlert, CheckCircle2, Zap } from 'lucide-react';
 
 interface ProviderModalProps {
@@ -190,3 +191,4 @@ export const ProviderModal: React.FC<ProviderModalProps> = ({ provider, open, on
     </Dialog>
   );
 };
+

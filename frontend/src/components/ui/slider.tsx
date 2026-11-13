@@ -28,3 +28,4 @@ export function Slider({ value, min, max, step = 1, onChange, className, disable
     />
   );
 }
+

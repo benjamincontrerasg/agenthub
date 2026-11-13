@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
+import { ToastContainer } from '@/components/ui/toast';
 import { AlertCircle } from 'lucide-react';
 
 export const AppLayout: React.FC = () => {
@@ -40,7 +41,11 @@ export const AppLayout: React.FC = () => {
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
           <Outlet />
         </main>
+
+        {/* Global Toast Notifications */}
+        <ToastContainer />
       </div>
     </div>
   );
 };
+

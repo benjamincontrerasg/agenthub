@@ -15,3 +15,4 @@ npm run dev
 ```
 
 Consulta [`frontend/README.md`](./frontend/README.md) para documentación detallada de la arquitectura, pruebas y despliegue en Vercel.
+

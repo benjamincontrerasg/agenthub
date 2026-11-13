@@ -219,3 +219,4 @@ export const RegisterMCPServerModal: React.FC<RegisterMCPServerModalProps> = ({ 
     </Dialog>
   );
 };
+

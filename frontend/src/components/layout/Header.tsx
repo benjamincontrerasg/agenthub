@@ -1,21 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Menu,
   Search,
   Bell,
-  Wifi,
   ChevronDown,
   User,
   Shield,
-  HelpCircle,
-  ExternalLink,
   CheckCircle2,
   AlertTriangle,
   X,
+  Bot,
+  Wrench,
+  GitFork,
+  ArrowRight,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useSettingsStore } from '@/stores/settings.store';
+import { useAgentsStore } from '@/stores/agents.store';
+import { useMCPStore } from '@/stores/mcp.store';
+import { useWorkflowsStore } from '@/stores/workflows.store';
 
 interface HeaderProps {
   onOpenMobile: () => void;
@@ -37,11 +41,31 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { settings } = useSettingsStore();
+  const { agents } = useAgentsStore();
+  const { getAllTools } = useMCPStore();
+  const { workflows } = useWorkflowsStore();
 
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+
+  const allTools = getAllTools();
+
+  // Listen to Cmd+K / Ctrl+K keyboard shortcut
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setSearchOpen((prev) => !prev);
+      }
+      if (e.key === 'Escape' && searchOpen) {
+        setSearchOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [searchOpen]);
 
   const currentSection = sectionTitles[location.pathname] || {
     title: 'AgentHub Platform',
@@ -74,6 +98,12 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
       actionUrl: '/mcp',
     },
   ];
+
+  // Filtered results
+  const q = searchQuery.toLowerCase().trim();
+  const matchedAgents = q ? agents.filter((a) => a.name.toLowerCase().includes(q) || a.role.toLowerCase().includes(q)) : [];
+  const matchedTools = q ? allTools.filter((t) => t.name.toLowerCase().includes(q) || t.description.toLowerCase().includes(q)) : [];
+  const matchedWorkflows = q ? workflows.filter((w) => w.name.toLowerCase().includes(q) || w.description.toLowerCase().includes(q)) : [];
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-slate-800/80 bg-slate-950/85 px-4 sm:px-6 backdrop-blur-md">
@@ -227,17 +257,23 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
         </div>
       </div>
 
-      {/* Global Search Modal */}
+      {/* Global Search Modal (⌘K / Ctrl+K) */}
       {searchOpen && (
-        <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="w-full max-w-xl rounded-xl border border-slate-800 bg-slate-900 p-4 shadow-2xl">
+        <div
+          className="fixed inset-0 z-50 flex items-start justify-center pt-20 p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150"
+          onClick={() => setSearchOpen(false)}
+        >
+          <div
+            className="w-full max-w-xl rounded-2xl border border-slate-800 bg-slate-900 p-4 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between pb-3 border-b border-slate-800">
               <div className="flex items-center space-x-2 flex-1">
                 <Search className="h-4 w-4 text-violet-400" />
                 <input
                   type="text"
                   autoFocus
-                  placeholder="Buscar agente, herramienta MCP, workflow o ejecución..."
+                  placeholder="Escribe para buscar agentes, MCPs, workflows o atajos..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full bg-transparent text-sm text-white focus:outline-none placeholder:text-slate-500"
@@ -251,38 +287,134 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
               </button>
             </div>
 
-            <div className="mt-3 space-y-1 text-xs">
-              <div className="text-[11px] font-semibold text-slate-400 px-2 py-1">Accesos directos</div>
-              <button
-                onClick={() => {
-                  setSearchOpen(false);
-                  navigate('/chat');
-                }}
-                className="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 text-slate-200 flex items-center justify-between"
-              >
-                <span>💬 Abrir Multi-Agent Chat Room</span>
-                <span className="text-[10px] text-violet-400 font-mono">/chat</span>
-              </button>
-              <button
-                onClick={() => {
-                  setSearchOpen(false);
-                  navigate('/workflows');
-                }}
-                className="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 text-slate-200 flex items-center justify-between"
-              >
-                <span>⚡ Editor Visual de Workflows</span>
-                <span className="text-[10px] text-violet-400 font-mono">/workflows</span>
-              </button>
-              <button
-                onClick={() => {
-                  setSearchOpen(false);
-                  navigate('/mcp');
-                }}
-                className="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 text-slate-200 flex items-center justify-between"
-              >
-                <span>🔌 Administrar Servidores MCP</span>
-                <span className="text-[10px] text-violet-400 font-mono">/mcp</span>
-              </button>
+            <div className="mt-3 max-h-72 overflow-y-auto space-y-2 text-xs">
+              {/* Dynamic search matches */}
+              {q ? (
+                <>
+                  {matchedAgents.length > 0 && (
+                    <div>
+                      <span className="text-[10px] font-semibold uppercase text-violet-400 px-2 py-0.5 block">
+                        Agentes
+                      </span>
+                      {matchedAgents.map((ag) => (
+                        <div
+                          key={ag.id}
+                          onClick={() => {
+                            setSearchOpen(false);
+                            navigate(`/agents/${ag.id}`);
+                          }}
+                          className="p-2 rounded-lg hover:bg-slate-800 cursor-pointer flex items-center justify-between text-slate-200"
+                        >
+                          <span className="flex items-center gap-2">
+                            <Bot className="h-3.5 w-3.5 text-violet-400" />
+                            {ag.name}
+                          </span>
+                          <Badge variant="outline" className="text-[9px]">
+                            {ag.role}
+                          </Badge>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {matchedTools.length > 0 && (
+                    <div>
+                      <span className="text-[10px] font-semibold uppercase text-amber-400 px-2 py-0.5 block">
+                        Herramientas MCP
+                      </span>
+                      {matchedTools.map((tl) => (
+                        <div
+                          key={tl.id}
+                          onClick={() => {
+                            setSearchOpen(false);
+                            navigate('/mcp');
+                          }}
+                          className="p-2 rounded-lg hover:bg-slate-800 cursor-pointer flex items-center justify-between text-slate-200"
+                        >
+                          <span className="flex items-center gap-2">
+                            <Wrench className="h-3.5 w-3.5 text-amber-400" />
+                            {tl.name}
+                          </span>
+                          <span className="text-[10px] text-slate-400">{tl.serverName}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {matchedWorkflows.length > 0 && (
+                    <div>
+                      <span className="text-[10px] font-semibold uppercase text-blue-400 px-2 py-0.5 block">
+                        Workflows
+                      </span>
+                      {matchedWorkflows.map((wf) => (
+                        <div
+                          key={wf.id}
+                          onClick={() => {
+                            setSearchOpen(false);
+                            navigate('/workflows');
+                          }}
+                          className="p-2 rounded-lg hover:bg-slate-800 cursor-pointer flex items-center justify-between text-slate-200"
+                        >
+                          <span className="flex items-center gap-2">
+                            <GitFork className="h-3.5 w-3.5 text-blue-400" />
+                            {wf.name}
+                          </span>
+                          <span className="text-[10px] font-mono text-slate-400">v{wf.version}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {matchedAgents.length === 0 && matchedTools.length === 0 && matchedWorkflows.length === 0 && (
+                    <p className="text-slate-400 text-center py-4">No se encontraron resultados para "{searchQuery}"</p>
+                  )}
+                </>
+              ) : (
+                /* Default Shortcuts */
+                <div>
+                  <div className="text-[11px] font-semibold text-slate-400 px-2 py-1">Accesos Directos Rápidos</div>
+                  <button
+                    onClick={() => {
+                      setSearchOpen(false);
+                      navigate('/chat');
+                    }}
+                    className="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 text-slate-200 flex items-center justify-between cursor-pointer"
+                  >
+                    <span>💬 Abrir Multi-Agent Chat Room</span>
+                    <span className="text-[10px] text-violet-400 font-mono">/chat</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setSearchOpen(false);
+                      navigate('/workflows');
+                    }}
+                    className="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 text-slate-200 flex items-center justify-between cursor-pointer"
+                  >
+                    <span>⚡ Editor Visual de Workflows</span>
+                    <span className="text-[10px] text-violet-400 font-mono">/workflows</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setSearchOpen(false);
+                      navigate('/mcp');
+                    }}
+                    className="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 text-slate-200 flex items-center justify-between cursor-pointer"
+                  >
+                    <span>🔌 Administrar Servidores MCP</span>
+                    <span className="text-[10px] text-violet-400 font-mono">/mcp</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setSearchOpen(false);
+                      navigate('/executions');
+                    }}
+                    className="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 text-slate-200 flex items-center justify-between cursor-pointer"
+                  >
+                    <span>📊 Centro de Ejecución & Event Timeline</span>
+                    <span className="text-[10px] text-violet-400 font-mono">/executions</span>
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -365,3 +365,4 @@ export interface WSEvent<T = any> {
   payload: T;
   timestamp: string;
 }
+

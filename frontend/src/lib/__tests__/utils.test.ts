@@ -24,3 +24,4 @@ describe('Utility Formatters', () => {
     expect(id).toMatch(/^agent-/);
   });
 });
+

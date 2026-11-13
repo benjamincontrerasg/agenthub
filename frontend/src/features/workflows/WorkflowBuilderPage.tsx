@@ -47,7 +47,9 @@ import {
   Flag,
   Sparkles,
   Layers,
+  Download,
 } from 'lucide-react';
+import { toast } from '@/stores/toast.store';
 
 const nodeTypes = {
   startNode: StartNode,
@@ -157,14 +159,31 @@ export const WorkflowBuilderPage: React.FC = () => {
     if (currentWorkflow) {
       saveWorkflow(currentWorkflow.id, nodes as any, edges as any);
       setSaveFeedback('✓ Guardado exitoso');
+      toast.success('Workflow guardado', `Se guardaron los nodos de "${currentWorkflow.name}"`);
       setTimeout(() => setSaveFeedback(null), 2500);
     }
   };
 
   const handleDuplicate = () => {
     if (currentWorkflow) {
-      duplicateWorkflow(currentWorkflow.id);
+      const dup = duplicateWorkflow(currentWorkflow.id);
+      if (dup) {
+        toast.success('Workflow duplicado', `Copia creada: "${dup.name}"`);
+      }
     }
+  };
+
+  const handleExportJson = () => {
+    if (!currentWorkflow) return;
+    const jsonStr = JSON.stringify({ ...currentWorkflow, nodes, edges }, null, 2);
+    const blob = new Blob([jsonStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${currentWorkflow.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success('Workflow exportado', 'Archivo JSON generado y descargado exitosamente.');
   };
 
   const handleNewWorkflow = () => {
@@ -249,6 +268,16 @@ export const WorkflowBuilderPage: React.FC = () => {
             title="Duplicar Workflow"
           >
             <Copy className="h-3.5 w-3.5" />
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-xs h-8"
+            onClick={handleExportJson}
+            title="Exportar Workflow como JSON"
+          >
+            <Download className="h-3.5 w-3.5" />
           </Button>
 
           <Button

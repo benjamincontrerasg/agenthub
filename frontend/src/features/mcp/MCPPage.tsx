@@ -384,3 +384,4 @@ export const MCPPage: React.FC = () => {
     </div>
   );
 };
+
