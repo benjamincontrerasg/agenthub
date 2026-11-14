@@ -15,6 +15,7 @@ import {
   ChevronRight,
   ShieldAlert,
   Play,
+  X,
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -52,8 +53,9 @@ export const ExecutionsPage: React.FC = () => {
     return matchesStatus && matchesSearch;
   });
 
-  const activeExecution =
-    executions.find((e) => e.id === selectedExecutionId) || filtered[0] || executions[0];
+  const activeExecution = selectedExecutionId
+    ? executions.find((e) => e.id === selectedExecutionId) || null
+    : null;
 
   const handleRetry = async (id: string) => {
     setIsRetrying(true);
@@ -116,10 +118,10 @@ export const ExecutionsPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Two Column Layout: List (5 cols) + Detailed Timeline View (7 cols) */}
+      {/* Layout: Full width List OR Two Columns with Side Panel */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Executions List */}
-        <div className="lg:col-span-5 space-y-2.5">
+        <div className={`${activeExecution ? 'lg:col-span-5' : 'lg:col-span-12'} space-y-2.5 transition-all`}>
           {filtered.map((exec) => {
             const isSelected = activeExecution?.id === exec.id;
 
@@ -219,6 +221,15 @@ export const ExecutionsPage: React.FC = () => {
                         Reintentar
                       </Button>
                     )}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0 text-fg-muted hover:text-fg-primary"
+                      onClick={() => setSelectedExecutionId(null)}
+                      title="Cerrar panel lateral"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
                   </div>
                 </div>
               </CardHeader>

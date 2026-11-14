@@ -26,15 +26,15 @@ interface HeaderProps {
 }
 
 const sectionTitles: Record<string, { title: string; subtitle: string }> = {
-  '/': { title: 'Dashboard', subtitle: 'Vista general y métricas del ecosistema de agentes' },
-  '/providers': { title: 'AI Providers', subtitle: 'Conexión y gestión de proveedores de modelos de lenguaje' },
-  '/agents': { title: 'Agents', subtitle: 'Configuración, roles y orquestación de agentes autónomos' },
-  '/mcp': { title: 'MCP Hub', subtitle: 'Administración de servidores Model Context Protocol' },
-  '/workflows': { title: 'Workflow Builder', subtitle: 'Diseñador visual de pipelines multiagente con React Flow' },
-  '/chat': { title: 'Multi-Agent Chat', subtitle: 'Sala colaborativa de ejecución e interacción con agentes' },
-  '/executions': { title: 'Execution Center', subtitle: 'Trazabilidad, logs y auditoría en tiempo real' },
-  '/analytics': { title: 'Usage & Analytics', subtitle: 'Consumo de tokens, costos y rendimiento' },
-  '/settings': { title: 'Settings', subtitle: 'Configuración de seguridad, backend y entorno' },
+  '/': { title: 'Dashboard', subtitle: 'Resumen operativo y acciones que requieren tu atención' },
+  '/providers': { title: 'Proveedores de IA', subtitle: 'Conexión con Claude, OpenAI, Gemini y modelos locales' },
+  '/agents': { title: 'Agentes Autónomos', subtitle: 'Equipos de IA con roles especializados y herramientas asignadas' },
+  '/mcp': { title: 'MCP Hub', subtitle: 'Herramientas y capacidades externas que tus agentes pueden usar' },
+  '/workflows': { title: 'Flujos de Trabajo', subtitle: 'Diseñador visual para conectar agentes en secuencia o paralelo' },
+  '/chat': { title: 'Chat Multi-Agente', subtitle: 'Espacio de trabajo donde tus agentes colaboran y piden aprobación' },
+  '/executions': { title: 'Centro de Ejecuciones', subtitle: 'Historial, trazabilidad y estado de tareas en tiempo real' },
+  '/analytics': { title: 'Uso y Métricas', subtitle: 'Consumo de tokens, costos estimados y rendimiento de inferencia' },
+  '/settings': { title: 'Configuración', subtitle: 'Ajustes del sistema, seguridad y claves de cifrado' },
 };
 
 export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
@@ -146,14 +146,13 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
           </kbd>
         </button>
 
-        {/* Live Status Pill */}
-        <div className="hidden sm:flex items-center space-x-2 rounded-lg border border-border-default/80 bg-bg-card/50 px-2.5 py-1 text-caption">
+        {/* Simulation Mode Compact Badge */}
+        <div className="hidden sm:flex items-center space-x-1.5 rounded-lg border border-border-brand/40 bg-bg-brand-subtle px-2.5 py-1 text-caption">
           <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-fg-success opacity-75"></span>
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-fg-success"></span>
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-fg-brand opacity-75"></span>
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-fg-brand"></span>
           </span>
-          <span className="text-fg-secondary font-medium">En línea</span>
-          <span className="text-caption text-fg-brand font-mono">(Mock Mode)</span>
+          <span className="text-fg-brand font-medium">Modo Simulación</span>
         </div>
 
         {/* Notifications Popover */}

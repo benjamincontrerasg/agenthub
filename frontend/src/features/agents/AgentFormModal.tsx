@@ -1,8 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Agent, AgentRole } from '@/types';
+import {
+  ChevronDown,
+  ChevronRight,
+  Sliders,
+} from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -81,6 +86,7 @@ export const AgentFormModal: React.FC<AgentFormModalProps> = ({ agent, open, onC
 
   const selectedProviderId = watch('providerId');
   const selectedProvider = providers.find((p) => p.id === selectedProviderId) || providers[0];
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   React.useEffect(() => {
     if (agent) {
@@ -251,59 +257,78 @@ export const AgentFormModal: React.FC<AgentFormModalProps> = ({ agent, open, onC
               />
             </div>
 
-            {/* Hyperparameters: Temperature & Max Iterations */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 p-3 rounded-lg bg-bg-card/60 border border-border-default">
-              <div>
-                <Controller
-                  name="temperature"
-                  control={control}
-                  render={({ field }) => (
-                    <div>
-                      <div className="flex justify-between items-center text-caption mb-2">
-                        <span className="font-medium text-fg-secondary">Temperatura</span>
-                        <span className="font-mono text-fg-brand font-semibold">{field.value.toFixed(2)}</span>
-                      </div>
-                      <Slider
-                        min={0}
-                        max={1}
-                        step={0.05}
-                        value={field.value}
-                        onChange={field.onChange}
-                      />
-                      <div className="flex justify-between text-caption text-fg-secondary mt-1">
-                        <span>Preciso / Determinista</span>
-                        <span>Creativo</span>
-                      </div>
-                    </div>
-                  )}
-                />
-              </div>
+            {/* Collapsible Hyperparameters (Avanzado) */}
+            <div className="rounded-lg border border-border-default bg-bg-card/40 overflow-hidden">
+              <button
+                type="button"
+                onClick={() => setShowAdvanced(!showAdvanced)}
+                className="w-full flex items-center justify-between p-3 text-caption font-semibold text-fg-secondary hover:text-fg-primary hover:bg-bg-surface/50 transition-colors"
+              >
+                <span className="flex items-center gap-2">
+                  <Sliders className="h-4 w-4 text-fg-brand" />
+                  Hiperparámetros del Modelo (Avanzado)
+                </span>
+                <span className="flex items-center gap-1.5 text-caption font-mono text-fg-muted">
+                  <span>{showAdvanced ? 'Ocultar' : 'Configurar'}</span>
+                  {showAdvanced ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                </span>
+              </button>
 
-              <div>
-                <Controller
-                  name="maxIterations"
-                  control={control}
-                  render={({ field }) => (
-                    <div>
-                      <div className="flex justify-between items-center text-caption mb-2">
-                        <span className="font-medium text-fg-secondary">Límite de Iteraciones (Loops)</span>
-                        <span className="font-mono text-fg-brand font-semibold">{field.value} pasos</span>
-                      </div>
-                      <Slider
-                        min={3}
-                        max={30}
-                        step={1}
-                        value={field.value}
-                        onChange={field.onChange}
-                      />
-                      <div className="flex justify-between text-caption text-fg-secondary mt-1">
-                        <span>3 pasos</span>
-                        <span>30 pasos max</span>
-                      </div>
-                    </div>
-                  )}
-                />
-              </div>
+              {showAdvanced && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 p-4 border-t border-border-default/60 bg-bg-card/70 animate-in slide-in-from-top-1">
+                  <div>
+                    <Controller
+                      name="temperature"
+                      control={control}
+                      render={({ field }) => (
+                        <div>
+                          <div className="flex justify-between items-center text-caption mb-2">
+                            <span className="font-medium text-fg-secondary">Temperatura</span>
+                            <span className="font-mono text-fg-brand font-semibold">{field.value.toFixed(2)}</span>
+                          </div>
+                          <Slider
+                            min={0}
+                            max={1}
+                            step={0.05}
+                            value={field.value}
+                            onChange={field.onChange}
+                          />
+                          <div className="flex justify-between text-caption text-fg-secondary mt-1">
+                            <span>Preciso / Determinista</span>
+                            <span>Creativo</span>
+                          </div>
+                        </div>
+                      )}
+                    />
+                  </div>
+
+                  <div>
+                    <Controller
+                      name="maxIterations"
+                      control={control}
+                      render={({ field }) => (
+                        <div>
+                          <div className="flex justify-between items-center text-caption mb-2">
+                            <span className="font-medium text-fg-secondary">Límite de Iteraciones (Loops)</span>
+                            <span className="font-mono text-fg-brand font-semibold">{field.value} pasos</span>
+                          </div>
+                          <Slider
+                            min={3}
+                            max={30}
+                            step={1}
+                            value={field.value}
+                            onChange={field.onChange}
+                          />
+                          <div className="flex justify-between text-caption text-fg-secondary mt-1">
+                            <span>3 pasos</span>
+                            <span>30 pasos max</span>
+                          </div>
+                        </div>
+                      )}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* MCP Tools Allowed */}

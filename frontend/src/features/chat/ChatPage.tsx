@@ -86,6 +86,9 @@ export const ChatPage: React.FC = () => {
   };
 
   const activeTypingAgent = agents.find((a) => a.id === activeAgentTypingId);
+  const activePendingApproval = activeConv?.messages.find(
+    (m) => m.approvalRequest && m.approvalRequest.status === 'pending'
+  )?.approvalRequest;
 
   return (
     <div className="h-[calc(100vh-8.5rem)] flex flex-col lg:flex-row gap-4 max-w-7xl mx-auto overflow-hidden">
@@ -270,6 +273,53 @@ export const ChatPage: React.FC = () => {
           </div>
         )}
 
+        {/* Zero-Trust Active Approval Spotlight Banner */}
+        {activePendingApproval && (
+          <div className="mx-4 mt-3 p-3.5 rounded-xl border-2 border-fg-warning bg-bg-warning/20 shadow-md shadow-amber-950/20 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 animate-in slide-in-from-top-2">
+            <div className="flex items-start gap-3">
+              <div className="p-2 rounded-lg bg-fg-warning/20 text-fg-warning shrink-0 mt-0.5">
+                <ShieldAlert className="h-5 w-5 animate-pulse" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-caption font-bold text-fg-warning uppercase tracking-wider">
+                    Acción en Espera de Autorización Humana
+                  </span>
+                  <Badge variant="warning" className="text-caption font-mono py-0">
+                    {activePendingApproval.id}
+                  </Badge>
+                </div>
+                <p className="text-body font-semibold text-fg-primary mt-0.5">
+                  {activePendingApproval.actionDescription}
+                </p>
+                <p className="text-caption text-fg-secondary font-mono mt-0.5">
+                  Agente: <strong className="text-fg-primary">{activePendingApproval.agentName}</strong> · Herramienta: <strong className="text-fg-brand">{activePendingApproval.toolName}</strong>
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <Button
+                variant="default"
+                size="sm"
+                className="bg-fg-success hover:bg-emerald-500 text-slate-950 font-bold px-3.5 h-8 shadow-sm"
+                onClick={() => respondToApproval(activePendingApproval.id, true)}
+              >
+                <CheckCircle2 className="mr-1.5 h-3.5 w-3.5" />
+                Aprobar
+              </Button>
+              <Button
+                variant="destructive"
+                size="sm"
+                className="h-8 px-3.5"
+                onClick={() => respondToApproval(activePendingApproval.id, false)}
+              >
+                <XCircle className="mr-1.5 h-3.5 w-3.5" />
+                Rechazar
+              </Button>
+            </div>
+          </div>
+        )}
+
         {/* Messages Stream */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
           {activeConv?.messages.map((msg) => {
@@ -368,35 +418,48 @@ export const ChatPage: React.FC = () => {
                     </div>
                   )}
 
-                  {/* Interactive Human Approval Request Banner */}
+                  {/* Interactive Human Approval Request Banner (Zero-Trust) */}
                   {msg.approvalRequest && msg.approvalRequest.status === 'pending' && (
-                    <div className="mt-3 rounded-xl border border-fg-warning/70 bg-bg-warning/50 p-3.5 space-y-2.5 text-fg-warning animate-in zoom-in-95 duration-150">
-                      <div className="flex items-center gap-2 text-caption font-bold text-fg-warning">
-                        <ShieldAlert className="h-4 w-4" />
-                        <span>Confirmación de Seguridad Requerida (Zero-Trust)</span>
+                    <div className="mt-4 rounded-xl border-2 border-fg-warning bg-bg-warning/25 p-4 space-y-3 shadow-lg shadow-amber-950/30 animate-in zoom-in-95 duration-150">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 text-body font-bold text-fg-warning">
+                          <ShieldAlert className="h-5 w-5 animate-pulse" />
+                          <span>Aprobación Humana Requerida (Zero-Trust)</span>
+                        </div>
+                        <Badge variant="warning" className="text-caption font-mono uppercase">
+                          {msg.approvalRequest.id}
+                        </Badge>
                       </div>
-                      <p className="text-caption text-fg-warning/90 leading-normal">
-                        {msg.approvalRequest.actionDescription}
-                      </p>
 
-                      <div className="flex items-center gap-2.5 pt-1">
+                      <div className="rounded-lg bg-bg-card/70 border border-border-default p-3">
+                        <p className="text-body font-semibold text-fg-primary leading-relaxed">
+                          {msg.approvalRequest.actionDescription}
+                        </p>
+                        <div className="mt-2 flex flex-wrap items-center gap-2 text-caption text-fg-secondary font-mono">
+                          <span>Herramienta: <strong className="text-fg-brand">{msg.approvalRequest.toolName}</strong></span>
+                          <span>·</span>
+                          <span>Agente solicitante: <strong className="text-fg-primary">{msg.approvalRequest.agentName}</strong></span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3 pt-1">
                         <Button
-                          variant="success"
+                          variant="default"
                           size="sm"
-                          className="text-caption h-7 px-3 bg-fg-success hover:bg-emerald-500"
+                          className="text-body h-9 px-4 bg-fg-success hover:bg-emerald-500 text-slate-950 font-bold shadow-md"
                           onClick={() => respondToApproval(msg.approvalRequest!.id, true)}
                         >
-                          <CheckCircle2 className="mr-1.5 h-3.5 w-3.5" />
+                          <CheckCircle2 className="mr-2 h-4 w-4" />
                           Aprobar Ejecución
                         </Button>
                         <Button
                           variant="destructive"
                           size="sm"
-                          className="text-caption h-7 px-3"
+                          className="text-body h-9 px-4 font-semibold"
                           onClick={() => respondToApproval(msg.approvalRequest!.id, false)}
                         >
-                          <XCircle className="mr-1.5 h-3.5 w-3.5" />
-                          Rechazar
+                          <XCircle className="mr-2 h-4 w-4" />
+                          Rechazar Operación
                         </Button>
                       </div>
                     </div>
