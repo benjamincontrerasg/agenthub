@@ -3,7 +3,7 @@ import * as schema from '../db/schema.js';
 import { eq } from 'drizzle-orm';
 import { AIProvider, ProviderId } from '../types.js';
 import { encrypt, decrypt } from '../lib/crypto.js';
-import { NotFoundError } from '../lib/errors.js';
+import { NotFoundError, ValidationError } from '../lib/errors.js';
 import Anthropic from '@anthropic-ai/sdk';
 import OpenAI from 'openai';
 import { GoogleGenerativeAI } from '@google/generative-ai';
@@ -107,9 +107,79 @@ export const providerService = {
       .where(eq(schema.providers.id, id))
       .run();
 
+    if (defaultModelId) {
+      db.update(schema.models)
+        .set({ isDefault: false })
+        .where(eq(schema.models.providerId, id))
+        .run();
+      db.update(schema.models)
+        .set({ isDefault: true })
+        .where(eq(schema.models.id, defaultModelId))
+        .run();
+    }
+
     return {
       success: true,
       message: `Proveedor ${p.name} conectado y credencial cifrada con éxito.`,
+    };
+  },
+
+  async disconnect(id: ProviderId): Promise<{ success: boolean; message: string }> {
+    const p = db.select().from(schema.providers).where(eq(schema.providers.id, id)).get();
+    if (!p) {
+      throw new NotFoundError('Proveedor', id);
+    }
+
+    db.update(schema.providers)
+      .set({
+        encryptedApiKey: null,
+        hasApiKey: false,
+        status: 'disconnected',
+        latencyMs: null,
+        lastTested: null,
+        updatedAt: new Date().toISOString(),
+      })
+      .where(eq(schema.providers.id, id))
+      .run();
+
+    return {
+      success: true,
+      message: `Proveedor ${p.name} desconectado y credenciales eliminadas.`,
+    };
+  },
+
+  async updateDefaultModel(id: ProviderId, defaultModelId: string): Promise<{ success: boolean; message: string }> {
+    const p = db.select().from(schema.providers).where(eq(schema.providers.id, id)).get();
+    if (!p) {
+      throw new NotFoundError('Proveedor', id);
+    }
+
+    const model = db.select().from(schema.models).where(eq(schema.models.id, defaultModelId)).get();
+    if (!model || model.providerId !== id) {
+      throw new ValidationError(`El modelo '${defaultModelId}' no pertenece al proveedor '${id}'`);
+    }
+
+    db.update(schema.providers)
+      .set({
+        defaultModelId,
+        updatedAt: new Date().toISOString(),
+      })
+      .where(eq(schema.providers.id, id))
+      .run();
+
+    db.update(schema.models)
+      .set({ isDefault: false })
+      .where(eq(schema.models.providerId, id))
+      .run();
+
+    db.update(schema.models)
+      .set({ isDefault: true })
+      .where(eq(schema.models.id, defaultModelId))
+      .run();
+
+    return {
+      success: true,
+      message: `Modelo predeterminado de ${p.name} actualizado a ${model.name}.`,
     };
   },
 

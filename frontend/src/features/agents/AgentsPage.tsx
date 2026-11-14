@@ -21,7 +21,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useAgentsStore } from '@/stores/agents.store';
-import { useProvidersStore } from '@/stores/providers.store';
+import { useProviders } from '@/features/providers/hooks';
 import { AgentFormModal } from './AgentFormModal';
 import { Agent } from '@/types';
 import { AgentAvatar } from '@/components/shared/AgentAvatar';
@@ -39,7 +39,7 @@ export const AgentsPage: React.FC = () => {
     toggleAgentStatus,
     deleteAgent,
   } = useAgentsStore();
-  const { providers } = useProvidersStore();
+  const { data: providers = [] } = useProviders();
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editingAgent, setEditingAgent] = useState<Agent | null>(null);

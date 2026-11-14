@@ -22,7 +22,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAgentsStore } from '@/stores/agents.store';
-import { useProvidersStore } from '@/stores/providers.store';
+import { useProviders } from '@/features/providers/hooks';
 import { useMCPStore } from '@/stores/mcp.store';
 import { useExecutionsStore } from '@/stores/executions.store';
 import { useChatStore } from '@/stores/chat.store';
@@ -43,7 +43,7 @@ import {
 export const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
   const { agents } = useAgentsStore();
-  const { providers } = useProvidersStore();
+  const { data: providers = [] } = useProviders();
   const { servers } = useMCPStore();
   const { executions } = useExecutionsStore();
   const { conversations, respondToApproval } = useChatStore();

@@ -4,7 +4,7 @@
  * and seamless fallback between Mock Data and real HTTP Backend.
  */
 
-const BASE_URL = import.meta.env.VITE_API_URL || 'https://api.agenthub.dev/v1';
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/v1';
 
 export class ApiError extends Error {
   status: number;

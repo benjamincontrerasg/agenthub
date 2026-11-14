@@ -22,7 +22,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
-import { useProvidersStore } from '@/stores/providers.store';
+import { useProviders } from '@/features/providers/hooks';
 import { useMCPStore } from '@/stores/mcp.store';
 import { useAgentsStore } from '@/stores/agents.store';
 
@@ -47,7 +47,7 @@ interface AgentFormModalProps {
 }
 
 export const AgentFormModal: React.FC<AgentFormModalProps> = ({ agent, open, onClose }) => {
-  const { providers } = useProvidersStore();
+  const { data: providers = [] } = useProviders();
   const { getAllTools } = useMCPStore();
   const { agents, addAgent, updateAgent } = useAgentsStore();
 
