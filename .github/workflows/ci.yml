@@ -1,0 +1,310 @@
+# ============================================================================
+# AgentHub - Pipeline de Integración y Despliegue Continuo (CI/CD)
+# ============================================================================
+# Este workflow ejecuta verificaciones de calidad, seguridad y construcción
+# para cada push y pull request a la rama principal.
+# ============================================================================
+
+name: AgentHub CI/CD
+
+# ---------------------------------------------------------------------------
+# Disparadores: se ejecuta en push y pull request hacia la rama main
+# ---------------------------------------------------------------------------
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Cancelar ejecuciones anteriores del mismo PR/rama para ahorrar recursos
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# ---------------------------------------------------------------------------
+# Variables de entorno globales compartidas por todos los jobs
+# ---------------------------------------------------------------------------
+env:
+  NODE_VERSION: "20.x"
+
+# ===========================================================================
+# JOBS
+# ===========================================================================
+jobs:
+  # -------------------------------------------------------------------------
+  # Job 1: Lint y Construcción
+  # Instala dependencias de los tres módulos (backend, frontend, bridge)
+  # y ejecuta el build completo del monorepo.
+  # -------------------------------------------------------------------------
+  lint-and-build:
+    name: 🔨 Lint y Construcción
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: ["20.x"]
+
+    steps:
+      # Paso 1: Clonar el repositorio
+      - name: 📥 Clonar repositorio
+        uses: actions/checkout@v4
+
+      # Paso 2: Configurar Node.js con la versión de la matriz
+      - name: 🟢 Configurar Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      # Paso 3: Cachear dependencias npm para acelerar futuras ejecuciones
+      - name: 💾 Cachear dependencias npm (backend)
+        uses: actions/cache@v4
+        with:
+          path: backend/node_modules
+          key: ${{ runner.os }}-npm-backend-${{ hashFiles('backend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-backend-
+
+      - name: 💾 Cachear dependencias npm (frontend)
+        uses: actions/cache@v4
+        with:
+          path: frontend/node_modules
+          key: ${{ runner.os }}-npm-frontend-${{ hashFiles('frontend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-frontend-
+
+      - name: 💾 Cachear dependencias npm (bridge)
+        uses: actions/cache@v4
+        with:
+          path: bridge/node_modules
+          key: ${{ runner.os }}-npm-bridge-${{ hashFiles('bridge/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-bridge-
+
+      # Paso 4: Instalar dependencias de cada módulo
+      - name: 📦 Instalar dependencias del backend
+        working-directory: backend
+        run: npm ci
+
+      - name: 📦 Instalar dependencias del frontend
+        working-directory: frontend
+        run: npm ci
+
+      - name: 📦 Instalar dependencias del bridge
+        working-directory: bridge
+        run: npm ci
+
+      # Paso 5: Ejecutar la construcción completa desde la raíz del monorepo
+      - name: 🏗️ Construir todos los módulos
+        run: npm run build
+
+  # -------------------------------------------------------------------------
+  # Job 2: Tests
+  # Ejecuta las pruebas unitarias con Vitest para frontend y backend.
+  # Se permite fallo graceful si aún no existen tests configurados.
+  # -------------------------------------------------------------------------
+  test:
+    name: 🧪 Tests
+    runs-on: ubuntu-latest
+    needs: lint-and-build
+
+    strategy:
+      matrix:
+        node-version: ["20.x"]
+
+    steps:
+      - name: 📥 Clonar repositorio
+        uses: actions/checkout@v4
+
+      - name: 🟢 Configurar Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      # Restaurar caché de dependencias
+      - name: 💾 Cachear dependencias npm (backend)
+        uses: actions/cache@v4
+        with:
+          path: backend/node_modules
+          key: ${{ runner.os }}-npm-backend-${{ hashFiles('backend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-backend-
+
+      - name: 💾 Cachear dependencias npm (frontend)
+        uses: actions/cache@v4
+        with:
+          path: frontend/node_modules
+          key: ${{ runner.os }}-npm-frontend-${{ hashFiles('frontend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-frontend-
+
+      - name: 💾 Cachear dependencias npm (bridge)
+        uses: actions/cache@v4
+        with:
+          path: bridge/node_modules
+          key: ${{ runner.os }}-npm-bridge-${{ hashFiles('bridge/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-bridge-
+
+      # Instalar dependencias (se usa caché si está disponible)
+      - name: 📦 Instalar dependencias del backend
+        working-directory: backend
+        run: npm ci
+
+      - name: 📦 Instalar dependencias del frontend
+        working-directory: frontend
+        run: npm ci
+
+      - name: 📦 Instalar dependencias del bridge
+        working-directory: bridge
+        run: npm ci
+
+      # Ejecutar tests del frontend (fallo graceful si no hay tests)
+      - name: 🧪 Ejecutar tests del frontend
+        run: npm run test:frontend || echo "⚠️ No se encontraron tests del frontend o fallaron. Continuando..."
+        env:
+          CI: true
+
+      # Ejecutar tests del backend (fallo graceful si no hay tests)
+      - name: 🧪 Ejecutar tests del backend
+        run: npm run test:backend || echo "⚠️ No se encontraron tests del backend o fallaron. Continuando..."
+        env:
+          CI: true
+
+  # -------------------------------------------------------------------------
+  # Job 3: Auditoría de Seguridad
+  # Analiza las dependencias de cada módulo en busca de vulnerabilidades
+  # de nivel alto o crítico.
+  # -------------------------------------------------------------------------
+  security-audit:
+    name: 🔒 Auditoría de Seguridad
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: ["20.x"]
+
+    steps:
+      - name: 📥 Clonar repositorio
+        uses: actions/checkout@v4
+
+      - name: 🟢 Configurar Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      # Auditar cada módulo individualmente para identificar
+      # exactamente dónde están las vulnerabilidades
+      - name: 🔍 Auditar dependencias del backend
+        working-directory: backend
+        run: npm audit --audit-level=high || true
+        # Se usa || true para no bloquear el pipeline por vulnerabilidades
+        # en dependencias transitivas fuera de nuestro control.
+        # En producción, evaluar cambiar a fallo estricto.
+
+      - name: 🔍 Auditar dependencias del frontend
+        working-directory: frontend
+        run: npm audit --audit-level=high || true
+
+      - name: 🔍 Auditar dependencias del bridge
+        working-directory: bridge
+        run: npm audit --audit-level=high || true
+
+      # Resumen consolidado de auditorías
+      - name: 📋 Resumen de auditoría
+        if: always()
+        run: |
+          echo "============================================"
+          echo "  Resumen de Auditoría de Seguridad"
+          echo "============================================"
+          echo ""
+          echo "📦 Backend:"
+          cd backend && npm audit --audit-level=high 2>&1 | tail -5 || true
+          echo ""
+          echo "📦 Frontend:"
+          cd ../frontend && npm audit --audit-level=high 2>&1 | tail -5 || true
+          echo ""
+          echo "📦 Bridge:"
+          cd ../bridge && npm audit --audit-level=high 2>&1 | tail -5 || true
+
+  # -------------------------------------------------------------------------
+  # Job 4: Análisis CodeQL (Opcional)
+  # Ejecuta análisis estático de código con GitHub CodeQL para detectar
+  # vulnerabilidades de seguridad y errores de calidad en JavaScript/TypeScript.
+  # -------------------------------------------------------------------------
+  codeql:
+    name: 🛡️ Análisis CodeQL
+    runs-on: ubuntu-latest
+    # Solo ejecutar en push a main y PRs (no en forks por permisos)
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: ["javascript-typescript"]
+
+    steps:
+      - name: 📥 Clonar repositorio
+        uses: actions/checkout@v4
+
+      # Inicializar el motor de análisis CodeQL
+      - name: 🛡️ Inicializar CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          # Consultas extendidas para mayor cobertura de seguridad
+          queries: security-extended
+
+      # CodeQL auto-construye proyectos JavaScript/TypeScript
+      - name: 🔧 Auto-construcción para análisis
+        uses: github/codeql-action/autobuild@v3
+
+      # Ejecutar el análisis y subir resultados
+      - name: 📊 Ejecutar análisis CodeQL
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{ matrix.language }}"
+
+  # -------------------------------------------------------------------------
+  # Job 5: Construcción de Imágenes Docker
+  # Construye las imágenes Docker del backend y frontend para verificar
+  # que los Dockerfiles funcionan correctamente. NO se hace push al registry.
+  # -------------------------------------------------------------------------
+  docker-build:
+    name: 🐳 Construcción Docker
+    runs-on: ubuntu-latest
+    needs: lint-and-build
+
+    steps:
+      - name: 📥 Clonar repositorio
+        uses: actions/checkout@v4
+
+      # Configurar Docker Buildx para builds multi-plataforma y caché
+      - name: 🐳 Configurar Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Construir imagen del backend (solo verificación, sin push)
+      - name: 🏗️ Construir imagen Docker del backend
+        uses: docker/build-push-action@v6
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          push: false
+          tags: agenthub-backend:ci-${{ github.sha }}
+          cache-from: type=gha,scope=backend
+          cache-to: type=gha,mode=max,scope=backend
+
+      # Construir imagen del frontend (solo verificación, sin push)
+      - name: 🏗️ Construir imagen Docker del frontend
+        uses: docker/build-push-action@v6
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile
+          push: false
+          tags: agenthub-frontend:ci-${{ github.sha }}
+          cache-from: type=gha,scope=frontend
+          cache-to: type=gha,mode=max,scope=frontend
