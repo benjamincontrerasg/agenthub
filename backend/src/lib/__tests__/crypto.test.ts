@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { encrypt, decrypt } from '../crypto.js';
+import { encrypt, decrypt, encryptWithKey, decryptWithKey } from '../crypto.js';
 
 describe('Crypto Service (AES-256-GCM)', () => {
   it('correctly encrypts and decrypts a sensitive API key', () => {
@@ -30,5 +30,25 @@ describe('Crypto Service (AES-256-GCM)', () => {
     const tampered = encrypted.substring(0, encrypted.length - 4) + 'AAAA';
 
     expect(() => decrypt(tampered)).toThrow();
+  });
+
+  it('supports multi-key encryption and seamless key rotation', () => {
+    const secret = 'sk-prod-rotation-test-secret';
+    const oldKey = 'old-master-key-32-chars-long-abc!!';
+    const newKey = 'new-master-key-32-chars-long-xyz!!';
+
+    // 1. Encrypt with old key
+    const encryptedOld = encryptWithKey(secret, oldKey);
+    expect(decryptWithKey(encryptedOld, oldKey)).toBe(secret);
+
+    // Old key fails with wrong key
+    expect(() => decryptWithKey(encryptedOld, newKey)).toThrow();
+
+    // 2. Rotate to new key: decrypt with old, encrypt with new
+    const plainFromOld = decryptWithKey(encryptedOld, oldKey);
+    const encryptedNew = encryptWithKey(plainFromOld, newKey);
+
+    // 3. New key decrypts successfully
+    expect(decryptWithKey(encryptedNew, newKey)).toBe(secret);
   });
 });

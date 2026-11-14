@@ -6,14 +6,14 @@ const IV_LENGTH = 16;
 const TAG_LENGTH = 16;
 const SALT_LENGTH = 16;
 
-function deriveKey(salt: Buffer): Buffer {
-  return scryptSync(config.encryptionKey, salt, 32);
+function deriveKey(masterKey: string, salt: Buffer): Buffer {
+  return scryptSync(masterKey, salt, 32);
 }
 
-export function encrypt(plaintext: string): string {
+export function encryptWithKey(plaintext: string, masterKey: string): string {
   const salt = randomBytes(SALT_LENGTH);
   const iv = randomBytes(IV_LENGTH);
-  const key = deriveKey(salt);
+  const key = deriveKey(masterKey, salt);
 
   const cipher = createCipheriv(ALGORITHM, key, iv);
   const encrypted = Buffer.concat([cipher.update(plaintext, 'utf8'), cipher.final()]);
@@ -23,7 +23,7 @@ export function encrypt(plaintext: string): string {
   return Buffer.concat([salt, iv, tag, encrypted]).toString('base64');
 }
 
-export function decrypt(ciphertext: string): string {
+export function decryptWithKey(ciphertext: string, masterKey: string): string {
   const data = Buffer.from(ciphertext, 'base64');
 
   const salt = data.subarray(0, SALT_LENGTH);
@@ -31,10 +31,18 @@ export function decrypt(ciphertext: string): string {
   const tag = data.subarray(SALT_LENGTH + IV_LENGTH, SALT_LENGTH + IV_LENGTH + TAG_LENGTH);
   const encrypted = data.subarray(SALT_LENGTH + IV_LENGTH + TAG_LENGTH);
 
-  const key = deriveKey(salt);
+  const key = deriveKey(masterKey, salt);
 
   const decipher = createDecipheriv(ALGORITHM, key, iv);
   decipher.setAuthTag(tag);
 
   return decipher.update(encrypted) + decipher.final('utf8');
+}
+
+export function encrypt(plaintext: string): string {
+  return encryptWithKey(plaintext, config.encryptionKey);
+}
+
+export function decrypt(ciphertext: string): string {
+  return decryptWithKey(ciphertext, config.encryptionKey);
 }

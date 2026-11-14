@@ -62,4 +62,50 @@ describe('Local Agent Bridge HTTP API', () => {
     const body = JSON.parse(response.body);
     expect(body.error).toContain('no permitido por política de Sandbox');
   });
+
+  it('enforces Bearer token authentication when configured', async () => {
+    const authConfig = {
+      port: 8798,
+      host: '127.0.0.1',
+      authorizedDirectories: [process.cwd()],
+      backendUrl: 'http://localhost:3001',
+      allowStdioExecution: true,
+      token: 'secret-test-token-1234',
+    };
+
+    const secureInstance = createBridgeServer(authConfig);
+    await secureInstance.fastify.ready();
+
+    // 1. Health is public without token
+    const healthRes = await secureInstance.fastify.inject({
+      method: 'GET',
+      url: '/health',
+    });
+    expect(healthRes.statusCode).toBe(200);
+
+    // 2. Protected endpoint without token returns 401
+    const unauthRes = await secureInstance.fastify.inject({
+      method: 'GET',
+      url: '/status',
+    });
+    expect(unauthRes.statusCode).toBe(401);
+
+    // 3. Protected endpoint with invalid token returns 401
+    const badTokenRes = await secureInstance.fastify.inject({
+      method: 'GET',
+      url: '/status',
+      headers: { authorization: 'Bearer wrong-token' },
+    });
+    expect(badTokenRes.statusCode).toBe(401);
+
+    // 4. Protected endpoint with valid token returns 200
+    const validRes = await secureInstance.fastify.inject({
+      method: 'GET',
+      url: '/status',
+      headers: { authorization: 'Bearer secret-test-token-1234' },
+    });
+    expect(validRes.statusCode).toBe(200);
+
+    await secureInstance.fastify.close();
+  });
 });

@@ -10,6 +10,7 @@ function parseArgs(): BridgeConfig {
   let host = '127.0.0.1';
   let backendUrl = 'http://localhost:3001';
   let allowStdioExecution = true;
+  let token = process.env.BRIDGE_TOKEN || undefined;
   const authorizedDirectories: string[] = [process.cwd()];
 
   for (let i = 0; i < args.length; i++) {
@@ -20,6 +21,8 @@ function parseArgs(): BridgeConfig {
       host = args[++i] || host;
     } else if (arg === '--backend' || arg === '-b') {
       backendUrl = args[++i] || backendUrl;
+    } else if (arg === '--token' || arg === '-t') {
+      token = args[++i] || token;
     } else if (arg === '--no-stdio') {
       allowStdioExecution = false;
     } else if (arg === '--allow-dir' || arg === '-d') {
@@ -33,6 +36,7 @@ function parseArgs(): BridgeConfig {
     backendUrl,
     allowStdioExecution,
     authorizedDirectories,
+    token,
   };
 }
 

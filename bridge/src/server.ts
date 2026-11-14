@@ -15,6 +15,21 @@ export function createBridgeServer(config: BridgeConfig) {
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   });
 
+  // Zero-Trust Shared Token Authentication for Local Bridge
+  const authToken = config.token || process.env.BRIDGE_TOKEN;
+  if (authToken) {
+    fastify.addHook('preHandler', async (req, reply) => {
+      if (req.url === '/health') return;
+
+      const authHeader = req.headers.authorization;
+      if (!authHeader || authHeader !== `Bearer ${authToken}`) {
+        return reply.status(401).send({
+          error: 'No autorizado. Se requiere token Bearer válido para acceder al Local Bridge.',
+        });
+      }
+    });
+  }
+
   // Health / Status Ping
   fastify.get('/health', async () => ({
     status: 'healthy',

@@ -4,6 +4,7 @@ export interface BridgeConfig {
   authorizedDirectories: string[];
   backendUrl: string;
   allowStdioExecution: boolean;
+  token?: string;
 }
 
 export interface MCPProcessInfo {
