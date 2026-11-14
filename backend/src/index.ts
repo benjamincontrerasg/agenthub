@@ -16,6 +16,7 @@ import { chatRoutes } from './routes/chat.routes.js';
 import { executionsRoutes } from './routes/executions.routes.js';
 import { analyticsRoutes } from './routes/analytics.routes.js';
 import { settingsRoutes } from './routes/settings.routes.js';
+import { authRoutes } from './routes/auth.routes.js';
 
 const fastify = Fastify({
   logger: {
@@ -105,6 +106,9 @@ async function main() {
   await fastify.register(registerAllRoutes, { prefix: '/v1' });
   // Also register at root level
   await fastify.register(registerAllRoutes);
+
+  // Auth routes (no prefix — /auth/login, /auth/register, /auth/me)
+  await fastify.register(authRoutes);
 
   try {
     await fastify.listen({ port: config.port, host: config.host });

@@ -199,14 +199,16 @@ export const providerService = {
         if (id === 'openai') {
           const client = new OpenAI({ apiKey });
           await client.models.list();
+          message = 'Conexión con OpenAI API (Modelos y cuota) validada con éxito.';
         } else if (id === 'anthropic') {
           const client = new Anthropic({ apiKey });
-          // Basic test call or ping
-          message = 'Conexión con Anthropic API validada con éxito.';
+          await client.models.list({ limit: 1 });
+          message = 'Conexión con Anthropic API (Claude) validada con éxito.';
         } else if (id === 'gemini') {
           const genAI = new GoogleGenerativeAI(apiKey);
           const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-          message = 'Conexión con Google Gemini API validada con éxito.';
+          await model.countTokens({ contents: [{ role: 'user', parts: [{ text: 'ping' }] }] });
+          message = 'Conexión con Google Gemini API validada con éxito (Token check OK).';
         } else if (id === 'ollama') {
           const endpoint = p.apiEndpoint || 'http://localhost:11434';
           const res = await fetch(`${endpoint}/api/tags`);
