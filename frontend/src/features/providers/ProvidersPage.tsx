@@ -17,6 +17,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useProvidersStore } from '@/stores/providers.store';
 import { ProviderModal } from './ProviderModal';
+import { ProviderLogo } from '@/components/shared/ProviderLogo';
 import { AIProvider } from '@/types';
 import { formatDate } from '@/lib/utils';
 
@@ -68,9 +69,7 @@ export const ProvidersPage: React.FC = () => {
               <div>
                 <CardHeader className="flex flex-row items-start justify-between pb-3">
                   <div className="flex items-center space-x-3.5">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/70 shadow-inner text-lg font-bold text-violet-400">
-                      {provider.name.substring(0, 2).toUpperCase()}
-                    </div>
+                    <ProviderLogo providerId={provider.id} size="xl" className="shadow-lg ring-1 ring-slate-800" />
                     <div>
                       <div className="flex items-center gap-2">
                         <CardTitle className="text-base font-semibold">{provider.name}</CardTitle>

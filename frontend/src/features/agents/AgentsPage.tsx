@@ -24,6 +24,8 @@ import { useAgentsStore } from '@/stores/agents.store';
 import { useProvidersStore } from '@/stores/providers.store';
 import { AgentFormModal } from './AgentFormModal';
 import { Agent } from '@/types';
+import { AgentAvatar } from '@/components/shared/AgentAvatar';
+import { ProviderLogo } from '@/components/shared/ProviderLogo';
 import { formatNumber } from '@/lib/utils';
 
 export const AgentsPage: React.FC = () => {
@@ -111,11 +113,10 @@ export const AgentsPage: React.FC = () => {
             <button
               key={role}
               onClick={() => setRoleFilter(role)}
-              className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
-                roleFilter === role
+              className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer ${roleFilter === role
                   ? 'bg-violet-600 text-white shadow-sm'
                   : 'bg-slate-900/80 text-slate-400 hover:bg-slate-800 hover:text-slate-200 border border-slate-800'
-              }`}
+                }`}
             >
               {role === 'ALL' ? 'Todos' : role}
             </button>
@@ -139,9 +140,13 @@ export const AgentsPage: React.FC = () => {
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center space-x-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-violet-900/40 to-slate-800 border border-violet-800/40 text-violet-300 font-bold text-sm">
-                        {agent.name.substring(0, 2).toUpperCase()}
-                      </div>
+                      <AgentAvatar
+                        agentName={agent.name}
+                        role={agent.role}
+                        providerId={agent.providerId}
+                        size="md"
+                        status={isActive ? 'active' : 'paused'}
+                      />
                       <div>
                         <CardTitle className="text-base font-semibold group-hover:text-violet-300 transition-colors">
                           {agent.name}
@@ -150,9 +155,10 @@ export const AgentsPage: React.FC = () => {
                           <Badge variant="outline" className="text-[10px] font-mono">
                             {agent.role}
                           </Badge>
-                          <span className="text-[11px] text-slate-400">
-                            {provider?.name.split(' ')[0] || agent.providerId}
-                          </span>
+                          <div className="flex items-center gap-1 text-[11px] text-slate-400">
+                            <ProviderLogo providerId={agent.providerId} size="xs" showBackground={false} />
+                            <span>{provider?.name.split(' ')[0] || agent.providerId}</span>
+                          </div>
                         </div>
                       </div>
                     </div>

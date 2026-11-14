@@ -13,6 +13,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { ProviderLogo } from '@/components/shared/ProviderLogo';
 
 // Base wrapper for consistent SaaS styling
 const NodeWrapper = ({
@@ -25,6 +26,7 @@ const NodeWrapper = ({
   badgeVariant = 'outline',
   borderColor = 'border-slate-700',
   accentColor = 'text-violet-400',
+  providerId,
 }: {
   children: React.ReactNode;
   selected?: boolean;
@@ -35,6 +37,7 @@ const NodeWrapper = ({
   badgeVariant?: any;
   borderColor?: string;
   accentColor?: string;
+  providerId?: string;
 }) => {
   const isRunning = status === 'running';
   const isCompleted = status === 'completed';
@@ -49,9 +52,13 @@ const NodeWrapper = ({
     >
       <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-800">
         <div className="flex items-center gap-2">
-          <div className={`p-1.5 rounded-md bg-slate-800/80 ${accentColor}`}>
-            <Icon className="h-4 w-4" />
-          </div>
+          {providerId ? (
+            <ProviderLogo providerId={providerId} size="xs" rounded="md" className="shrink-0" />
+          ) : (
+            <div className={`p-1.5 rounded-md bg-slate-800/80 ${accentColor}`}>
+              <Icon className="h-4 w-4" />
+            </div>
+          )}
           <span className="text-xs font-semibold text-white tracking-tight truncate max-w-[120px]">
             {title}
           </span>
@@ -106,12 +113,32 @@ export const StartNode = memo((props: any) => {
 
 export const AgentNode = memo((props: any) => {
   const { data, selected } = props;
+  const label = (data?.label || '').toLowerCase();
+  const agentId = (data?.agentId || '').toLowerCase();
+
+  const providerId =
+    data?.providerId ||
+    (label.includes('architect') || agentId.includes('architect')
+      ? 'openai'
+      : label.includes('developer') || agentId.includes('developer')
+      ? 'anthropic'
+      : label.includes('reviewer') || agentId.includes('reviewer')
+      ? 'openai'
+      : label.includes('research') || agentId.includes('research')
+      ? 'gemini'
+      : label.includes('coordinator') || agentId.includes('coordinator')
+      ? 'anthropic'
+      : label.includes('ollama') || agentId.includes('ollama')
+      ? 'ollama'
+      : 'anthropic');
+
   return (
     <NodeWrapper
       selected={selected}
       status={data?.status}
       title={data?.label || 'AI Agent'}
       icon={Bot}
+      providerId={providerId}
       badgeText={data?.agentId ? 'Autonomous' : 'Agent'}
       badgeVariant="default"
       borderColor="border-violet-600/50"
@@ -119,11 +146,18 @@ export const AgentNode = memo((props: any) => {
     >
       <Handle type="target" position={Position.Left} className="!bg-violet-500 !w-2.5 !h-2.5" />
       <p className="text-[11px] text-slate-300 line-clamp-2">{data?.description || 'Ejecuta inferencia con LLM'}</p>
-      {data?.agentId && (
-        <span className="mt-1.5 inline-block text-[10px] font-mono text-violet-300 bg-violet-950/70 px-1.5 py-0.5 rounded border border-violet-800/50 truncate max-w-full">
-          ID: {data.agentId}
-        </span>
-      )}
+      
+      <div className="mt-2 pt-1.5 border-t border-slate-800 flex items-center justify-between text-[10px]">
+        <div className="flex items-center gap-1.5 bg-slate-950/70 px-1.5 py-0.5 rounded border border-slate-800">
+          <ProviderLogo providerId={providerId} size="xs" showBackground={false} />
+          <span className="font-mono text-slate-300 capitalize">{providerId}</span>
+        </div>
+        {data?.agentId && (
+          <span className="font-mono text-slate-400 truncate max-w-[90px]">
+            {data.agentId}
+          </span>
+        )}
+      </div>
       <Handle type="source" position={Position.Right} className="!bg-violet-500 !w-2.5 !h-2.5" />
     </NodeWrapper>
   );

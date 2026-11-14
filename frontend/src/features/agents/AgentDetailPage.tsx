@@ -25,6 +25,8 @@ import { useMCPStore } from '@/stores/mcp.store';
 import { useExecutionsStore } from '@/stores/executions.store';
 import { AgentFormModal } from './AgentFormModal';
 import { formatNumber, formatDate } from '@/lib/utils';
+import { AgentAvatar } from '@/components/shared/AgentAvatar';
+import { ProviderLogo } from '@/components/shared/ProviderLogo';
 
 export const AgentDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -76,6 +78,15 @@ export const AgentDetailPage: React.FC = () => {
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
+
+          <AgentAvatar
+            agentName={agent.name}
+            role={agent.role}
+            providerId={agent.providerId}
+            size="md"
+            status={agent.status}
+          />
+
           <div>
             <div className="flex items-center gap-2.5">
               <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
@@ -197,9 +208,12 @@ export const AgentDetailPage: React.FC = () => {
                 <span className="text-slate-400 text-[11px] block">Límite de Iteraciones</span>
                 <span className="font-semibold text-white font-mono">{agent.maxIterations} pasos</span>
               </div>
-              <div className="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800">
-                <span className="text-slate-400 text-[11px] block">Proveedor</span>
-                <span className="font-semibold text-white font-mono capitalize">{agent.providerId}</span>
+              <div className="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800 flex items-center justify-between">
+                <div>
+                  <span className="text-slate-400 text-[11px] block">Proveedor</span>
+                  <span className="font-semibold text-white font-mono capitalize">{agent.providerId}</span>
+                </div>
+                <ProviderLogo providerId={agent.providerId} size="sm" />
               </div>
             </div>
           </CardContent>

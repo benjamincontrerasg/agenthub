@@ -22,6 +22,8 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { useExecutionsStore } from '@/stores/executions.store';
 import { formatNumber, formatDuration, formatDate } from '@/lib/utils';
+import { AgentAvatar } from '@/components/shared/AgentAvatar';
+import { ProviderLogo } from '@/components/shared/ProviderLogo';
 import { WorkflowExecution } from '@/types';
 
 export const ExecutionsPage: React.FC = () => {
@@ -160,7 +162,10 @@ export const ExecutionsPage: React.FC = () => {
                 </p>
 
                 <div className="mt-2.5 flex items-center justify-between text-[11px] text-slate-400 font-mono">
-                  <span>{exec.responsibleAgentName || 'Coordinator'}</span>
+                  <div className="flex items-center gap-1.5 truncate max-w-[130px]">
+                    <AgentAvatar agentName={exec.responsibleAgentName || 'Coordinator'} size="xs" />
+                    <span className="truncate">{exec.responsibleAgentName || 'Coordinator'}</span>
+                  </div>
                   <span>{formatDuration(exec.durationMs || 0)}</span>
                   <span>{formatNumber(exec.totalTokens)} tok</span>
                 </div>
@@ -304,8 +309,9 @@ export const ExecutionsPage: React.FC = () => {
                         </div>
 
                         {step.agentOrToolName && (
-                          <div className="text-[11px] text-violet-400 font-mono">
-                            {step.agentOrToolName}
+                          <div className="text-[11px] text-violet-300 font-mono flex items-center gap-1.5">
+                            <AgentAvatar agentName={step.agentOrToolName} size="xs" />
+                            <span>{step.agentOrToolName}</span>
                           </div>
                         )}
 

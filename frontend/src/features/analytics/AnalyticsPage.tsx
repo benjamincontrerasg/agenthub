@@ -16,6 +16,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { initialAnalytics } from '@/services/mock-data';
 import { formatNumber, formatCurrency } from '@/lib/utils';
+import { ProviderLogo } from '@/components/shared/ProviderLogo';
+import { AgentAvatar } from '@/components/shared/AgentAvatar';
 import {
   AreaChart,
   Area,
@@ -245,10 +247,7 @@ export const AnalyticsPage: React.FC = () => {
               {initialAnalytics.tokensByProvider.map((p, idx) => (
                 <div key={p.provider} className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <span
-                      className="h-2.5 w-2.5 rounded-full"
-                      style={{ backgroundColor: providerColors[idx % providerColors.length] }}
-                    />
+                    <ProviderLogo providerId={p.provider} size="xs" />
                     <span className="text-slate-300 font-medium">{p.provider}</span>
                   </div>
                   <div className="flex items-center gap-3 font-mono text-[11px]">
@@ -308,10 +307,7 @@ export const AnalyticsPage: React.FC = () => {
               {initialAnalytics.tokensByAgent.map((a, idx) => (
                 <div key={a.agent} className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <span
-                      className="h-2.5 w-2.5 rounded-full"
-                      style={{ backgroundColor: agentColors[idx % agentColors.length] }}
-                    />
+                    <AgentAvatar agentName={a.agent} size="xs" />
                     <span className="text-slate-300 font-medium">{a.agent}</span>
                   </div>
                   <div className="flex items-center gap-3 font-mono text-[11px]">

@@ -14,6 +14,7 @@ import { Select } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { useProvidersStore } from '@/stores/providers.store';
 import { toast } from '@/stores/toast.store';
+import { ProviderLogo } from '@/components/shared/ProviderLogo';
 import { KeyRound, ShieldAlert, CheckCircle2, Zap } from 'lucide-react';
 
 interface ProviderModalProps {
@@ -76,9 +77,7 @@ export const ProviderModal: React.FC<ProviderModalProps> = ({ provider, open, on
         <form onSubmit={handleSave}>
           <DialogHeader>
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-800 border border-slate-700 text-lg font-bold text-violet-400">
-                {provider.name.substring(0, 2).toUpperCase()}
-              </div>
+              <ProviderLogo providerId={provider.id} size="lg" className="shadow-md" />
               <div>
                 <DialogTitle className="flex items-center gap-2">
                   Configurar {provider.name}

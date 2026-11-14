@@ -26,6 +26,8 @@ import { useMCPStore } from '@/stores/mcp.store';
 import { useExecutionsStore } from '@/stores/executions.store';
 import { initialAnalytics } from '@/services/mock-data';
 import { formatNumber, formatCurrency, formatDuration, formatDate } from '@/lib/utils';
+import { ProviderLogo } from '@/components/shared/ProviderLogo';
+import { AgentAvatar } from '@/components/shared/AgentAvatar';
 import {
   AreaChart,
   Area,
@@ -154,7 +156,17 @@ export const DashboardPage: React.FC = () => {
                   <span className="text-2xl font-bold tracking-tight text-white">{stat.value}</span>
                   <ArrowUpRight className="h-4 w-4 text-slate-600 group-hover:text-violet-400 transition-colors" />
                 </div>
-                <p className="mt-1 text-xs text-slate-400 truncate">{stat.subValue}</p>
+                {stat.title === 'Proveedores IA' ? (
+                  <div className="mt-1.5 flex items-center gap-1.5">
+                    <ProviderLogo providerId="anthropic" size="xs" />
+                    <ProviderLogo providerId="openai" size="xs" />
+                    <ProviderLogo providerId="gemini" size="xs" />
+                    <ProviderLogo providerId="ollama" size="xs" />
+                    <span className="text-[10px] text-slate-400 ml-1">4 Modelos</span>
+                  </div>
+                ) : (
+                  <p className="mt-1 text-xs text-slate-400 truncate">{stat.subValue}</p>
+                )}
               </CardContent>
             </Card>
           );
@@ -352,7 +364,10 @@ export const DashboardPage: React.FC = () => {
                       {exec.workflowName}
                     </td>
                     <td className="py-3 text-slate-300">
-                      {exec.responsibleAgentName || 'Coordinator'}
+                      <div className="flex items-center gap-2">
+                        <AgentAvatar agentName={exec.responsibleAgentName || 'Coordinator'} size="xs" />
+                        <span>{exec.responsibleAgentName || 'Coordinator'}</span>
+                      </div>
                     </td>
                     <td className="py-3">
                       {exec.status === 'completed' && (

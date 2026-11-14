@@ -26,6 +26,8 @@ import { useChatStore } from '@/stores/chat.store';
 import { useAgentsStore } from '@/stores/agents.store';
 import { formatDate } from '@/lib/utils';
 import { Message, Approval } from '@/types';
+import { AgentAvatar } from '@/components/shared/AgentAvatar';
+import { ProviderLogo } from '@/components/shared/ProviderLogo';
 
 export const ChatPage: React.FC = () => {
   const {
@@ -158,9 +160,13 @@ export const ChatPage: React.FC = () => {
                     }`}
                   >
                     <div className="flex items-center gap-2 truncate">
-                      <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-slate-800 text-[10px] font-bold text-violet-300">
-                        {ag ? ag.name.substring(0, 2).toUpperCase() : 'AG'}
-                      </div>
+                      <AgentAvatar
+                        agentName={ag?.name}
+                        role={ag?.role}
+                        providerId={ag?.providerId}
+                        size="xs"
+                        status={isTyping ? 'running' : isCurrentActive ? 'active' : 'idle'}
+                      />
                       <div className="truncate">
                         <p className="font-medium truncate text-xs">{ag?.name || agId}</p>
                         <p className="text-[10px] text-slate-400 font-mono">{ag?.role || 'Agent'}</p>
@@ -247,13 +253,14 @@ export const ChatPage: React.FC = () => {
             {activeConv.currentDelegationPath.map((agentName, idx) => (
               <React.Fragment key={idx}>
                 <span
-                  className={`px-2 py-0.5 rounded font-mono text-[10px] shrink-0 ${
+                  className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded font-mono text-[10px] shrink-0 ${
                     idx === activeConv.currentDelegationPath!.length - 1
                       ? 'bg-violet-950 text-violet-300 font-semibold border border-violet-800'
                       : 'bg-slate-900 text-slate-300 border border-slate-800'
                   }`}
                 >
-                  {agentName}
+                  <ProviderLogo providerId={agentName} size="xs" showBackground={false} />
+                  <span>{agentName}</span>
                 </span>
                 {idx < activeConv.currentDelegationPath!.length - 1 && (
                   <ArrowRight className="h-3 w-3 text-slate-600 shrink-0" />
@@ -287,9 +294,15 @@ export const ChatPage: React.FC = () => {
               >
                 {/* Sender Header */}
                 <div className="flex items-center gap-2 text-xs">
-                  {!isUser && (
-                    <div className="flex h-5 w-5 items-center justify-center rounded-md bg-gradient-to-tr from-violet-600 to-indigo-600 text-[10px] font-bold text-white">
-                      {msg.senderName.substring(0, 2).toUpperCase()}
+                  {!isUser ? (
+                    <AgentAvatar
+                      agentName={msg.senderName}
+                      role={msg.senderRole}
+                      size="xs"
+                    />
+                  ) : (
+                    <div className="flex h-5 w-5 items-center justify-center rounded-md bg-violet-600 text-[10px] font-bold text-white shadow">
+                      TÚ
                     </div>
                   )}
                   <span className="font-semibold text-slate-200">{msg.senderName}</span>
