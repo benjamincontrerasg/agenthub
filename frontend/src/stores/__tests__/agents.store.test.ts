@@ -1,4 +1,32 @@
 import { describe, it, expect, beforeEach } from 'vitest';
+
+const memoryStore: Record<string, string> = {};
+const mockLocalStorage = {
+  getItem: (key: string) => (key in memoryStore ? memoryStore[key] : null),
+  setItem: (key: string, value: string) => {
+    memoryStore[key] = String(value);
+  },
+  removeItem: (key: string) => {
+    delete memoryStore[key];
+  },
+  clear: () => {
+    for (const key of Object.keys(memoryStore)) {
+      delete memoryStore[key];
+    }
+  },
+  get length() {
+    return Object.keys(memoryStore).length;
+  },
+  key: (i: number) => Object.keys(memoryStore)[i] ?? null,
+};
+
+if (typeof globalThis.localStorage === 'undefined') {
+  Object.defineProperty(globalThis, 'localStorage', {
+    value: mockLocalStorage,
+    writable: true,
+  });
+}
+
 import { useAgentsStore } from '../agents.store';
 
 describe('Agents Store', () => {

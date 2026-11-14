@@ -1,5 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import { agentService } from '../services/agent.service.js';
+import { memoryService } from '../services/memory.service.js';
 import { createAgentSchema, updateAgentSchema } from '../lib/validators.js';
 
 export async function agentsRoutes(fastify: FastifyInstance) {
@@ -23,5 +24,33 @@ export async function agentsRoutes(fastify: FastifyInstance) {
 
   fastify.delete<{ Params: { id: string } }>('/agents/:id', async (req) => {
     return agentService.delete(req.params.id);
+  });
+
+  // Semantic Memory & RAG endpoints
+  fastify.get<{ Params: { id: string } }>('/agents/:id/memories', async (req) => {
+    return memoryService.getMemories(req.params.id);
+  });
+
+  fastify.post<{ Params: { id: string }; Body: { content: string; metadata?: any } }>(
+    '/agents/:id/memories',
+    async (req) => {
+      return memoryService.addMemory({
+        agentId: req.params.id,
+        content: req.body.content,
+        metadata: req.body.metadata,
+      });
+    }
+  );
+
+  fastify.get<{ Params: { id: string }; Querystring: { q: string; limit?: string } }>(
+    '/agents/:id/memories/search',
+    async (req) => {
+      const limit = req.query.limit ? parseInt(req.query.limit, 10) : 5;
+      return memoryService.searchMemories(req.params.id, req.query.q || '', limit);
+    }
+  );
+
+  fastify.delete<{ Params: { id: string } }>('/agents/memories/:id', async (req) => {
+    return memoryService.deleteMemory(req.params.id);
   });
 }

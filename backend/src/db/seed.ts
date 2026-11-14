@@ -10,9 +10,22 @@ import {
   initialSettings,
 } from './seed-data.js';
 import { eq } from 'drizzle-orm';
+import { sqlite } from './connection.js';
 
 export async function seedDatabase() {
   console.log('[Seed] Checking database state...');
+
+  // Ensure agent_memories table exists
+  sqlite.exec(`
+    CREATE TABLE IF NOT EXISTS agent_memories (
+      id TEXT PRIMARY KEY,
+      agent_id TEXT NOT NULL REFERENCES agents(id) ON DELETE CASCADE,
+      content TEXT NOT NULL,
+      metadata TEXT,
+      embedding TEXT NOT NULL,
+      created_at TEXT NOT NULL
+    );
+  `);
 
   // 1. Providers and Models
   const existingProviders = db.select().from(schema.providers).all();

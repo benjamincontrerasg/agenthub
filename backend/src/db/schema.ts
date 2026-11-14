@@ -57,6 +57,15 @@ export const agents = sqliteTable('agents', {
   updatedAt: text('updated_at').notNull(),
 });
 
+export const agentMemories = sqliteTable('agent_memories', {
+  id: text('id').primaryKey(),
+  agentId: text('agent_id').notNull().references(() => agents.id, { onDelete: 'cascade' }),
+  content: text('content').notNull(),
+  metadata: text('metadata'), // JSON object
+  embedding: text('embedding').notNull(), // JSON float[] vector (1536 dims)
+  createdAt: text('created_at').notNull(),
+});
+
 export const agentAllowedTools = sqliteTable('agent_allowed_tools', {
   agentId: text('agent_id').notNull().references(() => agents.id, { onDelete: 'cascade' }),
   toolId: text('tool_id').notNull(),
