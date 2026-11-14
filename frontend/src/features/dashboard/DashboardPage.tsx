@@ -21,7 +21,7 @@ import {
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { useAgentsStore } from '@/stores/agents.store';
+import { useAgents } from '@/features/agents/hooks';
 import { useProviders } from '@/features/providers/hooks';
 import { useMCPStore } from '@/stores/mcp.store';
 import { useExecutionsStore } from '@/stores/executions.store';
@@ -42,7 +42,7 @@ import {
 
 export const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
-  const { agents } = useAgentsStore();
+  const { data: agents = [] } = useAgents();
   const { data: providers = [] } = useProviders();
   const { servers } = useMCPStore();
   const { executions } = useExecutionsStore();

@@ -24,7 +24,7 @@ import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
 import { useProviders } from '@/features/providers/hooks';
 import { useMCPStore } from '@/stores/mcp.store';
-import { useAgentsStore } from '@/stores/agents.store';
+import { useAgents, useCreateAgent, useUpdateAgent } from './hooks';
 
 const agentSchema = z.object({
   name: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
@@ -49,7 +49,9 @@ interface AgentFormModalProps {
 export const AgentFormModal: React.FC<AgentFormModalProps> = ({ agent, open, onClose }) => {
   const { data: providers = [] } = useProviders();
   const { getAllTools } = useMCPStore();
-  const { agents, addAgent, updateAgent } = useAgentsStore();
+  const { data: agents = [] } = useAgents();
+  const createAgentMutation = useCreateAgent();
+  const updateAgentMutation = useUpdateAgent();
 
   const allTools = getAllTools();
   const otherAgents = agents.filter((a) => !agent || a.id !== agent.id);
@@ -134,13 +136,16 @@ export const AgentFormModal: React.FC<AgentFormModalProps> = ({ agent, open, onC
 
   const onSubmit = async (data: AgentFormData) => {
     if (agent) {
-      updateAgent(agent.id, {
-        ...data,
-        allowedToolIds: selectedTools,
-        allowedAgentCommunicationIds: selectedPeers,
+      await updateAgentMutation.mutateAsync({
+        id: agent.id,
+        updates: {
+          ...data,
+          allowedToolIds: selectedTools,
+          allowedAgentCommunicationIds: selectedPeers,
+        },
       });
     } else {
-      addAgent({
+      await createAgentMutation.mutateAsync({
         ...data,
         allowedToolIds: selectedTools,
         allowedAgentCommunicationIds: selectedPeers,

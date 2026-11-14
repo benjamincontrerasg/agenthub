@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useSettingsStore } from '@/stores/settings.store';
-import { useAgentsStore } from '@/stores/agents.store';
+import { useAgents } from '@/features/agents/hooks';
 import { useMCPStore } from '@/stores/mcp.store';
 import { useWorkflowsStore } from '@/stores/workflows.store';
 
@@ -41,7 +41,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { settings } = useSettingsStore();
-  const { agents } = useAgentsStore();
+  const { data: agents = [] } = useAgents();
   const { getAllTools } = useMCPStore();
   const { workflows } = useWorkflowsStore();
 

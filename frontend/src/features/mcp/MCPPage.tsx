@@ -22,40 +22,36 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
-import { useMCPStore } from '@/stores/mcp.store';
+import {
+  useMCPServers,
+  useValidateMCPServer,
+  useToggleMCPActivation,
+  useDeleteMCPServer,
+} from './hooks';
 import { RegisterMCPServerModal } from './RegisterMCPServerModal';
 import { AssignToolModal } from './AssignToolModal';
 import { MCPServer, MCPTool } from '@/types';
 import { formatDate } from '@/lib/utils';
 
 export const MCPPage: React.FC = () => {
-  const {
-    servers,
-    selectedServerId,
-    setSelectedServerId,
-    toggleServerActivation,
-    validateServer,
-    deleteServer,
-  } = useMCPStore();
+  const { data: servers = [], isLoading } = useMCPServers();
+  const validateMutation = useValidateMCPServer();
+  const toggleActivationMutation = useToggleMCPActivation();
+  const deleteMutation = useDeleteMCPServer();
 
+  const [selectedServerId, setSelectedServerId] = useState<string | null>(null);
   const [registerModalOpen, setRegisterModalOpen] = useState(false);
   const [selectedToolForAssign, setSelectedToolForAssign] = useState<MCPTool | null>(null);
-  const [isValidating, setIsValidating] = useState(false);
 
-  const activeServer = servers.find((s) => s.id === selectedServerId) || servers[0];
+  const activeServer = servers.find((s) => s.id === (selectedServerId || servers[0]?.id)) || servers[0];
 
   const handleValidate = async (id: string) => {
-    setIsValidating(true);
-    try {
-      await validateServer(id);
-    } finally {
-      setIsValidating(false);
-    }
+    validateMutation.mutate(id);
   };
 
   const handleDelete = (server: MCPServer) => {
     if (confirm(`¿Eliminar el servidor MCP "${server.name}"?`)) {
-      deleteServer(server.id);
+      deleteMutation.mutate(server.id);
     }
   };
 
@@ -143,7 +139,9 @@ export const MCPPage: React.FC = () => {
 
                     <Switch
                       checked={server.isActivated}
-                      onCheckedChange={() => toggleServerActivation(server.id)}
+                      onCheckedChange={(checked) =>
+                        toggleActivationMutation.mutate({ id: server.id, active: checked })
+                      }
                     />
                   </div>
 
@@ -213,7 +211,7 @@ export const MCPPage: React.FC = () => {
                         variant="default"
                         size="sm"
                         onClick={() => handleValidate(activeServer.id)}
-                        isLoading={isValidating}
+                        isLoading={validateMutation.isPending}
                         className="bg-fg-warning hover:bg-amber-500 text-caption"
                       >
                         <RefreshCw className="mr-1.5 h-3.5 w-3.5" />

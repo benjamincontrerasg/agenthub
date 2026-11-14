@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { useAgentsStore } from '@/stores/agents.store';
+import { useAgents } from '@/features/agents/hooks';
 import { useMCPStore } from '@/stores/mcp.store';
 import { Wrench, Bot, Check, ShieldAlert } from 'lucide-react';
 
@@ -21,7 +21,7 @@ interface AssignToolModalProps {
 }
 
 export const AssignToolModal: React.FC<AssignToolModalProps> = ({ tool, open, onClose }) => {
-  const { agents } = useAgentsStore();
+  const { data: agents = [] } = useAgents();
   const { assignToolToAgent, removeToolFromAgent } = useMCPStore();
 
   if (!tool) return null;

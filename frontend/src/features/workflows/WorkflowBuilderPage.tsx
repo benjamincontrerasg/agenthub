@@ -29,6 +29,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select } from '@/components/ui/select';
 import { useWorkflowsStore } from '@/stores/workflows.store';
+import { useSaveWorkflow } from './hooks';
 import { WorkflowNodeType } from '@/types';
 import { generateId } from '@/lib/utils';
 import {
@@ -76,6 +77,7 @@ export const WorkflowBuilderPage: React.FC = () => {
     stopSimulation,
     isSimulating,
   } = useWorkflowsStore();
+  const saveWorkflowMutation = useSaveWorkflow();
 
   const currentWorkflow = getActiveWorkflow();
 
@@ -158,8 +160,12 @@ export const WorkflowBuilderPage: React.FC = () => {
   const handleSave = () => {
     if (currentWorkflow) {
       saveWorkflow(currentWorkflow.id, nodes as any, edges as any);
+      saveWorkflowMutation.mutate({
+        ...currentWorkflow,
+        nodes: nodes as any,
+        edges: edges as any,
+      });
       setSaveFeedback('✓ Guardado exitoso');
-      toast.success('Workflow guardado', `Se guardaron los nodos de "${currentWorkflow.name}"`);
       setTimeout(() => setSaveFeedback(null), 2500);
     }
   };

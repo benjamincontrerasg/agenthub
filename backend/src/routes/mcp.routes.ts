@@ -23,4 +23,8 @@ export async function mcpRoutes(fastify: FastifyInstance) {
       return mcpService.toggleActivation(req.params.id, parsed.active);
     }
   );
+
+  fastify.delete<{ Params: { id: string } }>('/mcp/servers/:id', async (req) => {
+    return mcpService.delete(req.params.id);
+  });
 }

@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { useAgentsStore } from '@/stores/agents.store';
+import { useAgents } from '@/features/agents/hooks';
 import { useMCPStore } from '@/stores/mcp.store';
 import { X, Trash2, Settings, ShieldAlert } from 'lucide-react';
 
@@ -21,7 +21,7 @@ export const NodeConfigDrawer: React.FC<NodeConfigDrawerProps> = ({
   onUpdate,
   onDelete,
 }) => {
-  const { agents } = useAgentsStore();
+  const { data: agents = [] } = useAgents();
   const { getAllTools } = useMCPStore();
   const allTools = getAllTools();
 

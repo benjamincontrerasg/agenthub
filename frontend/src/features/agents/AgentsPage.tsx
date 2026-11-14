@@ -20,7 +20,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { useAgentsStore } from '@/stores/agents.store';
+import { useAgents, useToggleAgentStatus, useDeleteAgent } from './hooks';
 import { useProviders } from '@/features/providers/hooks';
 import { AgentFormModal } from './AgentFormModal';
 import { Agent } from '@/types';
@@ -30,17 +30,13 @@ import { formatNumber } from '@/lib/utils';
 
 export const AgentsPage: React.FC = () => {
   const navigate = useNavigate();
-  const {
-    agents,
-    searchQuery,
-    roleFilter,
-    setSearchQuery,
-    setRoleFilter,
-    toggleAgentStatus,
-    deleteAgent,
-  } = useAgentsStore();
+  const { data: agents = [], isLoading, error } = useAgents();
+  const toggleStatusMutation = useToggleAgentStatus();
+  const deleteMutation = useDeleteAgent();
   const { data: providers = [] } = useProviders();
 
+  const [searchQuery, setSearchQuery] = useState('');
+  const [roleFilter, setRoleFilter] = useState('ALL');
   const [modalOpen, setModalOpen] = useState(false);
   const [editingAgent, setEditingAgent] = useState<Agent | null>(null);
 
@@ -71,7 +67,7 @@ export const AgentsPage: React.FC = () => {
   const handleDelete = (agent: Agent, e: React.MouseEvent) => {
     e.stopPropagation();
     if (confirm(`¿Eliminar al agente "${agent.name}"?`)) {
-      deleteAgent(agent.id);
+      deleteMutation.mutate(agent.id);
     }
   };
 
@@ -207,7 +203,7 @@ export const AgentsPage: React.FC = () => {
                     className="h-8 px-2 text-caption text-fg-secondary hover:text-white"
                     onClick={(e) => {
                       e.stopPropagation();
-                      toggleAgentStatus(agent.id);
+                      toggleStatusMutation.mutate({ id: agent.id, currentStatus: agent.status });
                     }}
                   >
                     {isActive ? (

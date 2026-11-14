@@ -243,4 +243,14 @@ export const workflowService = {
       message: `Workflow '${wf.name}' finalizado con éxito.`,
     });
   },
+
+  async delete(id: string): Promise<{ success: boolean }> {
+    const existing = db.select().from(schema.workflows).where(eq(schema.workflows.id, id)).get();
+    if (!existing) {
+      throw new NotFoundError('Workflow', id);
+    }
+
+    db.delete(schema.workflows).where(eq(schema.workflows.id, id)).run();
+    return { success: true };
+  },
 };

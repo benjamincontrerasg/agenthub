@@ -23,7 +23,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useChatStore } from '@/stores/chat.store';
-import { useAgentsStore } from '@/stores/agents.store';
+import { useAgents } from '@/features/agents/hooks';
 import { formatDate } from '@/lib/utils';
 import { Message, Approval } from '@/types';
 import { AgentAvatar } from '@/components/shared/AgentAvatar';
@@ -46,7 +46,7 @@ export const ChatPage: React.FC = () => {
     activeAgentTypingId,
   } = useChatStore();
 
-  const { agents } = useAgentsStore();
+  const { data: agents = [] } = useAgents();
   const activeConv = getActiveConversation();
 
   const [inputContent, setInputContent] = useState('');

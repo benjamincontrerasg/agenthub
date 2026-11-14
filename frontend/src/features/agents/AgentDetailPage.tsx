@@ -20,7 +20,7 @@ import {
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { useAgentsStore } from '@/stores/agents.store';
+import { useAgent, useToggleAgentStatus, useDeleteAgent } from './hooks';
 import { useMCPStore } from '@/stores/mcp.store';
 import { useExecutionsStore } from '@/stores/executions.store';
 import { AgentFormModal } from './AgentFormModal';
@@ -31,13 +31,22 @@ import { ProviderLogo } from '@/components/shared/ProviderLogo';
 export const AgentDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { getAgentById, toggleAgentStatus, deleteAgent } = useAgentsStore();
+  const { data: agent, isLoading } = useAgent(id);
+  const toggleStatusMutation = useToggleAgentStatus();
+  const deleteMutation = useDeleteAgent();
   const { getAllTools } = useMCPStore();
   const { executions } = useExecutionsStore();
 
   const [editModalOpen, setEditModalOpen] = useState(false);
 
-  const agent = getAgentById(id || '');
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center p-12 text-center">
+        <Bot className="h-10 w-10 text-fg-brand animate-pulse mb-3" />
+        <p className="text-body text-fg-secondary">Cargando detalles del agente...</p>
+      </div>
+    );
+  }
 
   if (!agent) {
     return (
@@ -60,8 +69,9 @@ export const AgentDetailPage: React.FC = () => {
 
   const handleDelete = () => {
     if (confirm(`¿Estás seguro de eliminar al agente "${agent.name}"?`)) {
-      deleteAgent(agent.id);
-      navigate('/agents');
+      deleteMutation.mutate(agent.id, {
+        onSuccess: () => navigate('/agents'),
+      });
     }
   };
 
@@ -105,7 +115,7 @@ export const AgentDetailPage: React.FC = () => {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => toggleAgentStatus(agent.id)}
+            onClick={() => toggleStatusMutation.mutate({ id: agent.id, currentStatus: agent.status })}
           >
             {agent.status === 'active' ? (
               <>

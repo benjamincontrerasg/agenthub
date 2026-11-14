@@ -219,4 +219,17 @@ export const mcpService = {
 
     return { success: true };
   },
+
+  async delete(id: string): Promise<{ success: boolean }> {
+    const s = db.select().from(schema.mcpServers).where(eq(schema.mcpServers.id, id)).get();
+    if (!s) {
+      throw new NotFoundError('Servidor MCP', id);
+    }
+
+    db.delete(schema.mcpServers).where(eq(schema.mcpServers.id, id)).run();
+    db.delete(schema.mcpTools).where(eq(schema.mcpTools.serverId, id)).run();
+    db.delete(schema.mcpLogs).where(eq(schema.mcpLogs.serverId, id)).run();
+
+    return { success: true };
+  },
 };

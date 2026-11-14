@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { useMCPStore } from '@/stores/mcp.store';
+import { useRegisterMCPServer } from './hooks';
 import { Server, ShieldAlert, FolderLock, Terminal } from 'lucide-react';
 
 interface RegisterMCPServerModalProps {
@@ -21,7 +21,7 @@ interface RegisterMCPServerModalProps {
 }
 
 export const RegisterMCPServerModal: React.FC<RegisterMCPServerModalProps> = ({ open, onClose }) => {
-  const { addServer } = useMCPStore();
+  const registerMutation = useRegisterMCPServer();
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -55,7 +55,7 @@ export const RegisterMCPServerModal: React.FC<RegisterMCPServerModalProps> = ({ 
       if (k && v.length) env[k.trim()] = v.join('=').trim();
     });
 
-    addServer({
+    registerMutation.mutate({
       name,
       description: description || 'Servidor MCP registrado en AgentHub.',
       transport,

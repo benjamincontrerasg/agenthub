@@ -20,4 +20,8 @@ export async function workflowsRoutes(fastify: FastifyInstance) {
     const parsed = executeWorkflowSchema.parse(req.body || {});
     return workflowService.execute(req.params.id, parsed.inputs);
   });
+
+  fastify.delete<{ Params: { id: string } }>('/workflows/:id', async (req) => {
+    return workflowService.delete(req.params.id);
+  });
 }
