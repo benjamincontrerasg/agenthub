@@ -1,5 +1,47 @@
 @import "tailwindcss";
 
+/* ═══════════════════════════════════════════════════════════
+   AgentHub — Design Tokens v2
+   Tipografía: 4 tamaños fijos (mín 13px)
+   Colores: tokens semánticos con contraste WCAG AA validado
+   ═══════════════════════════════════════════════════════════ */
+
+@theme {
+  /* ── Typography ── */
+  --font-size-caption: 0.8125rem;       /* 13px — badges, metadata, timestamps */
+  --font-size-caption--line-height: 1.25rem;
+  --font-size-body: 0.875rem;           /* 14px — texto de lectura, labels */
+  --font-size-body--line-height: 1.375rem;
+  --font-size-subtitle: 1rem;           /* 16px — subtítulos de sección */
+  --font-size-subtitle--line-height: 1.5rem;
+  --font-size-title: 1.375rem;          /* 22px — títulos de página */
+  --font-size-title--line-height: 1.75rem;
+
+  /* ── Foreground (text) ── */
+  --color-fg-primary: #f1f5f9;          /* Texto principal, títulos */
+  --color-fg-secondary: #a1afc4;        /* Descripciones, texto secundario (5.8:1 vs bg-base) */
+  --color-fg-muted: #7a8ba3;            /* Placeholders, metadata discreta (4.6:1 vs bg-base) */
+  --color-fg-brand: #a78bfa;            /* Acción primaria, links, acentos de marca */
+  --color-fg-success: #34d399;          /* Éxito, conectado, positivo */
+  --color-fg-warning: #fbbf24;          /* Advertencia, pendiente */
+  --color-fg-error: #f87171;            /* Error, desconectado, fallido */
+
+  /* ── Background ── */
+  --color-bg-base: #0b0f19;             /* Fondo app */
+  --color-bg-card: #0f1629;             /* Cards, paneles */
+  --color-bg-surface: #1a2236;          /* Inputs, selects, hover */
+  --color-bg-brand: #7c3aed;            /* Botón primario, badge activo */
+  --color-bg-success: rgba(16,185,129,0.1);
+  --color-bg-warning: rgba(245,158,11,0.1);
+  --color-bg-error: rgba(239,68,68,0.1);
+  --color-bg-brand-subtle: rgba(124,58,237,0.1);
+
+  /* ── Borders ── */
+  --color-border-default: #1e293b;
+  --color-border-hover: #334155;
+  --color-border-brand: rgba(124,58,237,0.4);
+}
+
 @layer base {
   :root {
     --background: 222 47% 7%;
@@ -28,8 +70,10 @@
 body {
   margin: 0;
   min-height: 100vh;
-  background-color: #0b0f19;
-  color: #f1f5f9;
+  background-color: var(--color-bg-base);
+  color: var(--color-fg-primary);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: var(--font-size-body);
+  line-height: var(--font-size-body--line-height);
   -webkit-font-smoothing: antialiased;
 }

@@ -82,7 +82,7 @@ export const RegisterMCPServerModal: React.FC<RegisterMCPServerModalProps> = ({ 
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <div className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-950/60 border border-emerald-800/60 text-emerald-400">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-bg-success/60 border border-fg-success/60 text-fg-success">
                 <Server className="h-4 w-4" />
               </div>
               <div>
@@ -95,26 +95,26 @@ export const RegisterMCPServerModal: React.FC<RegisterMCPServerModalProps> = ({ 
           </DialogHeader>
 
           {/* Security Architecture Notice */}
-          <div className="mb-4 rounded-lg border border-amber-900/60 bg-amber-950/25 p-3 text-xs text-amber-300 flex items-start gap-2.5">
-            <ShieldAlert className="h-4 w-4 shrink-0 text-amber-400 mt-0.5" />
+          <div className="mb-4 rounded-lg border border-fg-warning/60 bg-bg-warning/25 p-3 text-caption text-fg-warning flex items-start gap-2.5">
+            <ShieldAlert className="h-4 w-4 shrink-0 text-fg-warning mt-0.5" />
             <div className="space-y-1">
               <span className="font-semibold block">Seguridad del Sistema (Zero Local Execution):</span>
-              <p className="text-[11px] text-amber-200/80 leading-relaxed">
-                El frontend <strong>no ejecuta</strong> directamente comandos de PowerShell ni procesos en el host. El servidor se registrará inicialmente en estado <Badge variant="warning" className="text-[9px] py-0 px-1 inline-flex">Pendiente de validación</Badge> y requerirá confirmación antes de ser activado por el Local Agent.
+              <p className="text-caption text-fg-warning/80 leading-relaxed">
+                El frontend <strong>no ejecuta</strong> directamente comandos de PowerShell ni procesos en el host. El servidor se registrará inicialmente en estado <Badge variant="warning" className="text-caption py-0 px-1 inline-flex">Pendiente de validación</Badge> y requerirá confirmación antes de ser activado por el Local Agent.
               </p>
             </div>
           </div>
 
           <div className="space-y-3.5 max-h-[60vh] overflow-y-auto pr-1">
             {error && (
-              <div className="p-2 rounded bg-red-950/50 border border-red-800 text-xs text-red-300">
+              <div className="p-2 rounded bg-bg-error/50 border border-fg-error text-caption text-fg-error">
                 {error}
               </div>
             )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">
+                <label className="block text-caption font-medium text-fg-secondary mb-1">
                   Nombre del Servidor
                 </label>
                 <Input
@@ -125,7 +125,7 @@ export const RegisterMCPServerModal: React.FC<RegisterMCPServerModalProps> = ({ 
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">
+                <label className="block text-caption font-medium text-fg-secondary mb-1">
                   Protocolo de Transporte
                 </label>
                 <Select
@@ -139,7 +139,7 @@ export const RegisterMCPServerModal: React.FC<RegisterMCPServerModalProps> = ({ 
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">
+              <label className="block text-caption font-medium text-fg-secondary mb-1">
                 Descripción
               </label>
               <Input
@@ -150,7 +150,7 @@ export const RegisterMCPServerModal: React.FC<RegisterMCPServerModalProps> = ({ 
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">
+              <label className="block text-caption font-medium text-fg-secondary mb-1">
                 {transport === 'stdio' ? 'Comando Ejecutable (STDIO)' : 'Endpoint URL (HTTP SSE)'}
               </label>
               <Input
@@ -167,7 +167,7 @@ export const RegisterMCPServerModal: React.FC<RegisterMCPServerModalProps> = ({ 
             {transport === 'stdio' && (
               <>
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1">
+                  <label className="block text-caption font-medium text-fg-secondary mb-1">
                     Argumentos CLI (uno por línea)
                   </label>
                   <Textarea
@@ -179,8 +179,8 @@ export const RegisterMCPServerModal: React.FC<RegisterMCPServerModalProps> = ({ 
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1 flex items-center gap-1.5">
-                    <FolderLock className="h-3 w-3 text-emerald-400" />
+                  <label className="block text-caption font-medium text-fg-secondary mb-1 flex items-center gap-1.5">
+                    <FolderLock className="h-3 w-3 text-fg-success" />
                     Directorios Autorizados (Sandboxed Paths)
                   </label>
                   <Textarea
@@ -194,7 +194,7 @@ export const RegisterMCPServerModal: React.FC<RegisterMCPServerModalProps> = ({ 
             )}
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">
+              <label className="block text-caption font-medium text-fg-secondary mb-1">
                 Variables de Entorno (KEY=VALUE por línea)
               </label>
               <Textarea

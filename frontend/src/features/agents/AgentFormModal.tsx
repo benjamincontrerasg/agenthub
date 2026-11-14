@@ -161,7 +161,7 @@ export const AgentFormModal: React.FC<AgentFormModalProps> = ({ agent, open, onC
             {/* General Info */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">
+                <label className="block text-caption font-medium text-fg-secondary mb-1">
                   Nombre del Agente
                 </label>
                 <Input
@@ -172,7 +172,7 @@ export const AgentFormModal: React.FC<AgentFormModalProps> = ({ agent, open, onC
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">
+                <label className="block text-caption font-medium text-fg-secondary mb-1">
                   Rol del Agente
                 </label>
                 <Select error={errors.role?.message} {...register('role')}>
@@ -187,7 +187,7 @@ export const AgentFormModal: React.FC<AgentFormModalProps> = ({ agent, open, onC
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">
+              <label className="block text-caption font-medium text-fg-secondary mb-1">
                 Descripción del Propósito
               </label>
               <Input
@@ -200,7 +200,7 @@ export const AgentFormModal: React.FC<AgentFormModalProps> = ({ agent, open, onC
             {/* Provider and Model Selection */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">
+                <label className="block text-caption font-medium text-fg-secondary mb-1">
                   Proveedor de IA
                 </label>
                 <Select
@@ -222,7 +222,7 @@ export const AgentFormModal: React.FC<AgentFormModalProps> = ({ agent, open, onC
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">
+                <label className="block text-caption font-medium text-fg-secondary mb-1">
                   Modelo de Inferencia
                 </label>
                 <Select {...register('modelId')}>
@@ -238,10 +238,10 @@ export const AgentFormModal: React.FC<AgentFormModalProps> = ({ agent, open, onC
             {/* System Prompt */}
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="block text-xs font-medium text-slate-300">
+                <label className="block text-caption font-medium text-fg-secondary">
                   System Prompt (Instrucciones de Personalidad y Metodología)
                 </label>
-                <span className="text-[11px] text-slate-400 font-mono">Markdown soportado</span>
+                <span className="text-caption text-fg-secondary font-mono">Markdown soportado</span>
               </div>
               <Textarea
                 rows={4}
@@ -252,16 +252,16 @@ export const AgentFormModal: React.FC<AgentFormModalProps> = ({ agent, open, onC
             </div>
 
             {/* Hyperparameters: Temperature & Max Iterations */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 p-3 rounded-lg bg-slate-950/60 border border-slate-800">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 p-3 rounded-lg bg-bg-card/60 border border-border-default">
               <div>
                 <Controller
                   name="temperature"
                   control={control}
                   render={({ field }) => (
                     <div>
-                      <div className="flex justify-between items-center text-xs mb-2">
-                        <span className="font-medium text-slate-300">Temperatura</span>
-                        <span className="font-mono text-violet-400 font-semibold">{field.value.toFixed(2)}</span>
+                      <div className="flex justify-between items-center text-caption mb-2">
+                        <span className="font-medium text-fg-secondary">Temperatura</span>
+                        <span className="font-mono text-fg-brand font-semibold">{field.value.toFixed(2)}</span>
                       </div>
                       <Slider
                         min={0}
@@ -270,7 +270,7 @@ export const AgentFormModal: React.FC<AgentFormModalProps> = ({ agent, open, onC
                         value={field.value}
                         onChange={field.onChange}
                       />
-                      <div className="flex justify-between text-[10px] text-slate-400 mt-1">
+                      <div className="flex justify-between text-caption text-fg-secondary mt-1">
                         <span>Preciso / Determinista</span>
                         <span>Creativo</span>
                       </div>
@@ -285,9 +285,9 @@ export const AgentFormModal: React.FC<AgentFormModalProps> = ({ agent, open, onC
                   control={control}
                   render={({ field }) => (
                     <div>
-                      <div className="flex justify-between items-center text-xs mb-2">
-                        <span className="font-medium text-slate-300">Límite de Iteraciones (Loops)</span>
-                        <span className="font-mono text-violet-400 font-semibold">{field.value} pasos</span>
+                      <div className="flex justify-between items-center text-caption mb-2">
+                        <span className="font-medium text-fg-secondary">Límite de Iteraciones (Loops)</span>
+                        <span className="font-mono text-fg-brand font-semibold">{field.value} pasos</span>
                       </div>
                       <Slider
                         min={3}
@@ -296,7 +296,7 @@ export const AgentFormModal: React.FC<AgentFormModalProps> = ({ agent, open, onC
                         value={field.value}
                         onChange={field.onChange}
                       />
-                      <div className="flex justify-between text-[10px] text-slate-400 mt-1">
+                      <div className="flex justify-between text-caption text-fg-secondary mt-1">
                         <span>3 pasos</span>
                         <span>30 pasos max</span>
                       </div>
@@ -308,7 +308,7 @@ export const AgentFormModal: React.FC<AgentFormModalProps> = ({ agent, open, onC
 
             {/* MCP Tools Allowed */}
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-2">
+              <label className="block text-caption font-medium text-fg-secondary mb-2">
                 Herramientas MCP Permitidas ({selectedTools.length} seleccionadas)
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -318,21 +318,21 @@ export const AgentFormModal: React.FC<AgentFormModalProps> = ({ agent, open, onC
                     <div
                       key={tool.id}
                       onClick={() => toggleTool(tool.id)}
-                      className={`flex items-start gap-2.5 p-2 rounded-lg border text-xs cursor-pointer transition-colors ${
+                      className={`flex items-start gap-2.5 p-2 rounded-lg border text-caption cursor-pointer transition-colors ${
                         isChecked
-                          ? 'border-violet-600/70 bg-violet-950/25 text-white'
-                          : 'border-slate-800 bg-slate-900/50 text-slate-400 hover:border-slate-700'
+                          ? 'border-border-brand/70 bg-bg-brand-subtle/25 text-fg-primary'
+                          : 'border-border-default bg-bg-card/50 text-fg-secondary hover:border-slate-700'
                       }`}
                     >
                       <input
                         type="checkbox"
                         checked={isChecked}
                         onChange={() => {}}
-                        className="mt-0.5 rounded border-slate-700 text-violet-600 focus:ring-0"
+                        className="mt-0.5 rounded border-border-hover text-fg-brand focus:ring-0"
                       />
                       <div className="overflow-hidden">
-                        <p className="font-medium text-slate-200 truncate">{tool.name}</p>
-                        <p className="text-[10px] text-slate-400 truncate">{tool.serverName}</p>
+                        <p className="font-medium text-fg-primary truncate">{tool.name}</p>
+                        <p className="text-caption text-fg-secondary truncate">{tool.serverName}</p>
                       </div>
                     </div>
                   );
@@ -342,7 +342,7 @@ export const AgentFormModal: React.FC<AgentFormModalProps> = ({ agent, open, onC
 
             {/* Allowed Agents Communication Network */}
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-2">
+              <label className="block text-caption font-medium text-fg-secondary mb-2">
                 Red de Colaboración (Agentes a los que puede delegar tareas)
               </label>
               <div className="flex flex-wrap gap-2">

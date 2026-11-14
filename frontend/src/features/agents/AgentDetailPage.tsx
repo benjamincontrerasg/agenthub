@@ -42,9 +42,9 @@ export const AgentDetailPage: React.FC = () => {
   if (!agent) {
     return (
       <div className="flex flex-col items-center justify-center p-12 text-center">
-        <Bot className="h-12 w-12 text-slate-600 mb-4" />
-        <h3 className="text-lg font-semibold text-white">Agente no encontrado</h3>
-        <p className="text-sm text-slate-400 mt-1">El agente solicitado no existe o fue eliminado.</p>
+        <Bot className="h-12 w-12 text-fg-muted mb-4" />
+        <h3 className="text-lg font-semibold text-fg-primary">Agente no encontrado</h3>
+        <p className="text-body text-fg-secondary mt-1">El agente solicitado no existe o fue eliminado.</p>
         <Button variant="default" size="sm" onClick={() => navigate('/agents')} className="mt-4">
           Volver a Agentes
         </Button>
@@ -89,7 +89,7 @@ export const AgentDetailPage: React.FC = () => {
 
           <div>
             <div className="flex items-center gap-2.5">
-              <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
+              <h2 className="text-title sm:text-2xl font-bold tracking-tight text-fg-primary">
                 {agent.name}
               </h2>
               <Badge variant={agent.status === 'active' ? 'success' : 'secondary'}>
@@ -97,7 +97,7 @@ export const AgentDetailPage: React.FC = () => {
               </Badge>
               <Badge variant="outline">{agent.role}</Badge>
             </div>
-            <p className="text-xs text-slate-400 mt-0.5">{agent.description}</p>
+            <p className="text-caption text-fg-secondary mt-0.5">{agent.description}</p>
           </div>
         </div>
 
@@ -150,33 +150,33 @@ export const AgentDetailPage: React.FC = () => {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4">
-            <span className="text-xs text-slate-400">Total de Ejecuciones</span>
-            <p className="text-2xl font-bold text-white mt-1">{agent.stats.totalRuns}</p>
-            <span className="text-[10px] text-emerald-400">Tasa de éxito: {agent.stats.successRate}%</span>
+            <span className="text-caption text-fg-secondary">Total de Ejecuciones</span>
+            <p className="text-title font-bold text-fg-primary mt-1">{agent.stats.totalRuns}</p>
+            <span className="text-caption text-fg-success">Tasa de éxito: {agent.stats.successRate}%</span>
           </CardContent>
         </Card>
 
         <Card>
           <CardContent className="p-4">
-            <span className="text-xs text-slate-400">Tokens Procesados</span>
-            <p className="text-2xl font-bold text-violet-400 mt-1">{formatNumber(agent.stats.totalTokens)}</p>
-            <span className="text-[10px] text-slate-400">Prompt & Output</span>
+            <span className="text-caption text-fg-secondary">Tokens Procesados</span>
+            <p className="text-title font-bold text-fg-brand mt-1">{formatNumber(agent.stats.totalTokens)}</p>
+            <span className="text-caption text-fg-secondary">Prompt & Output</span>
           </CardContent>
         </Card>
 
         <Card>
           <CardContent className="p-4">
-            <span className="text-xs text-slate-400">Tiempo Medio</span>
-            <p className="text-2xl font-bold text-white mt-1">{agent.stats.avgDurationSec}s</p>
-            <span className="text-[10px] text-slate-400">Por ciclo de tarea</span>
+            <span className="text-caption text-fg-secondary">Tiempo Medio</span>
+            <p className="text-title font-bold text-fg-primary mt-1">{agent.stats.avgDurationSec}s</p>
+            <span className="text-caption text-fg-secondary">Por ciclo de tarea</span>
           </CardContent>
         </Card>
 
         <Card>
           <CardContent className="p-4">
-            <span className="text-xs text-slate-400">Modelo Asociado</span>
-            <p className="text-sm font-bold text-white mt-1.5 truncate">{agent.modelId}</p>
-            <span className="text-[10px] text-blue-400 font-mono">Temp: {agent.temperature}</span>
+            <span className="text-caption text-fg-secondary">Modelo Asociado</span>
+            <p className="text-body font-bold text-fg-primary mt-1.5 truncate">{agent.modelId}</p>
+            <span className="text-caption text-fg-brand font-mono">Temp: {agent.temperature}</span>
           </CardContent>
         </Card>
       </div>
@@ -186,8 +186,8 @@ export const AgentDetailPage: React.FC = () => {
         {/* System Prompt & Instructions (2 columns) */}
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2">
-              <Terminal className="h-4 w-4 text-violet-400" />
+            <CardTitle className="text-subtitle flex items-center gap-2">
+              <Terminal className="h-4 w-4 text-fg-brand" />
               System Prompt & Instrucciones de Rol
             </CardTitle>
             <CardDescription>
@@ -195,23 +195,23 @@ export const AgentDetailPage: React.FC = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <pre className="p-4 rounded-lg bg-slate-950 border border-slate-800 text-xs font-mono text-slate-300 leading-relaxed whitespace-pre-wrap overflow-x-auto">
+            <pre className="p-4 rounded-lg bg-bg-card border border-border-default text-caption font-mono text-fg-secondary leading-relaxed whitespace-pre-wrap overflow-x-auto">
               {agent.systemPrompt}
             </pre>
 
-            <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
-              <div className="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800">
-                <span className="text-slate-400 text-[11px] block">Temperatura</span>
-                <span className="font-semibold text-white font-mono">{agent.temperature}</span>
+            <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-3 text-caption">
+              <div className="p-2.5 rounded-lg bg-bg-card/60 border border-border-default">
+                <span className="text-fg-secondary text-caption block">Temperatura</span>
+                <span className="font-semibold text-fg-primary font-mono">{agent.temperature}</span>
               </div>
-              <div className="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800">
-                <span className="text-slate-400 text-[11px] block">Límite de Iteraciones</span>
-                <span className="font-semibold text-white font-mono">{agent.maxIterations} pasos</span>
+              <div className="p-2.5 rounded-lg bg-bg-card/60 border border-border-default">
+                <span className="text-fg-secondary text-caption block">Límite de Iteraciones</span>
+                <span className="font-semibold text-fg-primary font-mono">{agent.maxIterations} pasos</span>
               </div>
-              <div className="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800 flex items-center justify-between">
+              <div className="p-2.5 rounded-lg bg-bg-card/60 border border-border-default flex items-center justify-between">
                 <div>
-                  <span className="text-slate-400 text-[11px] block">Proveedor</span>
-                  <span className="font-semibold text-white font-mono capitalize">{agent.providerId}</span>
+                  <span className="text-fg-secondary text-caption block">Proveedor</span>
+                  <span className="font-semibold text-fg-primary font-mono capitalize">{agent.providerId}</span>
                 </div>
                 <ProviderLogo providerId={agent.providerId} size="sm" />
               </div>
@@ -224,8 +224,8 @@ export const AgentDetailPage: React.FC = () => {
           {/* MCP Tools Assigned */}
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm flex items-center gap-2">
-                <Wrench className="h-4 w-4 text-amber-400" />
+              <CardTitle className="text-body flex items-center gap-2">
+                <Wrench className="h-4 w-4 text-fg-warning" />
                 Herramientas MCP ({assignedTools.length})
               </CardTitle>
             </CardHeader>
@@ -234,21 +234,21 @@ export const AgentDetailPage: React.FC = () => {
                 assignedTools.map((tool) => (
                   <div
                     key={tool.id}
-                    className="p-2 rounded-lg bg-slate-950/60 border border-slate-800 text-xs flex items-center justify-between"
+                    className="p-2 rounded-lg bg-bg-card/60 border border-border-default text-caption flex items-center justify-between"
                   >
                     <div>
-                      <p className="font-medium text-slate-200">{tool.name}</p>
-                      <p className="text-[10px] text-slate-400">{tool.serverName}</p>
+                      <p className="font-medium text-fg-primary">{tool.name}</p>
+                      <p className="text-caption text-fg-secondary">{tool.serverName}</p>
                     </div>
                     {tool.isWriteOperation && (
-                      <Badge variant="warning" className="text-[9px] py-0 px-1">
+                      <Badge variant="warning" className="text-caption py-0 px-1">
                         Escritura
                       </Badge>
                     )}
                   </div>
                 ))
               ) : (
-                <p className="text-xs text-slate-400">Sin herramientas MCP asignadas.</p>
+                <p className="text-caption text-fg-secondary">Sin herramientas MCP asignadas.</p>
               )}
             </CardContent>
           </Card>
@@ -256,15 +256,15 @@ export const AgentDetailPage: React.FC = () => {
           {/* Peer Communication Network */}
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm flex items-center gap-2">
-                <Layers className="h-4 w-4 text-blue-400" />
+              <CardTitle className="text-body flex items-center gap-2">
+                <Layers className="h-4 w-4 text-fg-brand" />
                 Red de Delegación ({agent.allowedAgentCommunicationIds.length})
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-1.5">
                 {agent.allowedAgentCommunicationIds.map((peerId) => (
-                  <Badge key={peerId} variant="outline" className="text-xs font-mono">
+                  <Badge key={peerId} variant="outline" className="text-caption font-mono">
                     {peerId}
                   </Badge>
                 ))}
@@ -277,8 +277,8 @@ export const AgentDetailPage: React.FC = () => {
       {/* Execution History Table */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2">
-            <Clock className="h-4 w-4 text-violet-400" />
+          <CardTitle className="text-subtitle flex items-center gap-2">
+            <Clock className="h-4 w-4 text-fg-brand" />
             Historial de Ejecuciones de {agent.name}
           </CardTitle>
           <CardDescription>
@@ -288,8 +288,8 @@ export const AgentDetailPage: React.FC = () => {
         <CardContent>
           {agentExecutions.length > 0 ? (
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead className="border-b border-slate-800 text-slate-400 font-medium">
+              <table className="w-full text-left text-caption">
+                <thead className="border-b border-border-default text-fg-secondary font-medium">
                   <tr>
                     <th className="pb-3 pl-2">ID Ejecución</th>
                     <th className="pb-3">Workflow</th>
@@ -301,22 +301,22 @@ export const AgentDetailPage: React.FC = () => {
                 <tbody className="divide-y divide-slate-800/60">
                   {agentExecutions.map((ex) => (
                     <tr key={ex.id} className="hover:bg-slate-900/40">
-                      <td className="py-2.5 pl-2 font-mono text-violet-400">{ex.id}</td>
-                      <td className="py-2.5 text-slate-200">{ex.workflowName}</td>
+                      <td className="py-2.5 pl-2 font-mono text-fg-brand">{ex.id}</td>
+                      <td className="py-2.5 text-fg-primary">{ex.workflowName}</td>
                       <td className="py-2.5">
                         <Badge variant={ex.status === 'completed' ? 'success' : 'secondary'}>
                           {ex.status}
                         </Badge>
                       </td>
-                      <td className="py-2.5 font-mono text-slate-300">{formatNumber(ex.totalTokens)}</td>
-                      <td className="py-2.5 text-slate-400">{formatDate(ex.startedAt)}</td>
+                      <td className="py-2.5 font-mono text-fg-secondary">{formatNumber(ex.totalTokens)}</td>
+                      <td className="py-2.5 text-fg-secondary">{formatDate(ex.startedAt)}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
           ) : (
-            <p className="text-xs text-slate-400 py-3">No hay ejecuciones registradas todavía.</p>
+            <p className="text-caption text-fg-secondary py-3">No hay ejecuciones registradas todavía.</p>
           )}
         </CardContent>
       </Card>

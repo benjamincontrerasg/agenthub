@@ -69,11 +69,11 @@ export const ExecutionsPage: React.FC = () => {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+          <h2 className="text-title sm:text-2xl font-bold tracking-tight text-fg-primary flex items-center gap-2">
             Execution Center & Telemetría
-            <Badge variant="secondary" className="font-mono text-xs">{executions.length} Ejecuciones</Badge>
+            <Badge variant="secondary" className="font-mono text-caption">{executions.length} Ejecuciones</Badge>
           </h2>
-          <p className="mt-1 text-sm text-slate-400">
+          <p className="mt-1 text-body text-fg-secondary">
             Monitorea el ciclo de vida, logs detallados, llamadas a herramientas MCP y consumo de tokens en cada ejecución.
           </p>
         </div>
@@ -82,12 +82,12 @@ export const ExecutionsPage: React.FC = () => {
       {/* Filter and Search Bar */}
       <div className="flex flex-col sm:flex-row gap-3 items-center justify-between">
         <div className="relative w-full sm:w-80">
-          <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+          <Search className="absolute left-3 top-2.5 h-4 w-4 text-fg-secondary" />
           <Input
             placeholder="Buscar por ID, workflow o agente..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 text-xs"
+            className="pl-9 text-caption"
           />
         </div>
 
@@ -96,10 +96,10 @@ export const ExecutionsPage: React.FC = () => {
             <button
               key={st}
               onClick={() => setStatusFilter(st)}
-              className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
+              className={`px-2.5 py-1 rounded-lg text-caption font-medium transition-colors cursor-pointer ${
                 statusFilter === st
-                  ? 'bg-violet-600 text-white shadow-sm'
-                  : 'bg-slate-900/80 text-slate-400 hover:bg-slate-800 hover:text-slate-200 border border-slate-800'
+                  ? 'bg-bg-brand text-fg-primary shadow-sm'
+                  : 'bg-bg-card/80 text-fg-secondary hover:bg-slate-800 hover:text-slate-200 border border-border-default'
               }`}
             >
               {st === 'ALL'
@@ -129,39 +129,39 @@ export const ExecutionsPage: React.FC = () => {
                 onClick={() => setSelectedExecutionId(exec.id)}
                 className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
                   isSelected
-                    ? 'border-violet-600/80 bg-slate-900 shadow-lg shadow-violet-950/20'
-                    : 'border-slate-800/80 bg-slate-900/40 hover:bg-slate-900/70 hover:border-slate-700'
+                    ? 'border-border-brand/80 bg-bg-card shadow-lg shadow-violet-950/20'
+                    : 'border-border-default/80 bg-bg-card/40 hover:bg-slate-900/70 hover:border-slate-700'
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs font-bold text-violet-400">{exec.id}</span>
+                  <span className="font-mono text-caption font-bold text-fg-brand">{exec.id}</span>
                   {exec.status === 'completed' && (
-                    <Badge variant="success" className="text-[10px] gap-1">
+                    <Badge variant="success" className="text-caption gap-1">
                       <CheckCircle2 className="h-3 w-3" /> Completado
                     </Badge>
                   )}
                   {exec.status === 'running' && (
-                    <Badge variant="default" className="text-[10px] gap-1 animate-pulse">
+                    <Badge variant="default" className="text-caption gap-1 animate-pulse">
                       <Zap className="h-3 w-3" /> Ejecutando
                     </Badge>
                   )}
                   {exec.status === 'failed' && (
-                    <Badge variant="destructive" className="text-[10px] gap-1">
+                    <Badge variant="destructive" className="text-caption gap-1">
                       <XCircle className="h-3 w-3" /> Fallido
                     </Badge>
                   )}
                   {exec.status === 'waiting_approval' && (
-                    <Badge variant="warning" className="text-[10px] gap-1">
+                    <Badge variant="warning" className="text-caption gap-1">
                       <AlertTriangle className="h-3 w-3" /> Esperando Aprobación
                     </Badge>
                   )}
                 </div>
 
-                <p className="mt-1.5 text-xs font-semibold text-white line-clamp-1">
+                <p className="mt-1.5 text-caption font-semibold text-fg-primary line-clamp-1">
                   {exec.workflowName}
                 </p>
 
-                <div className="mt-2.5 flex items-center justify-between text-[11px] text-slate-400 font-mono">
+                <div className="mt-2.5 flex items-center justify-between text-caption text-fg-secondary font-mono">
                   <div className="flex items-center gap-1.5 truncate max-w-[130px]">
                     <AgentAvatar agentName={exec.responsibleAgentName || 'Coordinator'} size="xs" />
                     <span className="truncate">{exec.responsibleAgentName || 'Coordinator'}</span>
@@ -174,7 +174,7 @@ export const ExecutionsPage: React.FC = () => {
           })}
 
           {filtered.length === 0 && (
-            <div className="p-8 text-center rounded-xl border border-dashed border-slate-800 text-xs text-slate-400">
+            <div className="p-8 text-center rounded-xl border border-dashed border-border-default text-caption text-fg-secondary">
               No se encontraron ejecuciones con los filtros aplicados.
             </div>
           )}
@@ -189,7 +189,7 @@ export const ExecutionsPage: React.FC = () => {
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                   <div>
                     <div className="flex items-center gap-2">
-                      <CardTitle className="text-base font-mono text-violet-300">
+                      <CardTitle className="text-subtitle font-mono text-fg-brand">
                         {activeExecution.id}
                       </CardTitle>
                       <Badge variant="outline">{activeExecution.status}</Badge>
@@ -202,7 +202,7 @@ export const ExecutionsPage: React.FC = () => {
                       <Button
                         variant="destructive"
                         size="sm"
-                        className="text-xs h-8"
+                        className="text-caption h-8"
                         onClick={() => cancelExecution(activeExecution.id)}
                       >
                         Cancelar
@@ -211,7 +211,7 @@ export const ExecutionsPage: React.FC = () => {
                       <Button
                         variant="outline"
                         size="sm"
-                        className="text-xs h-8"
+                        className="text-caption h-8"
                         onClick={() => handleRetry(activeExecution.id)}
                         isLoading={isRetrying}
                       >
@@ -224,37 +224,37 @@ export const ExecutionsPage: React.FC = () => {
               </CardHeader>
 
               <CardContent className="pt-0">
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-3 rounded-lg bg-slate-950/70 border border-slate-800 text-xs">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-3 rounded-lg bg-bg-card/70 border border-border-default text-caption">
                   <div>
-                    <span className="text-slate-400 text-[10px] block">Duración</span>
-                    <span className="font-mono text-white font-semibold">
+                    <span className="text-fg-secondary text-caption block">Duración</span>
+                    <span className="font-mono text-fg-primary font-semibold">
                       {formatDuration(activeExecution.durationMs || 0)}
                     </span>
                   </div>
                   <div>
-                    <span className="text-slate-400 text-[10px] block">Tokens Usados</span>
-                    <span className="font-mono text-violet-400 font-semibold">
+                    <span className="text-fg-secondary text-caption block">Tokens Usados</span>
+                    <span className="font-mono text-fg-brand font-semibold">
                       {formatNumber(activeExecution.totalTokens)}
                     </span>
                   </div>
                   <div>
-                    <span className="text-slate-400 text-[10px] block">Costo Estimado</span>
-                    <span className="font-mono text-emerald-400 font-semibold">
+                    <span className="text-fg-secondary text-caption block">Costo Estimado</span>
+                    <span className="font-mono text-fg-success font-semibold">
                       ${activeExecution.estimatedCostUsd.toFixed(4)}
                     </span>
                   </div>
                   <div>
-                    <span className="text-slate-400 text-[10px] block">Disparado Por</span>
-                    <span className="text-slate-200 truncate block">{activeExecution.triggeredBy}</span>
+                    <span className="text-fg-secondary text-caption block">Disparado Por</span>
+                    <span className="text-fg-primary truncate block">{activeExecution.triggeredBy}</span>
                   </div>
                 </div>
 
                 {activeExecution.errorMessage && (
-                  <div className="mt-3 p-3 rounded-lg bg-red-950/40 border border-red-800 text-xs text-red-200 flex items-start gap-2">
-                    <AlertTriangle className="h-4 w-4 shrink-0 text-red-400 mt-0.5" />
+                  <div className="mt-3 p-3 rounded-lg bg-bg-error/40 border border-fg-error text-caption text-fg-error flex items-start gap-2">
+                    <AlertTriangle className="h-4 w-4 shrink-0 text-fg-error mt-0.5" />
                     <div>
-                      <strong className="block text-red-300">Error durante la ejecución:</strong>
-                      <p className="text-[11px] mt-0.5">{activeExecution.errorMessage}</p>
+                      <strong className="block text-fg-error">Error durante la ejecución:</strong>
+                      <p className="text-caption mt-0.5">{activeExecution.errorMessage}</p>
                     </div>
                   </div>
                 )}
@@ -264,8 +264,8 @@ export const ExecutionsPage: React.FC = () => {
             {/* Event Timeline */}
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-violet-400" />
+                <CardTitle className="text-body flex items-center gap-2">
+                  <Clock className="h-4 w-4 text-fg-brand" />
                   Línea Temporal de Eventos (Event Timeline)
                 </CardTitle>
                 <CardDescription>
@@ -278,20 +278,20 @@ export const ExecutionsPage: React.FC = () => {
                     <div key={step.id || idx} className="relative">
                       {/* Step Indicator Dot */}
                       <div
-                        className={`absolute -left-[22px] top-1 h-3.5 w-3.5 rounded-full border-2 bg-slate-950 ${
+                        className={`absolute -left-[22px] top-1 h-3.5 w-3.5 rounded-full border-2 bg-bg-card ${
                           step.status === 'completed'
-                            ? 'border-emerald-500'
+                            ? 'border-fg-success'
                             : step.status === 'running'
-                            ? 'border-amber-400 animate-ping'
+                            ? 'border-fg-warning animate-ping'
                             : step.status === 'failed'
-                            ? 'border-red-500'
-                            : 'border-slate-700'
+                            ? 'border-fg-error'
+                            : 'border-border-hover'
                         }`}
                       />
 
-                      <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800 space-y-1 text-xs">
+                      <div className="p-3 rounded-lg bg-bg-card/60 border border-border-default space-y-1 text-caption">
                         <div className="flex items-center justify-between">
-                          <span className="font-semibold text-white">{step.name}</span>
+                          <span className="font-semibold text-fg-primary">{step.name}</span>
                           <Badge
                             variant={
                               step.status === 'completed'
@@ -302,27 +302,27 @@ export const ExecutionsPage: React.FC = () => {
                                 ? 'destructive'
                                 : 'outline'
                             }
-                            className="text-[9px]"
+                            className="text-caption"
                           >
                             {step.status}
                           </Badge>
                         </div>
 
                         {step.agentOrToolName && (
-                          <div className="text-[11px] text-violet-300 font-mono flex items-center gap-1.5">
+                          <div className="text-caption text-fg-brand font-mono flex items-center gap-1.5">
                             <AgentAvatar agentName={step.agentOrToolName} size="xs" />
                             <span>{step.agentOrToolName}</span>
                           </div>
                         )}
 
                         {step.outputSummary && (
-                          <p className="text-[11px] text-slate-300 font-sans mt-1">
+                          <p className="text-caption text-fg-secondary font-sans mt-1">
                             {step.outputSummary}
                           </p>
                         )}
 
                         {step.error && (
-                          <p className="text-[11px] text-red-400 font-mono mt-1">
+                          <p className="text-caption text-fg-error font-mono mt-1">
                             {step.error}
                           </p>
                         )}
@@ -336,24 +336,24 @@ export const ExecutionsPage: React.FC = () => {
             {/* Execution Raw Logs */}
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-xs flex items-center gap-2 text-slate-300">
-                  <Terminal className="h-3.5 w-3.5 text-violet-400" />
+                <CardTitle className="text-caption flex items-center gap-2 text-fg-secondary">
+                  <Terminal className="h-3.5 w-3.5 text-fg-brand" />
                   Registro de Logs de la Ejecución
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="h-36 overflow-y-auto p-3 rounded-lg bg-black/90 border border-slate-800 font-mono text-[11px] space-y-1">
+                <div className="h-36 overflow-y-auto p-3 rounded-lg bg-black/90 border border-border-default font-mono text-caption space-y-1">
                   {activeExecution.logs.map((log) => (
                     <div key={log.id} className="flex items-start gap-2">
-                      <span className="text-slate-400">{formatDate(log.timestamp)}</span>
-                      <span className="text-violet-400">[{log.source}]</span>
+                      <span className="text-fg-secondary">{formatDate(log.timestamp)}</span>
+                      <span className="text-fg-brand">[{log.source}]</span>
                       <span
                         className={
                           log.level === 'warn'
-                            ? 'text-amber-400'
+                            ? 'text-fg-warning'
                             : log.level === 'error'
-                            ? 'text-red-400'
-                            : 'text-slate-300'
+                            ? 'text-fg-error'
+                            : 'text-fg-secondary'
                         }
                       >
                         {log.message}
@@ -365,9 +365,9 @@ export const ExecutionsPage: React.FC = () => {
             </Card>
           </div>
         ) : (
-          <div className="lg:col-span-7 flex flex-col items-center justify-center p-12 text-center rounded-xl border border-dashed border-slate-800">
-            <Activity className="h-10 w-10 text-slate-600 mb-2" />
-            <p className="text-sm font-medium text-slate-300">Selecciona una ejecución para ver el detalle</p>
+          <div className="lg:col-span-7 flex flex-col items-center justify-center p-12 text-center rounded-xl border border-dashed border-border-default">
+            <Activity className="h-10 w-10 text-fg-muted mb-2" />
+            <p className="text-body font-medium text-fg-secondary">Selecciona una ejecución para ver el detalle</p>
           </div>
         )}
       </div>

@@ -10,7 +10,7 @@ export const AppLayout: React.FC = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-[#090d16] text-slate-100">
+    <div className="flex h-screen w-full overflow-hidden bg-[#090d16] text-fg-primary">
       {/* Sidebar Navigation */}
       <Sidebar
         collapsed={collapsed}
@@ -25,14 +25,14 @@ export const AppLayout: React.FC = () => {
         <Header onOpenMobile={() => setMobileOpen(true)} />
 
         {/* Demo Mode Sub-banner */}
-        <div className="bg-gradient-to-r from-violet-950/60 via-slate-900 to-slate-950 px-4 py-1.5 border-b border-violet-900/30 flex items-center justify-between text-xs text-slate-300">
+        <div className="bg-gradient-to-r from-violet-950/60 via-slate-900 to-slate-950 px-4 py-1.5 border-b border-border-brand/30 flex items-center justify-between text-caption text-fg-secondary">
           <div className="flex items-center gap-2">
-            <AlertCircle className="h-3.5 w-3.5 text-violet-400 shrink-0" />
+            <AlertCircle className="h-3.5 w-3.5 text-fg-brand shrink-0" />
             <span className="truncate">
-              <strong className="text-violet-300 font-medium">Modo Simulación Activo:</strong> Operaciones de agentes, MCP y workflows se ejecutan en entorno seguro frontend con persistencia de sesión.
+              <strong className="text-fg-brand font-medium">Modo Simulación Activo:</strong> Operaciones de agentes, MCP y workflows se ejecutan en entorno seguro frontend con persistencia de sesión.
             </span>
           </div>
-          <span className="hidden md:inline-block text-[11px] font-mono text-slate-400 bg-slate-900 px-2 py-0.5 rounded border border-slate-800">
+          <span className="hidden md:inline-block text-caption font-mono text-fg-secondary bg-bg-card px-2 py-0.5 rounded border border-border-default">
             Zero-Trust Security
           </span>
         </div>

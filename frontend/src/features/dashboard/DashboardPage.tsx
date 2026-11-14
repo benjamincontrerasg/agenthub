@@ -56,9 +56,9 @@ export const DashboardPage: React.FC = () => {
       value: agents.length,
       subValue: `${activeAgentsCount} activos ahora`,
       icon: Bot,
-      color: 'text-violet-400',
-      bgColor: 'bg-violet-950/40',
-      borderColor: 'border-violet-800/40',
+      color: 'text-fg-brand',
+      bgColor: 'bg-bg-brand-subtle/40',
+      borderColor: 'border-border-brand/40',
       path: '/agents',
     },
     {
@@ -66,9 +66,9 @@ export const DashboardPage: React.FC = () => {
       value: `${connectedProvidersCount} / ${providers.length}`,
       subValue: 'Anthropic, OpenAI, Gemini, Ollama',
       icon: Cpu,
-      color: 'text-blue-400',
-      bgColor: 'bg-blue-950/40',
-      borderColor: 'border-blue-800/40',
+      color: 'text-fg-brand',
+      bgColor: 'bg-bg-brand-subtle/40',
+      borderColor: 'border-border-brand/40',
       path: '/providers',
     },
     {
@@ -76,9 +76,9 @@ export const DashboardPage: React.FC = () => {
       value: `${connectedMCPCount} activos`,
       subValue: `${servers.flatMap((s) => s.tools).length} herramientas registradas`,
       icon: Server,
-      color: 'text-emerald-400',
-      bgColor: 'bg-emerald-950/40',
-      borderColor: 'border-emerald-800/40',
+      color: 'text-fg-success',
+      bgColor: 'bg-bg-success/40',
+      borderColor: 'border-fg-success/40',
       path: '/mcp',
     },
     {
@@ -86,9 +86,9 @@ export const DashboardPage: React.FC = () => {
       value: formatNumber(initialAnalytics.totalTokens),
       subValue: `Costo estimado: ${formatCurrency(initialAnalytics.estimatedCostUsd)}`,
       icon: Zap,
-      color: 'text-amber-400',
-      bgColor: 'bg-amber-950/40',
-      borderColor: 'border-amber-800/40',
+      color: 'text-fg-warning',
+      bgColor: 'bg-bg-warning/40',
+      borderColor: 'border-fg-warning/40',
       path: '/analytics',
     },
   ];
@@ -96,13 +96,13 @@ export const DashboardPage: React.FC = () => {
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
       {/* Top Banner with Quick Actions */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 rounded-xl border border-slate-800/80 bg-gradient-to-r from-slate-900/90 via-slate-900/60 to-slate-950 p-6 shadow-md">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 rounded-xl border border-border-default/80 bg-gradient-to-r from-slate-900/90 via-slate-900/60 to-slate-950 p-6 shadow-md">
         <div>
-          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+          <h2 className="text-title sm:text-2xl font-bold tracking-tight text-fg-primary flex items-center gap-2">
             Plataforma Multiagente AgentHub
-            <Badge variant="default" className="text-[11px]">Empresarial</Badge>
+            <Badge variant="default" className="text-caption">Empresarial</Badge>
           </h2>
-          <p className="mt-1 text-sm text-slate-400">
+          <p className="mt-1 text-body text-fg-secondary">
             Orquesta flujos de trabajo autónomos conectando Claude, GPT-4o, Gemini y servidores MCP.
           </p>
         </div>
@@ -147,14 +147,14 @@ export const DashboardPage: React.FC = () => {
             >
               <CardContent className="p-5">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-medium text-slate-400">{stat.title}</span>
+                  <span className="text-caption font-medium text-fg-secondary">{stat.title}</span>
                   <div className={`p-2 rounded-lg ${stat.bgColor} border ${stat.borderColor}`}>
                     <Icon className={`h-4 w-4 ${stat.color}`} />
                   </div>
                 </div>
                 <div className="mt-2 flex items-baseline justify-between">
-                  <span className="text-2xl font-bold tracking-tight text-white">{stat.value}</span>
-                  <ArrowUpRight className="h-4 w-4 text-slate-600 group-hover:text-violet-400 transition-colors" />
+                  <span className="text-title font-bold tracking-tight text-fg-primary">{stat.value}</span>
+                  <ArrowUpRight className="h-4 w-4 text-fg-muted group-hover:text-violet-400 transition-colors" />
                 </div>
                 {stat.title === 'Proveedores IA' ? (
                   <div className="mt-1.5 flex items-center gap-1.5">
@@ -162,10 +162,10 @@ export const DashboardPage: React.FC = () => {
                     <ProviderLogo providerId="openai" size="xs" />
                     <ProviderLogo providerId="gemini" size="xs" />
                     <ProviderLogo providerId="ollama" size="xs" />
-                    <span className="text-[10px] text-slate-400 ml-1">4 Modelos</span>
+                    <span className="text-caption text-fg-secondary ml-1">4 Modelos</span>
                   </div>
                 ) : (
-                  <p className="mt-1 text-xs text-slate-400 truncate">{stat.subValue}</p>
+                  <p className="mt-1 text-caption text-fg-secondary truncate">{stat.subValue}</p>
                 )}
               </CardContent>
             </Card>
@@ -179,15 +179,15 @@ export const DashboardPage: React.FC = () => {
         <Card className="lg:col-span-2">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <div>
-              <CardTitle className="text-base flex items-center gap-2">
-                <TrendingUp className="h-4 w-4 text-violet-400" />
+              <CardTitle className="text-subtitle flex items-center gap-2">
+                <TrendingUp className="h-4 w-4 text-fg-brand" />
                 Actividad y Consumo de Tokens (Últimos 7 días)
               </CardTitle>
               <CardDescription>
                 Tokens procesados y número de ejecuciones autónomas por día
               </CardDescription>
             </div>
-            <Badge variant="secondary" className="font-mono text-xs">
+            <Badge variant="secondary" className="font-mono text-caption">
               {formatNumber(initialAnalytics.totalTokens)} total
             </Badge>
           </CardHeader>
@@ -247,8 +247,8 @@ export const DashboardPage: React.FC = () => {
         {/* System Health & Sandbox Status Card */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2">
-              <ShieldCheck className="h-4 w-4 text-emerald-400" />
+            <CardTitle className="text-subtitle flex items-center gap-2">
+              <ShieldCheck className="h-4 w-4 text-fg-success" />
               Estado General del Sistema
             </CardTitle>
             <CardDescription>
@@ -257,45 +257,45 @@ export const DashboardPage: React.FC = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-3">
-              <div className="flex items-center justify-between p-2.5 rounded-lg bg-slate-950/70 border border-slate-800">
+              <div className="flex items-center justify-between p-2.5 rounded-lg bg-bg-card/70 border border-border-default">
                 <div className="flex items-center gap-2">
-                  <div className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <div className="h-2 w-2 rounded-full bg-fg-success animate-pulse" />
                   <div>
-                    <p className="text-xs font-semibold text-slate-200">Local Bridge & STDIO</p>
-                    <p className="text-[11px] text-slate-400">Sandbox aislado con permisos</p>
+                    <p className="text-caption font-semibold text-fg-primary">Local Bridge & STDIO</p>
+                    <p className="text-caption text-fg-secondary">Sandbox aislado con permisos</p>
                   </div>
                 </div>
                 <Badge variant="success">Operativo</Badge>
               </div>
 
-              <div className="flex items-center justify-between p-2.5 rounded-lg bg-slate-950/70 border border-slate-800">
+              <div className="flex items-center justify-between p-2.5 rounded-lg bg-bg-card/70 border border-border-default">
                 <div className="flex items-center gap-2">
-                  <div className="h-2 w-2 rounded-full bg-emerald-400" />
+                  <div className="h-2 w-2 rounded-full bg-fg-success" />
                   <div>
-                    <p className="text-xs font-semibold text-slate-200">Aprobación Humana</p>
-                    <p className="text-[11px] text-slate-400">Escritura en disco & PRs</p>
+                    <p className="text-caption font-semibold text-fg-primary">Aprobación Humana</p>
+                    <p className="text-caption text-fg-secondary">Escritura en disco & PRs</p>
                   </div>
                 </div>
                 <Badge variant="info">Zero-Trust</Badge>
               </div>
 
-              <div className="flex items-center justify-between p-2.5 rounded-lg bg-slate-950/70 border border-slate-800">
+              <div className="flex items-center justify-between p-2.5 rounded-lg bg-bg-card/70 border border-border-default">
                 <div className="flex items-center gap-2">
-                  <div className="h-2 w-2 rounded-full bg-emerald-400" />
+                  <div className="h-2 w-2 rounded-full bg-fg-success" />
                   <div>
-                    <p className="text-xs font-semibold text-slate-200">Orquestador Multiagente</p>
-                    <p className="text-[11px] text-slate-400">Latencia media 48ms</p>
+                    <p className="text-caption font-semibold text-fg-primary">Orquestador Multiagente</p>
+                    <p className="text-caption text-fg-secondary">Latencia media 48ms</p>
                   </div>
                 </div>
                 <Badge variant="success">99.8% SLA</Badge>
               </div>
 
-              <div className="flex items-center justify-between p-2.5 rounded-lg bg-slate-950/70 border border-slate-800">
+              <div className="flex items-center justify-between p-2.5 rounded-lg bg-bg-card/70 border border-border-default">
                 <div className="flex items-center gap-2">
-                  <div className="h-2 w-2 rounded-full bg-blue-400" />
+                  <div className="h-2 w-2 rounded-full bg-bg-brand" />
                   <div>
-                    <p className="text-xs font-semibold text-slate-200">Backend Mock Adapter</p>
-                    <p className="text-[11px] text-slate-400">Persistencia local en sesión</p>
+                    <p className="text-caption font-semibold text-fg-primary">Backend Mock Adapter</p>
+                    <p className="text-caption text-fg-secondary">Persistencia local en sesión</p>
                   </div>
                 </div>
                 <Badge variant="secondary">Simulación</Badge>
@@ -305,7 +305,7 @@ export const DashboardPage: React.FC = () => {
             <Button
               variant="outline"
               size="sm"
-              className="w-full text-xs"
+              className="w-full text-caption"
               onClick={() => navigate('/settings')}
             >
               Configurar Gobernanza y Seguridad
@@ -318,8 +318,8 @@ export const DashboardPage: React.FC = () => {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
-            <CardTitle className="text-base flex items-center gap-2">
-              <Activity className="h-4 w-4 text-violet-400" />
+            <CardTitle className="text-subtitle flex items-center gap-2">
+              <Activity className="h-4 w-4 text-fg-brand" />
               Historial de Ejecuciones Recientes
             </CardTitle>
             <CardDescription>
@@ -329,7 +329,7 @@ export const DashboardPage: React.FC = () => {
           <Button
             variant="ghost"
             size="sm"
-            className="text-xs text-violet-400 hover:text-violet-300"
+            className="text-caption text-fg-brand hover:text-violet-300"
             onClick={() => navigate('/executions')}
           >
             Ver todas las ejecuciones ({executions.length}) →
@@ -337,8 +337,8 @@ export const DashboardPage: React.FC = () => {
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="border-b border-slate-800 text-slate-400 font-medium">
+            <table className="w-full text-left text-caption">
+              <thead className="border-b border-border-default text-fg-secondary font-medium">
                 <tr>
                   <th className="pb-3 pl-2">ID Ejecución</th>
                   <th className="pb-3">Workflow / Tarea</th>
@@ -357,13 +357,13 @@ export const DashboardPage: React.FC = () => {
                     className="hover:bg-slate-900/50 transition-colors cursor-pointer group"
                     onClick={() => navigate('/executions')}
                   >
-                    <td className="py-3 pl-2 font-mono text-violet-400 font-medium">
+                    <td className="py-3 pl-2 font-mono text-fg-brand font-medium">
                       {exec.id}
                     </td>
-                    <td className="py-3 font-medium text-slate-200 max-w-[240px] truncate">
+                    <td className="py-3 font-medium text-fg-primary max-w-[240px] truncate">
                       {exec.workflowName}
                     </td>
-                    <td className="py-3 text-slate-300">
+                    <td className="py-3 text-fg-secondary">
                       <div className="flex items-center gap-2">
                         <AgentAvatar agentName={exec.responsibleAgentName || 'Coordinator'} size="xs" />
                         <span>{exec.responsibleAgentName || 'Coordinator'}</span>
@@ -391,20 +391,20 @@ export const DashboardPage: React.FC = () => {
                         </Badge>
                       )}
                     </td>
-                    <td className="py-3 font-mono text-slate-300">
+                    <td className="py-3 font-mono text-fg-secondary">
                       {formatNumber(exec.totalTokens)}
                     </td>
-                    <td className="py-3 text-slate-400">
+                    <td className="py-3 text-fg-secondary">
                       {formatDuration(exec.durationMs || 0)}
                     </td>
-                    <td className="py-3 text-slate-400">
+                    <td className="py-3 text-fg-secondary">
                       {formatDate(exec.startedAt)}
                     </td>
                     <td className="py-3 text-right pr-2">
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-7 px-2 text-xs text-slate-400 group-hover:text-white"
+                        className="h-7 px-2 text-caption text-fg-secondary group-hover:text-white"
                       >
                         Ver Detalle →
                       </Button>

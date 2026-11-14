@@ -39,7 +39,7 @@ export const AssignToolModal: React.FC<AssignToolModalProps> = ({ tool, open, on
       <DialogContent onClose={onClose} className="sm:max-w-md">
         <DialogHeader>
           <div className="flex items-center gap-2">
-            <Wrench className="h-4 w-4 text-amber-400" />
+            <Wrench className="h-4 w-4 text-fg-warning" />
             <DialogTitle>Asignar Herramienta: {tool.name}</DialogTitle>
           </div>
           <DialogDescription>
@@ -48,8 +48,8 @@ export const AssignToolModal: React.FC<AssignToolModalProps> = ({ tool, open, on
         </DialogHeader>
 
         {tool.isWriteOperation && (
-          <div className="mb-3 p-2.5 rounded-lg bg-amber-950/40 border border-amber-800 text-xs text-amber-300 flex items-center gap-2">
-            <ShieldAlert className="h-4 w-4 shrink-0 text-amber-400" />
+          <div className="mb-3 p-2.5 rounded-lg bg-bg-warning/40 border border-fg-warning text-caption text-fg-warning flex items-center gap-2">
+            <ShieldAlert className="h-4 w-4 shrink-0 text-fg-warning" />
             <span>
               <strong>Herramienta de Escritura:</strong> Las llamadas generadas requerirán confirmación humana antes de ser ejecutadas.
             </span>
@@ -63,17 +63,17 @@ export const AssignToolModal: React.FC<AssignToolModalProps> = ({ tool, open, on
               <div
                 key={agent.id}
                 onClick={() => handleToggle(agent.id)}
-                className={`flex items-center justify-between p-2.5 rounded-lg border text-xs cursor-pointer transition-colors ${
+                className={`flex items-center justify-between p-2.5 rounded-lg border text-caption cursor-pointer transition-colors ${
                   isAssigned
-                    ? 'border-violet-600/70 bg-violet-950/25'
-                    : 'border-slate-800 bg-slate-950/50 hover:border-slate-700'
+                    ? 'border-border-brand/70 bg-bg-brand-subtle/25'
+                    : 'border-border-default bg-bg-card/50 hover:border-slate-700'
                 }`}
               >
                 <div className="flex items-center gap-2.5">
-                  <Bot className={`h-4 w-4 ${isAssigned ? 'text-violet-400' : 'text-slate-500'}`} />
+                  <Bot className={`h-4 w-4 ${isAssigned ? 'text-fg-brand' : 'text-fg-muted'}`} />
                   <div>
-                    <span className="font-semibold text-slate-200 block">{agent.name}</span>
-                    <span className="text-[10px] text-slate-400 font-mono">{agent.role}</span>
+                    <span className="font-semibold text-fg-primary block">{agent.name}</span>
+                    <span className="text-caption text-fg-secondary font-mono">{agent.role}</span>
                   </div>
                 </div>
 

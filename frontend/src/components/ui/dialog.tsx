@@ -53,7 +53,7 @@ export function DialogContent({
   return (
     <div
       className={cn(
-        'relative rounded-xl border border-slate-800 bg-slate-900 p-6 shadow-2xl text-slate-100 max-h-[90vh] overflow-y-auto',
+        'relative rounded-xl border border-border-default bg-bg-card p-6 shadow-2xl text-fg-primary max-h-[90vh] overflow-y-auto',
         className
       )}
       {...props}
@@ -61,7 +61,7 @@ export function DialogContent({
       {onClose && (
         <button
           onClick={onClose}
-          className="absolute right-4 top-4 rounded-md p-1 text-slate-400 hover:bg-slate-800 hover:text-white transition-colors cursor-pointer"
+          className="absolute right-4 top-4 rounded-md p-1 text-fg-secondary hover:bg-slate-800 hover:text-white transition-colors cursor-pointer"
         >
           <X className="h-4 w-4" />
           <span className="sr-only">Cerrar</span>
@@ -77,17 +77,17 @@ export function DialogHeader({ className, ...props }: React.HTMLAttributes<HTMLD
 }
 
 export function DialogTitle({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
-  return <h2 className={cn('text-lg font-semibold tracking-tight text-white', className)} {...props} />;
+  return <h2 className={cn('text-lg font-semibold tracking-tight text-fg-primary', className)} {...props} />;
 }
 
 export function DialogDescription({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) {
-  return <p className={cn('text-sm text-slate-400', className)} {...props} />;
+  return <p className={cn('text-body text-fg-secondary', className)} {...props} />;
 }
 
 export function DialogFooter({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn('flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 mt-6 pt-4 border-t border-slate-800', className)}
+      className={cn('flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 mt-6 pt-4 border-t border-border-default', className)}
       {...props}
     />
   );

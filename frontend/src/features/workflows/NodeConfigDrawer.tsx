@@ -38,26 +38,26 @@ export const NodeConfigDrawer: React.FC<NodeConfigDrawerProps> = ({
   };
 
   return (
-    <div className="absolute right-4 top-20 bottom-4 z-20 w-80 sm:w-96 rounded-2xl border border-slate-800 bg-slate-900/95 p-5 shadow-2xl backdrop-blur-md flex flex-col justify-between animate-in slide-in-from-right duration-200">
+    <div className="absolute right-4 top-20 bottom-4 z-20 w-80 sm:w-96 rounded-2xl border border-border-default bg-bg-card/95 p-5 shadow-2xl backdrop-blur-md flex flex-col justify-between animate-in slide-in-from-right duration-200">
       <div className="space-y-4 overflow-y-auto pr-1">
-        <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div className="flex items-center justify-between pb-3 border-b border-border-default">
           <div className="flex items-center gap-2">
-            <Settings className="h-4 w-4 text-violet-400" />
-            <h3 className="text-sm font-semibold text-white">Configurar Nodo</h3>
-            <Badge variant="outline" className="text-[10px] font-mono capitalize">
+            <Settings className="h-4 w-4 text-fg-brand" />
+            <h3 className="text-body font-semibold text-fg-primary">Configurar Nodo</h3>
+            <Badge variant="outline" className="text-caption font-mono capitalize">
               {nodeType}
             </Badge>
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-md text-slate-400 hover:bg-slate-800 hover:text-white"
+            className="p-1 rounded-md text-fg-secondary hover:bg-slate-800 hover:text-white"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-slate-300 mb-1">
+          <label className="block text-caption font-medium text-fg-secondary mb-1">
             Nombre / Etiqueta del Nodo
           </label>
           <Input
@@ -67,7 +67,7 @@ export const NodeConfigDrawer: React.FC<NodeConfigDrawerProps> = ({
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-slate-300 mb-1">
+          <label className="block text-caption font-medium text-fg-secondary mb-1">
             Descripción
           </label>
           <Textarea
@@ -80,7 +80,7 @@ export const NodeConfigDrawer: React.FC<NodeConfigDrawerProps> = ({
         {/* Dynamic configuration according to node type */}
         {nodeType === 'agent' && (
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1">
+            <label className="block text-caption font-medium text-fg-secondary mb-1">
               Agente Autónomo Responsable
             </label>
             <Select
@@ -99,7 +99,7 @@ export const NodeConfigDrawer: React.FC<NodeConfigDrawerProps> = ({
 
         {nodeType === 'mcp_tool' && (
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1">
+            <label className="block text-caption font-medium text-fg-secondary mb-1">
               Herramienta MCP
             </label>
             <Select
@@ -118,7 +118,7 @@ export const NodeConfigDrawer: React.FC<NodeConfigDrawerProps> = ({
 
         {nodeType === 'condition' && (
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1">
+            <label className="block text-caption font-medium text-fg-secondary mb-1">
               Expresión de Evaluación Lógica
             </label>
             <Input
@@ -126,30 +126,30 @@ export const NodeConfigDrawer: React.FC<NodeConfigDrawerProps> = ({
               placeholder="ej. review.verdict === 'APPROVED'"
               onChange={(e) => handleChange('conditionExpr', e.target.value)}
             />
-            <p className="mt-1 text-[10px] text-slate-400">
+            <p className="mt-1 text-caption text-fg-secondary">
               Puerto True (arriba) si la expresión es verdadera, Puerto False (abajo) si es falsa.
             </p>
           </div>
         )}
 
         {nodeType === 'human_approval' && (
-          <div className="p-3 rounded-lg bg-amber-950/40 border border-amber-800 text-xs text-amber-200 space-y-1">
-            <div className="flex items-center gap-1.5 font-semibold text-amber-300">
+          <div className="p-3 rounded-lg bg-bg-warning/40 border border-fg-warning text-caption text-fg-warning space-y-1">
+            <div className="flex items-center gap-1.5 font-semibold text-fg-warning">
               <ShieldAlert className="h-4 w-4" />
               Punto de Control Zero-Trust
             </div>
-            <p className="text-[11px] text-amber-200/80">
+            <p className="text-caption text-fg-warning/80">
               La ejecución de este pipeline se pausará automáticamente al llegar a este nodo hasta que un operador humano otorgue autorización explícita.
             </p>
           </div>
         )}
       </div>
 
-      <div className="pt-4 border-t border-slate-800 flex items-center justify-between">
+      <div className="pt-4 border-t border-border-default flex items-center justify-between">
         <Button
           variant="destructive"
           size="sm"
-          className="text-xs"
+          className="text-caption"
           onClick={() => {
             onDelete(selectedNode.id);
             onClose();
@@ -159,7 +159,7 @@ export const NodeConfigDrawer: React.FC<NodeConfigDrawerProps> = ({
           Eliminar Nodo
         </Button>
 
-        <Button variant="default" size="sm" className="text-xs" onClick={onClose}>
+        <Button variant="default" size="sm" className="text-caption" onClick={onClose}>
           Cerrar
         </Button>
       </div>

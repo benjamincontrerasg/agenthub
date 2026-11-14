@@ -45,11 +45,11 @@ export const ProvidersPage: React.FC = () => {
       {/* Header Info */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+          <h2 className="text-title sm:text-2xl font-bold tracking-tight text-fg-primary flex items-center gap-2">
             Proveedores de Inteligencia Artificial
-            <Badge variant="secondary" className="font-mono text-xs">{providers.length} Disponibles</Badge>
+            <Badge variant="secondary" className="font-mono text-caption">{providers.length} Disponibles</Badge>
           </h2>
-          <p className="mt-1 text-sm text-slate-400">
+          <p className="mt-1 text-body text-fg-secondary">
             Conecta credenciales para Claude, GPT-4o, Gemini y Ollama. Las llamadas se distribuyen según las capacidades de cada modelo.
           </p>
         </div>
@@ -64,7 +64,7 @@ export const ProvidersPage: React.FC = () => {
           return (
             <Card
               key={provider.id}
-              className="flex flex-col justify-between border-slate-800 bg-slate-900/60 hover:border-slate-700/80 transition-all"
+              className="flex flex-col justify-between border-border-default bg-bg-card/60 hover:border-slate-700/80 transition-all"
             >
               <div>
                 <CardHeader className="flex flex-row items-start justify-between pb-3">
@@ -72,23 +72,23 @@ export const ProvidersPage: React.FC = () => {
                     <ProviderLogo providerId={provider.id} size="xl" className="shadow-lg ring-1 ring-slate-800" />
                     <div>
                       <div className="flex items-center gap-2">
-                        <CardTitle className="text-base font-semibold">{provider.name}</CardTitle>
-                        <Badge variant="outline" className="text-[10px] font-mono">
+                        <CardTitle className="text-subtitle font-semibold">{provider.name}</CardTitle>
+                        <Badge variant="outline" className="text-caption font-mono">
                           {provider.badge}
                         </Badge>
                       </div>
                       <div className="flex items-center gap-2 mt-1">
                         {isConnected ? (
-                          <span className="flex items-center gap-1 text-xs text-emerald-400 font-medium">
+                          <span className="flex items-center gap-1 text-caption text-fg-success font-medium">
                             <CheckCircle2 className="h-3.5 w-3.5" /> Conectado
                           </span>
                         ) : (
-                          <span className="flex items-center gap-1 text-xs text-slate-400 font-medium">
+                          <span className="flex items-center gap-1 text-caption text-fg-secondary font-medium">
                             <XCircle className="h-3.5 w-3.5" /> No conectado
                           </span>
                         )}
                         {provider.latencyMs && isConnected && (
-                          <span className="text-[11px] font-mono text-slate-400">
+                          <span className="text-caption font-mono text-fg-secondary">
                             • {provider.latencyMs}ms ping
                           </span>
                         )}
@@ -96,21 +96,21 @@ export const ProvidersPage: React.FC = () => {
                     </div>
                   </div>
 
-                  <Badge variant={isConnected ? 'success' : 'secondary'} className="text-[10px]">
+                  <Badge variant={isConnected ? 'success' : 'secondary'} className="text-caption">
                     {isConnected ? 'Activo' : 'Inactivo'}
                   </Badge>
                 </CardHeader>
 
                 <CardContent className="space-y-4 pt-1">
-                  <p className="text-xs text-slate-400 leading-relaxed">
+                  <p className="text-caption text-fg-secondary leading-relaxed">
                     {provider.description}
                   </p>
 
                   {/* Models list inside provider */}
-                  <div className="space-y-2 rounded-lg bg-slate-950/60 p-3 border border-slate-800/80">
-                    <div className="flex items-center justify-between text-[11px] font-medium text-slate-400">
+                  <div className="space-y-2 rounded-lg bg-bg-card/60 p-3 border border-border-default/80">
+                    <div className="flex items-center justify-between text-caption font-medium text-fg-secondary">
                       <span className="flex items-center gap-1.5">
-                        <Layers className="h-3.5 w-3.5 text-violet-400" />
+                        <Layers className="h-3.5 w-3.5 text-fg-brand" />
                         Modelos Disponibles ({provider.models.length})
                       </span>
                       <span>Ctx / Precios</span>
@@ -120,17 +120,17 @@ export const ProvidersPage: React.FC = () => {
                       {provider.models.map((model) => (
                         <div
                           key={model.id}
-                          className="flex items-center justify-between text-xs py-1 px-2 rounded hover:bg-slate-900/60 transition-colors"
+                          className="flex items-center justify-between text-caption py-1 px-2 rounded hover:bg-slate-900/60 transition-colors"
                         >
                           <div className="flex items-center gap-2">
-                            <span className="font-medium text-slate-200">{model.name}</span>
+                            <span className="font-medium text-fg-primary">{model.name}</span>
                             {model.id === provider.defaultModelId && (
-                              <Badge variant="default" className="text-[9px] py-0 px-1">
+                              <Badge variant="default" className="text-caption py-0 px-1">
                                 Default
                               </Badge>
                             )}
                           </div>
-                          <span className="text-[11px] font-mono text-slate-400">
+                          <span className="text-caption font-mono text-fg-secondary">
                             {model.contextWindow / 1000}k ctx • ${model.inputPricePerMillion}/M
                           </span>
                         </div>
@@ -139,13 +139,13 @@ export const ProvidersPage: React.FC = () => {
                   </div>
 
                   {/* Security and credentials disclaimer */}
-                  <div className="flex items-center justify-between text-[11px] text-slate-400 pt-1">
+                  <div className="flex items-center justify-between text-caption text-fg-secondary pt-1">
                     <span className="flex items-center gap-1.5">
-                      <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
+                      <ShieldCheck className="h-3.5 w-3.5 text-fg-success" />
                       {provider.id === 'ollama' ? 'Inferencia Local sin envío de datos' : 'Vault E2E TLS'}
                     </span>
                     {provider.lastTested && (
-                      <span className="flex items-center gap-1 text-[10px] font-mono">
+                      <span className="flex items-center gap-1 text-caption font-mono">
                         <Clock className="h-3 w-3" /> {formatDate(provider.lastTested)}
                       </span>
                     )}
@@ -153,20 +153,20 @@ export const ProvidersPage: React.FC = () => {
                 </CardContent>
               </div>
 
-              <CardFooter className="pt-4 border-t border-slate-800/80 flex items-center justify-between">
+              <CardFooter className="pt-4 border-t border-border-default/80 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Button
                     variant="outline"
                     size="sm"
-                    className="text-xs"
+                    className="text-caption"
                     onClick={() => handleTest(provider)}
                     isLoading={testingId === provider.id}
                   >
-                    <Zap className="mr-1.5 h-3.5 w-3.5 text-amber-400" />
+                    <Zap className="mr-1.5 h-3.5 w-3.5 text-fg-warning" />
                     Probar Ping
                   </Button>
                   {testNotice?.id === provider.id && (
-                    <span className="text-xs font-mono font-medium text-emerald-400">
+                    <span className="text-caption font-mono font-medium text-fg-success">
                       {testNotice.text}
                     </span>
                   )}
@@ -177,7 +177,7 @@ export const ProvidersPage: React.FC = () => {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="text-xs text-red-400 hover:text-red-300"
+                      className="text-caption text-fg-error hover:text-red-300"
                       onClick={() => disconnectProvider(provider.id)}
                     >
                       Desconectar
@@ -186,7 +186,7 @@ export const ProvidersPage: React.FC = () => {
                   <Button
                     variant="default"
                     size="sm"
-                    className="text-xs"
+                    className="text-caption"
                     onClick={() => setSelectedProvider(provider)}
                   >
                     <Settings2 className="mr-1.5 h-3.5 w-3.5" />

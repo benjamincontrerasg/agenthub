@@ -13,18 +13,18 @@ interface AgentAvatarProps {
 }
 
 const roleColors: Record<string, { bg: string; border: string; text: string }> = {
-  Architect: { bg: 'from-emerald-950/80 to-slate-900', border: 'border-emerald-700/60', text: 'text-emerald-300' },
-  Developer: { bg: 'from-violet-950/80 to-slate-900', border: 'border-violet-700/60', text: 'text-violet-300' },
-  Reviewer: { bg: 'from-amber-950/80 to-slate-900', border: 'border-amber-700/60', text: 'text-amber-300' },
+  Architect: { bg: 'from-emerald-950/80 to-slate-900', border: 'border-fg-success/60', text: 'text-fg-success' },
+  Developer: { bg: 'from-violet-950/80 to-slate-900', border: 'border-border-brand/60', text: 'text-fg-brand' },
+  Reviewer: { bg: 'from-amber-950/80 to-slate-900', border: 'border-fg-warning/60', text: 'text-fg-warning' },
   Research: { bg: 'from-sky-950/80 to-slate-900', border: 'border-sky-700/60', text: 'text-sky-300' },
   Coordinator: { bg: 'from-fuchsia-950/80 to-slate-900', border: 'border-fuchsia-700/60', text: 'text-fuchsia-300' },
 };
 
 const avatarSizes = {
-  xs: 'h-6 w-6 text-[10px]',
-  sm: 'h-8 w-8 text-xs',
-  md: 'h-10 w-10 text-sm',
-  lg: 'h-12 w-12 text-base',
+  xs: 'h-6 w-6 text-caption',
+  sm: 'h-8 w-8 text-caption',
+  md: 'h-10 w-10 text-body',
+  lg: 'h-12 w-12 text-subtitle',
   xl: 'h-14 w-14 text-lg',
 };
 
@@ -47,8 +47,8 @@ export const AgentAvatar: React.FC<AgentAvatarProps> = ({
 }) => {
   const theme = roleColors[role] || {
     bg: 'from-slate-800 to-slate-900',
-    border: 'border-slate-700',
-    text: 'text-slate-200',
+    border: 'border-border-hover',
+    text: 'text-fg-primary',
   };
 
   const resolvedProviderId =
@@ -94,7 +94,7 @@ export const AgentAvatar: React.FC<AgentAvatarProps> = ({
       {/* Floating Provider Logo Badge (Claude, OpenAI, Gemini, Ollama) */}
       {resolvedProviderId && (
         <div
-          className={`absolute ${providerBadgeSizes[size]} rounded-full bg-slate-950 p-0.5 shadow-lg ring-1 ring-slate-800 flex items-center justify-center z-10`}
+          className={`absolute ${providerBadgeSizes[size]} rounded-full bg-bg-card p-0.5 shadow-lg ring-1 ring-slate-800 flex items-center justify-center z-10`}
           title={`Proveedor: ${resolvedProviderId}`}
         >
           <ProviderLogo providerId={resolvedProviderId} size="xs" rounded="full" showBackground={false} />
@@ -103,10 +103,10 @@ export const AgentAvatar: React.FC<AgentAvatarProps> = ({
 
       {/* Status Dot */}
       {status === 'running' && (
-        <span className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-amber-400 ring-2 ring-slate-950 animate-ping" />
+        <span className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-fg-warning ring-2 ring-slate-950 animate-ping" />
       )}
       {status === 'active' && (
-        <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-emerald-400 ring-2 ring-slate-950" />
+        <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-fg-success ring-2 ring-slate-950" />
       )}
     </div>
   );

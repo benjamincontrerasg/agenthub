@@ -213,13 +213,13 @@ export const WorkflowBuilderPage: React.FC = () => {
   };
 
   return (
-    <div className="relative h-[calc(100vh-8.5rem)] w-full rounded-2xl border border-slate-800 bg-slate-950 overflow-hidden shadow-2xl flex flex-col">
+    <div className="relative h-[calc(100vh-8.5rem)] w-full rounded-2xl border border-border-default bg-bg-card overflow-hidden shadow-2xl flex flex-col">
       {/* Top Toolbar */}
-      <div className="z-10 flex flex-wrap items-center justify-between gap-3 border-b border-slate-800/90 bg-slate-900/90 px-4 py-2.5 backdrop-blur-md">
+      <div className="z-10 flex flex-wrap items-center justify-between gap-3 border-b border-border-default/90 bg-bg-card/90 px-4 py-2.5 backdrop-blur-md">
         {/* Workflow Switcher & Info */}
         <div className="flex items-center space-x-3">
-          <div className="flex items-center gap-1.5 font-bold text-sm text-white">
-            <Layers className="h-4 w-4 text-violet-400" />
+          <div className="flex items-center gap-1.5 font-bold text-body text-fg-primary">
+            <Layers className="h-4 w-4 text-fg-brand" />
             <span className="hidden sm:inline">Pipeline:</span>
           </div>
 
@@ -227,7 +227,7 @@ export const WorkflowBuilderPage: React.FC = () => {
             <Select
               value={activeWorkflowId}
               onChange={(e) => setActiveWorkflowId(e.target.value)}
-              className="text-xs h-8"
+              className="text-caption h-8"
             >
               {workflows.map((wf) => (
                 <option key={wf.id} value={wf.id}>
@@ -237,7 +237,7 @@ export const WorkflowBuilderPage: React.FC = () => {
             </Select>
           </div>
 
-          <Badge variant="outline" className="text-[10px] hidden md:inline-flex">
+          <Badge variant="outline" className="text-caption hidden md:inline-flex">
             v{currentWorkflow?.version || '1.0.0'}
           </Badge>
         </div>
@@ -245,7 +245,7 @@ export const WorkflowBuilderPage: React.FC = () => {
         {/* Action Controls */}
         <div className="flex items-center space-x-2">
           {saveFeedback && (
-            <span className="text-xs font-mono text-emerald-400 font-semibold animate-in fade-in">
+            <span className="text-caption font-mono text-fg-success font-semibold animate-in fade-in">
               {saveFeedback}
             </span>
           )}
@@ -253,7 +253,7 @@ export const WorkflowBuilderPage: React.FC = () => {
           <Button
             variant="outline"
             size="sm"
-            className="text-xs h-8"
+            className="text-caption h-8"
             onClick={handleSave}
           >
             <Save className="mr-1.5 h-3.5 w-3.5" />
@@ -263,7 +263,7 @@ export const WorkflowBuilderPage: React.FC = () => {
           <Button
             variant="ghost"
             size="sm"
-            className="text-xs h-8"
+            className="text-caption h-8"
             onClick={handleDuplicate}
             title="Duplicar Workflow"
           >
@@ -273,7 +273,7 @@ export const WorkflowBuilderPage: React.FC = () => {
           <Button
             variant="ghost"
             size="sm"
-            className="text-xs h-8"
+            className="text-caption h-8"
             onClick={handleExportJson}
             title="Exportar Workflow como JSON"
           >
@@ -283,7 +283,7 @@ export const WorkflowBuilderPage: React.FC = () => {
           <Button
             variant="ghost"
             size="sm"
-            className="text-xs h-8 text-violet-400"
+            className="text-caption h-8 text-fg-brand"
             onClick={handleNewWorkflow}
           >
             <Plus className="mr-1 h-3.5 w-3.5" /> Nuevo
@@ -295,7 +295,7 @@ export const WorkflowBuilderPage: React.FC = () => {
               variant="default"
               size="sm"
               onClick={handleRunSimulation}
-              className="bg-emerald-600 hover:bg-emerald-500 text-xs h-8 shadow-md shadow-emerald-700/20"
+              className="bg-fg-success hover:bg-emerald-500 text-caption h-8 shadow-md shadow-emerald-700/20"
             >
               <Play className="mr-1.5 h-3.5 w-3.5 fill-current" />
               Simular Ejecución
@@ -305,7 +305,7 @@ export const WorkflowBuilderPage: React.FC = () => {
               variant="destructive"
               size="sm"
               onClick={stopSimulation}
-              className="text-xs h-8 animate-pulse"
+              className="text-caption h-8 animate-pulse"
             >
               <Square className="mr-1.5 h-3.5 w-3.5 fill-current" />
               Detener
@@ -315,38 +315,38 @@ export const WorkflowBuilderPage: React.FC = () => {
       </div>
 
       {/* Floating Node Palette */}
-      <div className="absolute left-4 top-16 z-20 hidden md:flex flex-col gap-1.5 p-2 rounded-xl border border-slate-800 bg-slate-900/90 shadow-xl backdrop-blur-md">
-        <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 px-2 py-0.5">
+      <div className="absolute left-4 top-16 z-20 hidden md:flex flex-col gap-1.5 p-2 rounded-xl border border-border-default bg-bg-card/90 shadow-xl backdrop-blur-md">
+        <span className="text-caption font-semibold uppercase tracking-wider text-fg-secondary px-2 py-0.5">
           Agregar Nodos
         </span>
 
         <button
           onClick={() => handleAddNode('agent', 'AI Agent')}
-          className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors cursor-pointer"
+          className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-caption font-medium text-fg-secondary hover:bg-slate-800 hover:text-white transition-colors cursor-pointer"
         >
-          <Bot className="h-3.5 w-3.5 text-violet-400" />
+          <Bot className="h-3.5 w-3.5 text-fg-brand" />
           <span>AI Agent</span>
         </button>
 
         <button
           onClick={() => handleAddNode('mcp_tool', 'MCP Tool')}
-          className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors cursor-pointer"
+          className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-caption font-medium text-fg-secondary hover:bg-slate-800 hover:text-white transition-colors cursor-pointer"
         >
-          <Wrench className="h-3.5 w-3.5 text-amber-400" />
+          <Wrench className="h-3.5 w-3.5 text-fg-warning" />
           <span>MCP Tool</span>
         </button>
 
         <button
           onClick={() => handleAddNode('condition', 'Condición')}
-          className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors cursor-pointer"
+          className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-caption font-medium text-fg-secondary hover:bg-slate-800 hover:text-white transition-colors cursor-pointer"
         >
-          <GitBranch className="h-3.5 w-3.5 text-blue-400" />
+          <GitBranch className="h-3.5 w-3.5 text-fg-brand" />
           <span>Condition</span>
         </button>
 
         <button
           onClick={() => handleAddNode('parallel', 'Paralelo')}
-          className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors cursor-pointer"
+          className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-caption font-medium text-fg-secondary hover:bg-slate-800 hover:text-white transition-colors cursor-pointer"
         >
           <Split className="h-3.5 w-3.5 text-purple-400" />
           <span>Parallel</span>
@@ -354,25 +354,25 @@ export const WorkflowBuilderPage: React.FC = () => {
 
         <button
           onClick={() => handleAddNode('human_approval', 'Human Approval')}
-          className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors cursor-pointer"
+          className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-caption font-medium text-fg-secondary hover:bg-slate-800 hover:text-white transition-colors cursor-pointer"
         >
-          <ShieldCheck className="h-3.5 w-3.5 text-amber-400" />
+          <ShieldCheck className="h-3.5 w-3.5 text-fg-warning" />
           <span>Human Approval</span>
         </button>
 
         <button
           onClick={() => handleAddNode('output', 'Output')}
-          className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors cursor-pointer"
+          className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-caption font-medium text-fg-secondary hover:bg-slate-800 hover:text-white transition-colors cursor-pointer"
         >
-          <Package className="h-3.5 w-3.5 text-cyan-400" />
+          <Package className="h-3.5 w-3.5 text-fg-brand" />
           <span>Output</span>
         </button>
 
         <button
           onClick={() => handleAddNode('end', 'End Pipeline')}
-          className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors cursor-pointer"
+          className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-caption font-medium text-fg-secondary hover:bg-slate-800 hover:text-white transition-colors cursor-pointer"
         >
-          <Flag className="h-3.5 w-3.5 text-rose-400" />
+          <Flag className="h-3.5 w-3.5 text-fg-error" />
           <span>End</span>
         </button>
       </div>

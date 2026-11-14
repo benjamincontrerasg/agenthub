@@ -81,7 +81,7 @@ export const ProviderModal: React.FC<ProviderModalProps> = ({ provider, open, on
               <div>
                 <DialogTitle className="flex items-center gap-2">
                   Configurar {provider.name}
-                  <Badge variant="outline" className="text-[10px]">{provider.badge}</Badge>
+                  <Badge variant="outline" className="text-caption">{provider.badge}</Badge>
                 </DialogTitle>
                 <DialogDescription>
                   Credenciales de acceso y selección de modelos de inferencia.
@@ -91,11 +91,11 @@ export const ProviderModal: React.FC<ProviderModalProps> = ({ provider, open, on
           </DialogHeader>
 
           {/* Security Notice Box */}
-          <div className="mb-4 rounded-lg border border-amber-900/60 bg-amber-950/30 p-3 text-xs text-amber-300 flex items-start gap-2.5">
-            <ShieldAlert className="h-4 w-4 shrink-0 text-amber-400 mt-0.5" />
+          <div className="mb-4 rounded-lg border border-fg-warning/60 bg-bg-warning/30 p-3 text-caption text-fg-warning flex items-start gap-2.5">
+            <ShieldAlert className="h-4 w-4 shrink-0 text-fg-warning mt-0.5" />
             <div className="space-y-1">
               <span className="font-semibold block">Manejo de Credenciales Sensibles:</span>
-              <p className="text-[11px] text-amber-200/80 leading-relaxed">
+              <p className="text-caption text-fg-warning/80 leading-relaxed">
                 Las API Keys se tratan como secretos cifrados. En producción son transmitidas exclusivamente al Backend Vault a través de canal TLS seguro y nunca se persisten en texto plano en el cliente.
               </p>
             </div>
@@ -105,13 +105,13 @@ export const ProviderModal: React.FC<ProviderModalProps> = ({ provider, open, on
             {/* API Key Input */}
             {provider.id !== 'ollama' ? (
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1.5 flex items-center justify-between">
+                <label className="block text-caption font-medium text-fg-secondary mb-1.5 flex items-center justify-between">
                   <span className="flex items-center gap-1.5">
-                    <KeyRound className="h-3.5 w-3.5 text-violet-400" />
+                    <KeyRound className="h-3.5 w-3.5 text-fg-brand" />
                     API Key / Secret Token
                   </span>
                   {provider.hasApiKey && (
-                    <span className="text-[10px] text-emerald-400 font-mono">
+                    <span className="text-caption text-fg-success font-mono">
                       ✓ Credencial configurada
                     </span>
                   )}
@@ -125,7 +125,7 @@ export const ProviderModal: React.FC<ProviderModalProps> = ({ provider, open, on
               </div>
             ) : (
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1.5">
+                <label className="block text-caption font-medium text-fg-secondary mb-1.5">
                   Endpoint HTTP Local (Ollama Server)
                 </label>
                 <Input
@@ -139,7 +139,7 @@ export const ProviderModal: React.FC<ProviderModalProps> = ({ provider, open, on
 
             {/* Default Model Selector */}
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1.5">
+              <label className="block text-caption font-medium text-fg-secondary mb-1.5">
                 Modelo Predeterminado para Nuevos Agentes
               </label>
               <Select
@@ -163,13 +163,13 @@ export const ProviderModal: React.FC<ProviderModalProps> = ({ provider, open, on
                   size="sm"
                   onClick={handleTest}
                   isLoading={isTesting}
-                  className="text-xs"
+                  className="text-caption"
                 >
-                  <Zap className="mr-1.5 h-3.5 w-3.5 text-amber-400" />
+                  <Zap className="mr-1.5 h-3.5 w-3.5 text-fg-warning" />
                   Probar Conexión en Vivo
                 </Button>
                 {testResult && (
-                  <span className="text-xs font-medium text-emerald-400 font-mono">
+                  <span className="text-caption font-medium text-fg-success font-mono">
                     {testResult}
                   </span>
                 )}

@@ -4,27 +4,27 @@ import { cn } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 disabled:pointer-events-none disabled:opacity-50 select-none cursor-pointer',
+  'inline-flex items-center justify-center whitespace-nowrap rounded-lg text-body font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 disabled:pointer-events-none disabled:opacity-50 select-none cursor-pointer',
   {
     variants: {
       variant: {
         default:
-          'bg-violet-600 text-white shadow-sm hover:bg-violet-500 active:scale-[0.98]',
+          'bg-bg-brand text-fg-primary shadow-sm hover:bg-violet-500 active:scale-[0.98]',
         secondary:
-          'bg-slate-800 text-slate-100 hover:bg-slate-700 active:scale-[0.98]',
+          'bg-bg-surface text-fg-primary hover:bg-slate-700 active:scale-[0.98]',
         outline:
-          'border border-slate-700 bg-transparent text-slate-200 hover:bg-slate-800/60 hover:text-white',
+          'border border-border-hover bg-transparent text-fg-primary hover:bg-slate-800/60 hover:text-white',
         ghost:
-          'text-slate-300 hover:bg-slate-800 hover:text-white',
+          'text-fg-secondary hover:bg-slate-800 hover:text-white',
         destructive:
-          'bg-red-600/90 text-white hover:bg-red-500 active:scale-[0.98]',
+          'bg-fg-error/90 text-fg-primary hover:bg-red-500 active:scale-[0.98]',
         success:
-          'bg-emerald-600 text-white hover:bg-emerald-500 active:scale-[0.98]',
+          'bg-fg-success text-fg-primary hover:bg-emerald-500 active:scale-[0.98]',
       },
       size: {
         default: 'h-9 px-4 py-2',
-        sm: 'h-8 rounded-md px-3 text-xs',
-        lg: 'h-11 rounded-lg px-6 text-base',
+        sm: 'h-8 rounded-md px-3 text-caption',
+        lg: 'h-11 rounded-lg px-6 text-subtitle',
         icon: 'h-9 w-9 p-0',
       },
     },

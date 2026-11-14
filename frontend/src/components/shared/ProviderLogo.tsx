@@ -126,8 +126,8 @@ export const ProviderLogo: React.FC<ProviderLogoProps> = ({
   const initial = (name || providerId || 'AI').substring(0, 2).toUpperCase();
   return (
     <div
-      className={`shrink-0 flex items-center justify-center font-bold text-xs ${dimensionClass} ${roundedClass} ${
-        showBackground ? 'bg-slate-800 border border-slate-700 text-slate-300' : ''
+      className={`shrink-0 flex items-center justify-center font-bold text-caption ${dimensionClass} ${roundedClass} ${
+        showBackground ? 'bg-bg-surface border border-border-hover text-fg-secondary' : ''
       } ${className}`}
     >
       {initial}

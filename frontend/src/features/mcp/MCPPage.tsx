@@ -64,13 +64,13 @@ export const MCPPage: React.FC = () => {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+          <h2 className="text-title sm:text-2xl font-bold tracking-tight text-fg-primary flex items-center gap-2">
             MCP Hub (Model Context Protocol)
-            <Badge variant="secondary" className="font-mono text-xs">
+            <Badge variant="secondary" className="font-mono text-caption">
               {servers.length} Servidores
             </Badge>
           </h2>
-          <p className="mt-1 text-sm text-slate-400">
+          <p className="mt-1 text-body text-fg-secondary">
             Administra servidores de herramientas y contexto externo para tus agentes con soporte STDIO y Streamable HTTP.
           </p>
         </div>
@@ -90,7 +90,7 @@ export const MCPPage: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left: Servers List (4 columns) */}
         <div className="lg:col-span-4 space-y-3">
-          <div className="flex items-center justify-between text-xs font-semibold text-slate-400 uppercase tracking-wider px-1">
+          <div className="flex items-center justify-between text-caption font-semibold text-fg-secondary uppercase tracking-wider px-1">
             <span>Servidores Registrados</span>
             <span>Activo</span>
           </div>
@@ -107,8 +107,8 @@ export const MCPPage: React.FC = () => {
                   onClick={() => setSelectedServerId(server.id)}
                   className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
                     isSelected
-                      ? 'border-violet-600/80 bg-slate-900/90 shadow-md shadow-violet-950/30'
-                      : 'border-slate-800/80 bg-slate-900/40 hover:bg-slate-900/70 hover:border-slate-700'
+                      ? 'border-border-brand/80 bg-bg-card/90 shadow-md shadow-violet-950/30'
+                      : 'border-border-default/80 bg-bg-card/40 hover:bg-slate-900/70 hover:border-slate-700'
                   }`}
                 >
                   <div className="flex items-start justify-between">
@@ -116,8 +116,8 @@ export const MCPPage: React.FC = () => {
                       <div
                         className={`p-2 rounded-lg border ${
                           server.transport === 'stdio'
-                            ? 'bg-blue-950/40 border-blue-800/50 text-blue-400'
-                            : 'bg-emerald-950/40 border-emerald-800/50 text-emerald-400'
+                            ? 'bg-bg-brand-subtle/40 border-border-brand/50 text-fg-brand'
+                            : 'bg-bg-success/40 border-fg-success/50 text-fg-success'
                         }`}
                       >
                         {server.transport === 'stdio' ? (
@@ -127,14 +127,14 @@ export const MCPPage: React.FC = () => {
                         )}
                       </div>
                       <div>
-                        <p className="text-sm font-semibold text-white truncate max-w-[170px]">
+                        <p className="text-body font-semibold text-fg-primary truncate max-w-[170px]">
                           {server.name}
                         </p>
                         <div className="flex items-center gap-1.5 mt-0.5">
-                          <Badge variant="outline" className="text-[9px] font-mono py-0">
+                          <Badge variant="outline" className="text-caption font-mono py-0">
                             {server.transport === 'stdio' ? 'STDIO' : 'HTTP-SSE'}
                           </Badge>
-                          <span className="text-[10px] text-slate-400">
+                          <span className="text-caption text-fg-secondary">
                             {server.tools.length} tools
                           </span>
                         </div>
@@ -147,24 +147,24 @@ export const MCPPage: React.FC = () => {
                     />
                   </div>
 
-                  <div className="mt-3 flex items-center justify-between text-[11px] pt-2 border-t border-slate-800/60">
+                  <div className="mt-3 flex items-center justify-between text-caption pt-2 border-t border-border-default/60">
                     <div className="flex items-center gap-1">
                       {isPending ? (
-                        <span className="text-amber-400 flex items-center gap-1">
+                        <span className="text-fg-warning flex items-center gap-1">
                           <AlertTriangle className="h-3 w-3" /> Pendiente validación
                         </span>
                       ) : isConnected && server.isActivated ? (
-                        <span className="text-emerald-400 flex items-center gap-1">
+                        <span className="text-fg-success flex items-center gap-1">
                           <CheckCircle2 className="h-3 w-3" /> Conectado
                         </span>
                       ) : (
-                        <span className="text-slate-400 flex items-center gap-1">
+                        <span className="text-fg-secondary flex items-center gap-1">
                           <XCircle className="h-3 w-3" /> Desactivado
                         </span>
                       )}
                     </div>
 
-                    <ChevronRight className={`h-3.5 w-3.5 ${isSelected ? 'text-violet-400' : 'text-slate-600'}`} />
+                    <ChevronRight className={`h-3.5 w-3.5 ${isSelected ? 'text-fg-brand' : 'text-fg-muted'}`} />
                   </div>
                 </div>
               );
@@ -180,7 +180,7 @@ export const MCPPage: React.FC = () => {
               <CardHeader className="pb-3">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-950/50 border border-violet-800/50 text-violet-400">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-bg-brand-subtle/50 border border-border-brand/50 text-fg-brand">
                       <Server className="h-5 w-5" />
                     </div>
                     <div>
@@ -194,7 +194,7 @@ export const MCPPage: React.FC = () => {
                               ? 'warning'
                               : 'secondary'
                           }
-                          className="text-[10px]"
+                          className="text-caption"
                         >
                           {activeServer.status === 'connected'
                             ? 'Conectado'
@@ -214,7 +214,7 @@ export const MCPPage: React.FC = () => {
                         size="sm"
                         onClick={() => handleValidate(activeServer.id)}
                         isLoading={isValidating}
-                        className="bg-amber-600 hover:bg-amber-500 text-xs"
+                        className="bg-fg-warning hover:bg-amber-500 text-caption"
                       >
                         <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
                         Validar Handshake
@@ -235,21 +235,21 @@ export const MCPPage: React.FC = () => {
               </CardHeader>
 
               <CardContent className="space-y-3 pt-0">
-                <div className="p-3 rounded-lg bg-slate-950/70 border border-slate-800 text-xs font-mono text-slate-300 space-y-1.5">
-                  <div className="flex items-center justify-between text-[11px] text-slate-400 font-sans mb-1">
+                <div className="p-3 rounded-lg bg-bg-card/70 border border-border-default text-caption font-mono text-fg-secondary space-y-1.5">
+                  <div className="flex items-center justify-between text-caption text-fg-secondary font-sans mb-1">
                     <span>Comando / Endpoint</span>
                     <Badge variant="outline">{activeServer.transport}</Badge>
                   </div>
-                  <div className="truncate text-violet-300 font-semibold">{activeServer.commandOrEndpoint}</div>
+                  <div className="truncate text-fg-brand font-semibold">{activeServer.commandOrEndpoint}</div>
 
                   {activeServer.allowedDirectories && (
-                    <div className="pt-2 border-t border-slate-800/70 text-[11px] font-sans">
-                      <span className="text-slate-400 flex items-center gap-1 mb-1">
-                        <FolderLock className="h-3 w-3 text-emerald-400" /> Directorios autorizados:
+                    <div className="pt-2 border-t border-border-default/70 text-caption font-sans">
+                      <span className="text-fg-secondary flex items-center gap-1 mb-1">
+                        <FolderLock className="h-3 w-3 text-fg-success" /> Directorios autorizados:
                       </span>
-                      <div className="flex flex-wrap gap-1 font-mono text-[10px]">
+                      <div className="flex flex-wrap gap-1 font-mono text-caption">
                         {activeServer.allowedDirectories.map((d) => (
-                          <span key={d} className="px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800">
+                          <span key={d} className="px-1.5 py-0.5 rounded bg-bg-card border border-border-default">
                             {d}
                           </span>
                         ))}
@@ -264,8 +264,8 @@ export const MCPPage: React.FC = () => {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-3">
                 <div>
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <Wrench className="h-4 w-4 text-amber-400" />
+                  <CardTitle className="text-subtitle flex items-center gap-2">
+                    <Wrench className="h-4 w-4 text-fg-warning" />
                     Herramientas Publicadas por este Servidor ({activeServer.tools.length})
                   </CardTitle>
                   <CardDescription>
@@ -277,17 +277,17 @@ export const MCPPage: React.FC = () => {
                 {activeServer.tools.map((tool) => (
                   <div
                     key={tool.id}
-                    className="p-3.5 rounded-xl border border-slate-800/80 bg-slate-950/60 space-y-2.5"
+                    className="p-3.5 rounded-xl border border-border-default/80 bg-bg-card/60 space-y-2.5"
                   >
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-semibold text-white font-mono">{tool.name}</span>
+                        <span className="text-body font-semibold text-fg-primary font-mono">{tool.name}</span>
                         {tool.isWriteOperation ? (
-                          <Badge variant="warning" className="text-[10px] gap-1">
+                          <Badge variant="warning" className="text-caption gap-1">
                             <ShieldAlert className="h-3 w-3" /> Operación de Escritura (Humano)
                           </Badge>
                         ) : (
-                          <Badge variant="info" className="text-[10px] gap-1">
+                          <Badge variant="info" className="text-caption gap-1">
                             <ShieldCheck className="h-3 w-3" /> Solo Lectura
                           </Badge>
                         )}
@@ -296,7 +296,7 @@ export const MCPPage: React.FC = () => {
                       <Button
                         variant="outline"
                         size="sm"
-                        className="text-xs h-7"
+                        className="text-caption h-7"
                         onClick={() => setSelectedToolForAssign(tool)}
                       >
                         <Users className="mr-1 h-3 w-3" />
@@ -304,20 +304,20 @@ export const MCPPage: React.FC = () => {
                       </Button>
                     </div>
 
-                    <p className="text-xs text-slate-400 leading-relaxed">{tool.description}</p>
+                    <p className="text-caption text-fg-secondary leading-relaxed">{tool.description}</p>
 
                     {/* Input Schema Parameters */}
                     {tool.inputSchema.properties && (
-                      <div className="rounded-lg bg-slate-900/60 p-2 border border-slate-800/70 text-[11px]">
-                        <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">
+                      <div className="rounded-lg bg-bg-card/60 p-2 border border-border-default/70 text-caption">
+                        <span className="text-caption font-semibold text-fg-secondary uppercase tracking-wider block mb-1">
                           Parámetros del Input Schema
                         </span>
                         <div className="space-y-1">
                           {Object.entries(tool.inputSchema.properties).map(([pName, pDef]) => (
                             <div key={pName} className="flex items-baseline gap-2 font-mono">
-                              <span className="text-violet-400 font-semibold">{pName}:</span>
-                              <span className="text-slate-400 text-[10px]">{pDef.type}</span>
-                              <span className="text-slate-400 font-sans text-[11px] truncate">
+                              <span className="text-fg-brand font-semibold">{pName}:</span>
+                              <span className="text-fg-secondary text-caption">{pDef.type}</span>
+                              <span className="text-fg-secondary font-sans text-caption truncate">
                                 — {pDef.description}
                               </span>
                             </div>
@@ -333,28 +333,28 @@ export const MCPPage: React.FC = () => {
             {/* Server Logs and Diagnostics Drawer */}
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm flex items-center gap-2 text-slate-300">
-                  <Terminal className="h-4 w-4 text-violet-400" />
+                <CardTitle className="text-body flex items-center gap-2 text-fg-secondary">
+                  <Terminal className="h-4 w-4 text-fg-brand" />
                   Terminal de Logs y Diagnóstico MCP
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="h-36 overflow-y-auto p-3 rounded-lg bg-black/80 border border-slate-800 font-mono text-[11px] space-y-1">
+                <div className="h-36 overflow-y-auto p-3 rounded-lg bg-black/80 border border-border-default font-mono text-caption space-y-1">
                   {activeServer.logs.map((log) => (
                     <div key={log.id} className="flex items-start gap-2">
-                      <span className="text-slate-400 shrink-0">{formatDate(log.timestamp)}</span>
+                      <span className="text-fg-secondary shrink-0">{formatDate(log.timestamp)}</span>
                       <span
                         className={
                           log.level === 'warn'
-                            ? 'text-amber-400'
+                            ? 'text-fg-warning'
                             : log.level === 'error'
-                            ? 'text-red-400'
-                            : 'text-emerald-400'
+                            ? 'text-fg-error'
+                            : 'text-fg-success'
                         }
                       >
                         [{log.level.toUpperCase()}]
                       </span>
-                      <span className="text-slate-300">{log.message}</span>
+                      <span className="text-fg-secondary">{log.message}</span>
                     </div>
                   ))}
                 </div>
@@ -362,9 +362,9 @@ export const MCPPage: React.FC = () => {
             </Card>
           </div>
         ) : (
-          <div className="lg:col-span-8 flex flex-col items-center justify-center p-12 text-center rounded-xl border border-dashed border-slate-800">
-            <Server className="h-10 w-10 text-slate-600 mb-2" />
-            <p className="text-sm font-medium text-slate-300">No hay servidor MCP seleccionado</p>
+          <div className="lg:col-span-8 flex flex-col items-center justify-center p-12 text-center rounded-xl border border-dashed border-border-default">
+            <Server className="h-10 w-10 text-fg-muted mb-2" />
+            <p className="text-body font-medium text-fg-secondary">No hay servidor MCP seleccionado</p>
           </div>
         )}
       </div>

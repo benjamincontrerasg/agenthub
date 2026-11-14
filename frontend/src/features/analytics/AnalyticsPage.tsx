@@ -43,24 +43,24 @@ export const AnalyticsPage: React.FC = () => {
       {/* Top Header with Period Filter */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+          <h2 className="text-title sm:text-2xl font-bold tracking-tight text-fg-primary flex items-center gap-2">
             Usage & Analytics
-            <Badge variant="secondary" className="font-mono text-xs">Telemetría Global</Badge>
+            <Badge variant="secondary" className="font-mono text-caption">Telemetría Global</Badge>
           </h2>
-          <p className="mt-1 text-sm text-slate-400">
+          <p className="mt-1 text-body text-fg-secondary">
             Métricas de consumo de tokens, distribución de costos e impacto computacional por proveedor y agente.
           </p>
         </div>
 
         <div className="flex items-center gap-2">
           {/* Period selector */}
-          <div className="flex items-center rounded-lg border border-slate-800 bg-slate-900/80 p-1">
+          <div className="flex items-center rounded-lg border border-border-default bg-bg-card/80 p-1">
             {(['7d', '30d', '90d'] as const).map((p) => (
               <button
                 key={p}
                 onClick={() => setPeriod(p)}
-                className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
-                  period === p ? 'bg-violet-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'
+                className={`px-3 py-1 rounded-md text-caption font-medium transition-colors ${
+                  period === p ? 'bg-bg-brand text-fg-primary shadow-sm' : 'text-fg-secondary hover:text-white'
                 }`}
               >
                 {p === '7d' ? '7 Días' : p === '30d' ? '30 Días' : '3 Meses'}
@@ -68,7 +68,7 @@ export const AnalyticsPage: React.FC = () => {
             ))}
           </div>
 
-          <Button variant="outline" size="sm" className="text-xs h-8">
+          <Button variant="outline" size="sm" className="text-caption h-8">
             <Download className="mr-1.5 h-3.5 w-3.5" />
             Exportar CSV
           </Button>
@@ -76,8 +76,8 @@ export const AnalyticsPage: React.FC = () => {
       </div>
 
       {/* Demo Notice Banner */}
-      <div className="p-3 rounded-xl border border-violet-900/60 bg-violet-950/20 text-xs text-slate-300 flex items-center gap-2">
-        <AlertCircle className="h-4 w-4 text-violet-400 shrink-0" />
+      <div className="p-3 rounded-xl border border-border-brand/60 bg-bg-brand-subtle/20 text-caption text-fg-secondary flex items-center gap-2">
+        <AlertCircle className="h-4 w-4 text-fg-brand shrink-0" />
         <span>
           <strong>Datos de demostración simulados:</strong> Todos los valores de tokens y costos corresponden a estimaciones analíticas basadas en tarifas de inferencia vigentes.
         </span>
@@ -87,53 +87,53 @@ export const AnalyticsPage: React.FC = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-5">
-            <div className="flex items-center justify-between text-slate-400 text-xs">
+            <div className="flex items-center justify-between text-fg-secondary text-caption">
               <span>Tokens Totales</span>
-              <Zap className="h-4 w-4 text-violet-400" />
+              <Zap className="h-4 w-4 text-fg-brand" />
             </div>
-            <p className="text-2xl font-bold text-white mt-1">
+            <p className="text-title font-bold text-fg-primary mt-1">
               {formatNumber(initialAnalytics.totalTokens)}
             </p>
-            <span className="text-[11px] text-emerald-400 font-medium">↑ 14.8% vs semana anterior</span>
+            <span className="text-caption text-fg-success font-medium">↑ 14.8% vs semana anterior</span>
           </CardContent>
         </Card>
 
         <Card>
           <CardContent className="p-5">
-            <div className="flex items-center justify-between text-slate-400 text-xs">
+            <div className="flex items-center justify-between text-fg-secondary text-caption">
               <span>Costo Estimado</span>
-              <DollarSign className="h-4 w-4 text-emerald-400" />
+              <DollarSign className="h-4 w-4 text-fg-success" />
             </div>
-            <p className="text-2xl font-bold text-white mt-1">
+            <p className="text-title font-bold text-fg-primary mt-1">
               {formatCurrency(initialAnalytics.estimatedCostUsd)}
             </p>
-            <span className="text-[11px] text-slate-400 font-mono">Promedio $0.0049 / 1k tok</span>
+            <span className="text-caption text-fg-secondary font-mono">Promedio $0.0049 / 1k tok</span>
           </CardContent>
         </Card>
 
         <Card>
           <CardContent className="p-5">
-            <div className="flex items-center justify-between text-slate-400 text-xs">
+            <div className="flex items-center justify-between text-fg-secondary text-caption">
               <span>Total Ejecuciones</span>
-              <Activity className="h-4 w-4 text-blue-400" />
+              <Activity className="h-4 w-4 text-fg-brand" />
             </div>
-            <p className="text-2xl font-bold text-white mt-1">
+            <p className="text-title font-bold text-fg-primary mt-1">
               {initialAnalytics.totalExecutions.toLocaleString()}
             </p>
-            <span className="text-[11px] text-emerald-400 font-medium">98.2% tasa de éxito</span>
+            <span className="text-caption text-fg-success font-medium">98.2% tasa de éxito</span>
           </CardContent>
         </Card>
 
         <Card>
           <CardContent className="p-5">
-            <div className="flex items-center justify-between text-slate-400 text-xs">
+            <div className="flex items-center justify-between text-fg-secondary text-caption">
               <span>Agentes & Proveedores</span>
-              <Bot className="h-4 w-4 text-amber-400" />
+              <Bot className="h-4 w-4 text-fg-warning" />
             </div>
-            <p className="text-2xl font-bold text-white mt-1">
+            <p className="text-title font-bold text-fg-primary mt-1">
               5 Agentes / 4 LLMs
             </p>
-            <span className="text-[11px] text-slate-400">100% disponibilidad</span>
+            <span className="text-caption text-fg-secondary">100% disponibilidad</span>
           </CardContent>
         </Card>
       </div>
@@ -141,8 +141,8 @@ export const AnalyticsPage: React.FC = () => {
       {/* Main Consumption Timeline Area Chart */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2">
-            <TrendingUp className="h-4 w-4 text-violet-400" />
+          <CardTitle className="text-subtitle flex items-center gap-2">
+            <TrendingUp className="h-4 w-4 text-fg-brand" />
             Evolución de Consumo y Costos Diarios
           </CardTitle>
           <CardDescription>
@@ -203,8 +203,8 @@ export const AnalyticsPage: React.FC = () => {
         {/* Consumption by Provider */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2">
-              <Cpu className="h-4 w-4 text-blue-400" />
+            <CardTitle className="text-subtitle flex items-center gap-2">
+              <Cpu className="h-4 w-4 text-fg-brand" />
               Consumo por Proveedor de IA
             </CardTitle>
             <CardDescription>Distribución de tokens y costo entre plataformas</CardDescription>
@@ -243,16 +243,16 @@ export const AnalyticsPage: React.FC = () => {
               </ResponsiveContainer>
             </div>
 
-            <div className="space-y-2 pt-2 border-t border-slate-800 text-xs">
+            <div className="space-y-2 pt-2 border-t border-border-default text-caption">
               {initialAnalytics.tokensByProvider.map((p, idx) => (
                 <div key={p.provider} className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <ProviderLogo providerId={p.provider} size="xs" />
-                    <span className="text-slate-300 font-medium">{p.provider}</span>
+                    <span className="text-fg-secondary font-medium">{p.provider}</span>
                   </div>
-                  <div className="flex items-center gap-3 font-mono text-[11px]">
-                    <span className="text-slate-400">{formatNumber(p.tokens)} tok</span>
-                    <span className="text-emerald-400 font-semibold">${p.cost.toFixed(2)}</span>
+                  <div className="flex items-center gap-3 font-mono text-caption">
+                    <span className="text-fg-secondary">{formatNumber(p.tokens)} tok</span>
+                    <span className="text-fg-success font-semibold">${p.cost.toFixed(2)}</span>
                   </div>
                 </div>
               ))}
@@ -263,8 +263,8 @@ export const AnalyticsPage: React.FC = () => {
         {/* Consumption by Agent */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2">
-              <Bot className="h-4 w-4 text-violet-400" />
+            <CardTitle className="text-subtitle flex items-center gap-2">
+              <Bot className="h-4 w-4 text-fg-brand" />
               Consumo por Agente Autónomo
             </CardTitle>
             <CardDescription>Carga de inferencia atribuida a cada rol</CardDescription>
@@ -303,16 +303,16 @@ export const AnalyticsPage: React.FC = () => {
               </ResponsiveContainer>
             </div>
 
-            <div className="space-y-2 pt-2 border-t border-slate-800 text-xs">
+            <div className="space-y-2 pt-2 border-t border-border-default text-caption">
               {initialAnalytics.tokensByAgent.map((a, idx) => (
                 <div key={a.agent} className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <AgentAvatar agentName={a.agent} size="xs" />
-                    <span className="text-slate-300 font-medium">{a.agent}</span>
+                    <span className="text-fg-secondary font-medium">{a.agent}</span>
                   </div>
-                  <div className="flex items-center gap-3 font-mono text-[11px]">
-                    <span className="text-slate-400">{formatNumber(a.tokens)} tok</span>
-                    <span className="text-emerald-400 font-semibold">${a.cost.toFixed(2)}</span>
+                  <div className="flex items-center gap-3 font-mono text-caption">
+                    <span className="text-fg-secondary">{formatNumber(a.tokens)} tok</span>
+                    <span className="text-fg-success font-semibold">${a.cost.toFixed(2)}</span>
                   </div>
                 </div>
               ))}
