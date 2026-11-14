@@ -7,15 +7,15 @@
    ═══════════════════════════════════════════════════════════ */
 
 @theme {
-  /* ── Typography ── */
-  --font-size-caption: 0.8125rem;       /* 13px — badges, metadata, timestamps */
-  --font-size-caption--line-height: 1.25rem;
-  --font-size-body: 0.875rem;           /* 14px — texto de lectura, labels */
-  --font-size-body--line-height: 1.375rem;
-  --font-size-subtitle: 1rem;           /* 16px — subtítulos de sección */
-  --font-size-subtitle--line-height: 1.5rem;
-  --font-size-title: 1.375rem;          /* 22px — títulos de página */
-  --font-size-title--line-height: 1.75rem;
+  /* ── Typography (Tailwind v4 maps --text-* to utility classes text-*) ── */
+  --text-caption: 0.8125rem;       /* 13px — badges, metadata, timestamps */
+  --text-caption--line-height: 1.25rem;
+  --text-body: 0.875rem;           /* 14px — texto de lectura, labels */
+  --text-body--line-height: 1.375rem;
+  --text-subtitle: 1rem;           /* 16px — subtítulos de sección */
+  --text-subtitle--line-height: 1.5rem;
+  --text-title: 1.375rem;          /* 22px — títulos de página */
+  --text-title--line-height: 1.75rem;
 
   /* ── Foreground (text) ── */
   --color-fg-primary: #f1f5f9;          /* Texto principal, títulos */
@@ -73,7 +73,7 @@ body {
   background-color: var(--color-bg-base);
   color: var(--color-fg-primary);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  font-size: var(--font-size-body);
-  line-height: var(--font-size-body--line-height);
+  font-size: var(--text-body);
+  line-height: var(--text-body--line-height);
   -webkit-font-smoothing: antialiased;
 }
