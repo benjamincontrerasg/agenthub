@@ -76,7 +76,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       items: [
         {
           path: '/chat',
-          label: 'Chat Multi-Agente',
+          label: 'Chat Multiagente',
           icon: MessageSquare,
           showBadge: pendingApprovalsCount > 0,
         },
@@ -187,8 +187,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
                     {/* Pending Approvals Counter Badge */}
                     {!collapsed && item.showBadge && (
-                      <span className="ml-auto rounded-full bg-fg-warning/20 px-2 py-0.5 text-caption font-mono font-semibold text-fg-warning border border-fg-warning/40 animate-pulse">
-                        {pendingApprovalsCount} pend.
+                      <span
+                        title={`${pendingApprovalsCount} aprobación(es) pendiente(s)`}
+                        aria-label={`${pendingApprovalsCount} aprobaciones pendientes`}
+                        className="ml-2 shrink-0 min-w-6 rounded-full bg-fg-warning/20 px-1.5 py-0.5 text-center text-caption font-mono font-semibold text-fg-warning border border-fg-warning/40"
+                      >
+                        {pendingApprovalsCount}
                       </span>
                     )}
 

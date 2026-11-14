@@ -8,6 +8,7 @@ interface ProviderLogoProps {
   className?: string;
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | number;
   rounded?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
+  /** true: logo dentro de una ficha con fondo; false: logo suelto (para insignias y listas). */
   showBackground?: boolean;
 }
 
@@ -27,55 +28,35 @@ const roundedMap = {
   full: 'rounded-full',
 };
 
-export const ClaudeLogo: React.FC<{ className?: string }> = ({ className = 'h-full w-full' }) => (
-  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
-    <rect width="24" height="24" rx="5" fill="#D97757" fillOpacity="0.2" />
-    <path
-      d="M13.5 4.5L10.5 19.5M19.5 10.5L4.5 13.5M16.5 6L7.5 18M18 16.5L6 7.5"
-      stroke="#D97757"
-      strokeWidth="2.2"
-      strokeLinecap="round"
-    />
-    <circle cx="12" cy="12" r="2.2" fill="#D97757" />
-  </svg>
-);
+/**
+ * Logos oficiales de cada proveedor, guardados como archivos en /public/logos.
+ * (Origen: paquete @lobehub/icons-static-svg. Las marcas pertenecen a sus dueños.)
+ *
+ * `mono: true` indica que el archivo es de un solo color (negro por defecto).
+ * Sobre el tema oscuro se invierte a blanco; los logos a color se muestran tal cual.
+ */
+interface LogoDef {
+  file: string;
+  label: string;
+  mono: boolean;
+}
 
-export const OpenAILogo: React.FC<{ className?: string }> = ({ className = 'h-full w-full' }) => (
-  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
-    <rect width="24" height="24" rx="5" fill="#10A37F" fillOpacity="0.2" />
-    <path
-      d="M20.5 10.3a5.2 5.2 0 0 0-.4-4.2 5.3 5.3 0 0 0-4.8-2.6 5.3 5.3 0 0 0-1.8.3 5.2 5.2 0 0 0-4-1.8 5.3 5.3 0 0 0-5 3.6 5.3 5.3 0 0 0-3 2.2 5.2 5.2 0 0 0-.6 4.6 5.3 5.3 0 0 0 .4 4.2 5.3 5.3 0 0 0 4.8 2.6c.6 0 1.2-.1 1.8-.3a5.2 5.2 0 0 0 4 1.8 5.3 5.3 0 0 0 5-3.6 5.3 5.3 0 0 0 3-2.2c.7-1.4.9-3 .6-4.6zm-7.6 10.2a3.8 3.8 0 0 1-2.4-.9l1.2-2a.7.7 0 0 1 .6-.4h3.6a3.8 3.8 0 0 1-3 3.3zm-5.7-2.1a3.8 3.8 0 0 1-1.3-2.2l2.3-.5a.7.7 0 0 1 .7.3l1.8 3.1a3.8 3.8 0 0 1-3.5-.7zm-2.8-5.7a3.8 3.8 0 0 1 1-2.4l1.1 2.1c.2.3.1.7-.1.9l-3.1 1.8c-.3-.8-.3-1.6 0-2.4zm3.7-4.4a3.8 3.8 0 0 1 2.4.9l-1.2 2a.7.7 0 0 1-.6.4H5.7a3.8 3.8 0 0 1 3-3.3zm5.7 2.1a3.8 3.8 0 0 1 1.3 2.2l-2.3.5a.7.7 0 0 1-.7-.3l-1.8-3.1a3.8 3.8 0 0 1 3.5.7zm2.8 5.7a3.8 3.8 0 0 1-1 2.4l-1.1-2.1a.7.7 0 0 1 .1-.9l3.1-1.8c.3.8.3 1.6-.1 2.4zm-3-1.7l-1.5-2.6 2.2-1.3 2.2 1.3v2.6l-2.9 0z"
-      fill="#10A37F"
-    />
-  </svg>
-);
+const LOGOS: Record<'anthropic' | 'openai' | 'gemini' | 'ollama', LogoDef> = {
+  anthropic: { file: 'claude.svg', label: 'Claude (Anthropic)', mono: false },
+  openai: { file: 'openai.svg', label: 'OpenAI', mono: true },
+  gemini: { file: 'gemini.svg', label: 'Google Gemini', mono: false },
+  ollama: { file: 'ollama.svg', label: 'Ollama', mono: true },
+};
 
-export const GeminiLogo: React.FC<{ className?: string }> = ({ className = 'h-full w-full' }) => (
-  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
-    <defs>
-      <linearGradient id="gemini-react-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#1BA1E3" />
-        <stop offset="50%" stopColor="#7976FB" />
-        <stop offset="100%" stopColor="#C665F6" />
-      </linearGradient>
-    </defs>
-    <rect width="24" height="24" rx="5" fill="url(#gemini-react-grad)" fillOpacity="0.2" />
-    <path
-      d="M12 2C12 7.52 7.52 12 2 12C7.52 12 12 16.48 12 22C12 16.48 16.48 12 22 12C16.48 12 12 7.52 12 2Z"
-      fill="url(#gemini-react-grad)"
-    />
-  </svg>
-);
-
-export const OllamaLogo: React.FC<{ className?: string }> = ({ className = 'h-full w-full' }) => (
-  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
-    <rect width="24" height="24" rx="5" fill="#3B82F6" fillOpacity="0.2" />
-    <path
-      d="M7 3C6.45 3 6 3.45 6 4V7.5C6 7.78 5.89 8.04 5.71 8.24L4.85 9.17C4.31 9.75 4 10.51 4 11.3V18C4 19.66 5.34 21 7 21H17C18.66 21 20 19.66 20 18V11.3C20 10.51 19.69 9.75 19.15 9.17L18.29 8.24C18.11 8.04 18 7.78 18 7.5V4C18 3.45 17.55 3 17 3H15C14.45 3 14 3.45 14 4V6H10V4C10 3.45 9.55 3 9 3H7ZM8.5 11C9.33 11 10 11.67 10 12.5C10 13.33 9.33 14 8.5 14C7.67 14 7 13.33 7 12.5C7 11.67 7.67 11 8.5 11ZM15.5 11C16.33 11 17 11.67 17 12.5C17 13.33 16.33 14 15.5 14C14.67 14 14 13.33 14 12.5C14 11.67 14.67 11 15.5 11ZM12 15C13.1 15 14 15.9 14 17H10C10 15.9 10.9 15 12 15Z"
-      fill="#60A5FA"
-    />
-  </svg>
-);
+function resolveLogo(normId: string): LogoDef | null {
+  if (normId.includes('anthropic') || normId.includes('claude')) return LOGOS.anthropic;
+  if (normId.includes('openai') || normId.includes('opencode') || normId.includes('gpt') || normId.includes('o3')) {
+    return LOGOS.openai;
+  }
+  if (normId.includes('gemini') || normId.includes('google')) return LOGOS.gemini;
+  if (normId.includes('ollama') || normId.includes('llama') || normId.includes('local')) return LOGOS.ollama;
+  return null;
+}
 
 export const ProviderLogo: React.FC<ProviderLogoProps> = ({
   providerId,
@@ -86,46 +67,40 @@ export const ProviderLogo: React.FC<ProviderLogoProps> = ({
   showBackground = true,
 }) => {
   const normId = (providerId || name || '').toLowerCase();
-  const dimensionClass = typeof size === 'number' ? `h-[${size}px] w-[${size}px]` : sizeMap[size];
+  const isCustomSize = typeof size === 'number';
+  const dimensionClass = isCustomSize ? '' : sizeMap[size];
+  const sizeStyle = isCustomSize ? { height: size, width: size } : undefined;
   const roundedClass = roundedMap[rounded];
+  const logo = resolveLogo(normId);
 
-  // Specific Providers
-  if (normId.includes('anthropic') || normId.includes('claude')) {
+  if (logo) {
+    const src = `${import.meta.env.BASE_URL}logos/${logo.file}`;
     return (
-      <div className={`relative shrink-0 flex items-center justify-center ${dimensionClass} ${roundedClass} ${className}`}>
-        <ClaudeLogo className="h-full w-full" />
+      <div
+        style={sizeStyle}
+        className={`relative shrink-0 flex items-center justify-center ${dimensionClass} ${roundedClass} ${
+          showBackground ? 'bg-bg-surface ring-1 ring-border-hover' : ''
+        } ${className}`}
+      >
+        {/* Con ficha, el logo ocupa el 60% para dejar margen; suelto ocupa todo el espacio.
+            (No usar padding en %: se calcula sobre el ancho del padre y rompe el tamaño.) */}
+        <img
+          src={src}
+          alt={logo.label}
+          draggable={false}
+          className={`object-contain select-none ${showBackground ? 'h-3/5 w-3/5' : 'h-full w-full'} ${
+            logo.mono ? 'brightness-0 invert' : ''
+          }`}
+        />
       </div>
     );
   }
 
-  if (normId.includes('openai') || normId.includes('opencode') || normId.includes('gpt') || normId.includes('o3')) {
-    return (
-      <div className={`relative shrink-0 flex items-center justify-center ${dimensionClass} ${roundedClass} ${className}`}>
-        <OpenAILogo className="h-full w-full" />
-      </div>
-    );
-  }
-
-  if (normId.includes('gemini') || normId.includes('google')) {
-    return (
-      <div className={`relative shrink-0 flex items-center justify-center ${dimensionClass} ${roundedClass} ${className}`}>
-        <GeminiLogo className="h-full w-full" />
-      </div>
-    );
-  }
-
-  if (normId.includes('ollama') || normId.includes('llama') || normId.includes('local')) {
-    return (
-      <div className={`relative shrink-0 flex items-center justify-center ${dimensionClass} ${roundedClass} ${className}`}>
-        <OllamaLogo className="h-full w-full" />
-      </div>
-    );
-  }
-
-  // Fallback generic AI badge
+  // Proveedor desconocido: ficha con las iniciales
   const initial = (name || providerId || 'AI').substring(0, 2).toUpperCase();
   return (
     <div
+      style={sizeStyle}
       className={`shrink-0 flex items-center justify-center font-bold text-caption ${dimensionClass} ${roundedClass} ${
         showBackground ? 'bg-bg-surface border border-border-hover text-fg-secondary' : ''
       } ${className}`}
