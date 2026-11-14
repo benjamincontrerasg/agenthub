@@ -154,7 +154,7 @@ export const messages = sqliteTable('messages', {
   senderRole: text('sender_role'),
   content: text('content').notNull(),
   timestamp: text('timestamp').notNull(),
-  status: text('status', { enum: ['thinking', 'executing', 'waiting_approval', 'done', 'failed'] }),
+  status: text('status', { enum: ['thinking', 'streaming', 'executing', 'waiting_approval', 'done', 'failed'] }),
   thoughtTrace: text('thought_trace'),
   delegation: text('delegation'), // JSON object
   approvalRequestId: text('approval_request_id'),

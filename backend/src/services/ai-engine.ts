@@ -18,12 +18,13 @@ export interface AIExecutionResult {
 
 export class AIEngine {
   /**
-   * Generates a real response from the AI model assigned to the agent.
+   * Generates a real response from the AI model assigned to the agent, with optional streaming tokens.
    */
   public async generateAgentResponse(
     agent: Agent,
     history: Message[],
-    userPrompt: string
+    userPrompt: string,
+    onChunk?: (chunk: string) => void
   ): Promise<AIExecutionResult> {
     const provider = db.select().from(schema.providers).where(eq(schema.providers.id, agent.providerId)).get();
 
@@ -53,11 +54,11 @@ export class AIEngine {
     if (apiKey) {
       try {
         if (agent.providerId === 'gemini') {
-          return await this.callGemini(apiKey, agent, history, userPrompt);
+          return await this.callGemini(apiKey, agent, history, userPrompt, onChunk);
         } else if (agent.providerId === 'openai') {
-          return await this.callOpenAI(apiKey, agent, history, userPrompt);
+          return await this.callOpenAI(apiKey, agent, history, userPrompt, onChunk);
         } else if (agent.providerId === 'anthropic') {
-          return await this.callAnthropic(apiKey, agent, history, userPrompt);
+          return await this.callAnthropic(apiKey, agent, history, userPrompt, onChunk);
         }
       } catch (err: any) {
         console.error(`[AI Engine Error with ${agent.providerId}]`, err);
@@ -76,17 +77,25 @@ export class AIEngine {
     if (agent.providerId === 'ollama') {
       try {
         const endpoint = provider?.apiEndpoint || 'http://localhost:11434';
-        return await this.callOllama(endpoint, agent, history, userPrompt);
+        return await this.callOllama(endpoint, agent, history, userPrompt, onChunk);
       } catch (err: any) {
         console.warn(`[AI Engine Ollama Offline]`, err.message);
       }
     }
 
-    // 3. Fallback when no API Key is configured yet
-    return {
-      content: `[Modo Simulación] Para ejecutar este agente con un modelo de IA real, ve a la pestaña "AI Providers", haz clic en "Configurar" en ${agent.providerId.toUpperCase()} e introduce tu API Key (o define la variable ${agent.providerId.toUpperCase()}_API_KEY).
+    // 3. Fallback when no API Key is configured yet (with simulated token streaming)
+    const fallbackText = `[Modo Simulación] Para ejecutar este agente con un modelo de IA real, ve a la pestaña "AI Providers", haz clic en "Configurar" en ${agent.providerId.toUpperCase()} e introduce tu API Key (o define la variable ${agent.providerId.toUpperCase()}_API_KEY).\n\nComo ${agent.name} (${agent.role}), aquí tienes mi análisis simulado para tu requerimiento: "${userPrompt}". El sistema multi-agente está listo para orquestar la tarea tan pronto como actives tu proveedor.`;
 
-Como ${agent.name} (${agent.role}), aquí tienes mi análisis simulado para tu requerimiento: "${userPrompt}". El sistema multi-agente está listo para orquestar la tarea tan pronto como actives tu proveedor.`,
+    if (onChunk) {
+      const words = fallbackText.split(' ');
+      for (const word of words) {
+        onChunk(word + ' ');
+        await new Promise((r) => setTimeout(r, 25));
+      }
+    }
+
+    return {
+      content: fallbackText,
       thoughtTrace: `No se detectó API Key para ${agent.providerId}. Operando en modo demostración.`,
       tokensUsed: 350,
       costUsd: 0.001,
@@ -95,12 +104,13 @@ Como ${agent.name} (${agent.role}), aquí tienes mi análisis simulado para tu r
     };
   }
 
-  // --- Real Google Gemini Call ---
+  // --- Real Google Gemini Call with Streaming ---
   private async callGemini(
     apiKey: string,
     agent: Agent,
     history: Message[],
-    userPrompt: string
+    userPrompt: string,
+    onChunk?: (chunk: string) => void
   ): Promise<AIExecutionResult> {
     const genAI = new GoogleGenerativeAI(apiKey);
     const modelName = agent.modelId.includes('gemini') ? agent.modelId : 'gemini-1.5-flash';
@@ -121,13 +131,24 @@ Como ${agent.name} (${agent.role}), aquí tienes mi análisis simulado para tu r
       history: recentHistory,
     });
 
-    const result = await chat.sendMessage(userPrompt);
-    const text = result.response.text();
-    const tokenCount = (await model.countTokens(userPrompt + text)).totalTokens || 500;
+    let fullText = '';
+    if (onChunk) {
+      const resultStream = await chat.sendMessageStream(userPrompt);
+      for await (const chunk of resultStream.stream) {
+        const chunkText = chunk.text();
+        fullText += chunkText;
+        onChunk(chunkText);
+      }
+    } else {
+      const result = await chat.sendMessage(userPrompt);
+      fullText = result.response.text();
+    }
+
+    const tokenCount = (await model.countTokens(userPrompt + fullText)).totalTokens || 500;
 
     return {
-      content: text,
-      thoughtTrace: `Procesado en vivo por Google Gemini (${modelName}) con rol ${agent.role}. Temperatura: ${agent.temperature}.`,
+      content: fullText,
+      thoughtTrace: `Procesado en streaming por Google Gemini (${modelName}) con rol ${agent.role}. Temperatura: ${agent.temperature}.`,
       tokensUsed: tokenCount,
       costUsd: (tokenCount / 1_000_000) * 0.35,
       isRealExecution: true,
@@ -135,12 +156,13 @@ Como ${agent.name} (${agent.role}), aquí tienes mi análisis simulado para tu r
     };
   }
 
-  // --- Real OpenAI Call ---
+  // --- Real OpenAI Call with Streaming ---
   private async callOpenAI(
     apiKey: string,
     agent: Agent,
     history: Message[],
-    userPrompt: string
+    userPrompt: string,
+    onChunk?: (chunk: string) => void
   ): Promise<AIExecutionResult> {
     const openai = new OpenAI({ apiKey });
     const modelName = agent.modelId || 'gpt-4o-mini';
@@ -154,18 +176,37 @@ Como ${agent.name} (${agent.role}), aquí tienes mi análisis simulado para tu r
       { role: 'user', content: userPrompt },
     ];
 
-    const response = await openai.chat.completions.create({
-      model: modelName,
-      messages,
-      temperature: agent.temperature,
-    });
+    let fullText = '';
+    let tokensUsed = 400;
 
-    const text = response.choices[0]?.message?.content || 'Sin respuesta';
-    const tokensUsed = response.usage?.total_tokens || 400;
+    if (onChunk) {
+      const stream = await openai.chat.completions.create({
+        model: modelName,
+        messages,
+        temperature: agent.temperature,
+        stream: true,
+      });
+
+      for await (const part of stream) {
+        const delta = part.choices[0]?.delta?.content || '';
+        if (delta) {
+          fullText += delta;
+          onChunk(delta);
+        }
+      }
+    } else {
+      const response = await openai.chat.completions.create({
+        model: modelName,
+        messages,
+        temperature: agent.temperature,
+      });
+      fullText = response.choices[0]?.message?.content || 'Sin respuesta';
+      tokensUsed = response.usage?.total_tokens || 400;
+    }
 
     return {
-      content: text,
-      thoughtTrace: `Procesado en vivo por OpenAI (${modelName}) con rol ${agent.role}.`,
+      content: fullText,
+      thoughtTrace: `Procesado en streaming por OpenAI (${modelName}) con rol ${agent.role}.`,
       tokensUsed,
       costUsd: (tokensUsed / 1_000_000) * 2.5,
       isRealExecution: true,
@@ -173,12 +214,13 @@ Como ${agent.name} (${agent.role}), aquí tienes mi análisis simulado para tu r
     };
   }
 
-  // --- Real Anthropic Call ---
+  // --- Real Anthropic Call with Streaming ---
   private async callAnthropic(
     apiKey: string,
     agent: Agent,
     history: Message[],
-    userPrompt: string
+    userPrompt: string,
+    onChunk?: (chunk: string) => void
   ): Promise<AIExecutionResult> {
     const anthropic = new Anthropic({ apiKey });
     const modelName = agent.modelId.includes('claude') ? agent.modelId : 'claude-3-5-haiku-20241022';
@@ -191,20 +233,40 @@ Como ${agent.name} (${agent.role}), aquí tienes mi análisis simulado para tu r
       { role: 'user' as const, content: userPrompt },
     ];
 
-    const response = await anthropic.messages.create({
-      model: modelName,
-      system: agent.systemPrompt,
-      max_tokens: 4096,
-      temperature: agent.temperature,
-      messages,
-    });
+    let fullText = '';
+    let tokensUsed = 400;
 
-    const text = response.content[0]?.type === 'text' ? response.content[0].text : 'Sin respuesta';
-    const tokensUsed = (response.usage?.input_tokens || 0) + (response.usage?.output_tokens || 0);
+    if (onChunk) {
+      const stream = anthropic.messages.stream({
+        model: modelName,
+        system: agent.systemPrompt,
+        max_tokens: 4096,
+        temperature: agent.temperature,
+        messages,
+      });
+
+      stream.on('text', (text) => {
+        fullText += text;
+        onChunk(text);
+      });
+
+      const finalMessage = await stream.finalMessage();
+      tokensUsed = (finalMessage.usage?.input_tokens || 0) + (finalMessage.usage?.output_tokens || 0);
+    } else {
+      const response = await anthropic.messages.create({
+        model: modelName,
+        system: agent.systemPrompt,
+        max_tokens: 4096,
+        temperature: agent.temperature,
+        messages,
+      });
+      fullText = response.content[0]?.type === 'text' ? response.content[0].text : 'Sin respuesta';
+      tokensUsed = (response.usage?.input_tokens || 0) + (response.usage?.output_tokens || 0);
+    }
 
     return {
-      content: text,
-      thoughtTrace: `Procesado en vivo por Anthropic (${modelName}) con rol ${agent.role}.`,
+      content: fullText,
+      thoughtTrace: `Procesado en streaming por Anthropic (${modelName}) con rol ${agent.role}.`,
       tokensUsed,
       costUsd: (tokensUsed / 1_000_000) * 3.0,
       isRealExecution: true,
@@ -217,7 +279,8 @@ Como ${agent.name} (${agent.role}), aquí tienes mi análisis simulado para tu r
     endpoint: string,
     agent: Agent,
     history: Message[],
-    userPrompt: string
+    userPrompt: string,
+    onChunk?: (chunk: string) => void
   ): Promise<AIExecutionResult> {
     const res = await fetch(`${endpoint}/api/chat`, {
       method: 'POST',
@@ -238,9 +301,18 @@ Como ${agent.name} (${agent.role}), aquí tienes mi análisis simulado para tu r
 
     if (!res.ok) throw new Error(`Ollama HTTP ${res.status}`);
     const data: any = await res.json();
+    const content = data.message?.content || 'Sin respuesta de Ollama';
+
+    if (onChunk) {
+      const words = content.split(' ');
+      for (const w of words) {
+        onChunk(w + ' ');
+        await new Promise((r) => setTimeout(r, 20));
+      }
+    }
 
     return {
-      content: data.message?.content || 'Sin respuesta de Ollama',
+      content,
       thoughtTrace: `Procesado localmente por Ollama (${agent.modelId || 'llama3'}) en ${endpoint}`,
       tokensUsed: data.eval_count || 300,
       costUsd: 0.0,

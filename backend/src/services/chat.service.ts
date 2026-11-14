@@ -299,12 +299,32 @@ export const chatService = {
     });
 
     if (targetAgent.id !== coordinator.id) {
-      // 3. Delegate to specialized agent & call real AI engine
+      // 3. Delegate to specialized agent & call real AI engine with streaming chunks
       const fullAgent = await agentService.getById(targetAgent.id);
-      const aiResult = await aiEngine.generateAgentResponse(fullAgent, conv.messages, userPrompt);
-
       const targetMsgId = `msg-agent-${Date.now()}`;
       const targetNow = new Date().toISOString();
+
+      wsManager.broadcast('chat.stream_start', {
+        conversationId,
+        messageId: targetMsgId,
+        agentId: targetAgent.id,
+        agentName: targetAgent.name,
+        senderRole: targetAgent.role,
+      });
+
+      const aiResult = await aiEngine.generateAgentResponse(
+        fullAgent,
+        conv.messages,
+        userPrompt,
+        (chunk: string) => {
+          wsManager.broadcast('chat.token', {
+            conversationId,
+            messageId: targetMsgId,
+            agentId: targetAgent.id,
+            chunk,
+          });
+        }
+      );
 
       db.insert(schema.messages).values({
         id: targetMsgId,

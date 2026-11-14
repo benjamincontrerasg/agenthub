@@ -383,8 +383,13 @@ export const ChatPage: React.FC = () => {
                     </div>
                   )}
 
-                  {/* Body Content */}
-                  <div className="whitespace-pre-wrap">{msg.content}</div>
+                  {/* Body Content with live token cursor */}
+                  <div className="whitespace-pre-wrap">
+                    {msg.content}
+                    {msg.status === 'streaming' && (
+                      <span className="inline-block w-2 h-4 ml-1 bg-violet-400 animate-pulse align-middle" />
+                    )}
+                  </div>
 
                   {/* Tool Executions Badge Box */}
                   {msg.toolExecutions && msg.toolExecutions.length > 0 && (

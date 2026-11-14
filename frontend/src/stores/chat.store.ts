@@ -4,6 +4,81 @@ import { Conversation, Message, Approval, ToolExecution } from '@/types';
 import { initialConversations } from '@/services/mock-data';
 import { generateId } from '@/lib/utils';
 
+// Helper to stream message tokens word by word with realistic pacing and pause/cancel awareness
+async function streamMessageTokens(
+  set: any,
+  get: any,
+  convId: string,
+  baseMsg: Message,
+  fullContent: string,
+  typingAgentId: string
+): Promise<boolean> {
+  set({ activeAgentTypingId: typingAgentId });
+
+  // 1. Initial message with empty content and 'streaming' status
+  set((state: any) => ({
+    conversations: state.conversations.map((c: any) =>
+      c.id === convId
+        ? {
+            ...c,
+            activeAgentId: typingAgentId,
+            messages: [...c.messages, { ...baseMsg, content: '', status: 'streaming' }],
+          }
+        : c
+    ),
+  }));
+
+  // 2. Stream tokens (words with spaces)
+  const tokens = fullContent.match(/\S+|\s+/g) || [fullContent];
+  let accumulated = '';
+
+  for (const token of tokens) {
+    if (!get().isSimulating) return false;
+
+    // Check pause loop
+    while (get().isPaused && get().isSimulating) {
+      await new Promise((r) => setTimeout(r, 100));
+    }
+    if (!get().isSimulating) return false;
+
+    accumulated += token;
+    set((state: any) => ({
+      conversations: state.conversations.map((c: any) =>
+        c.id === convId
+          ? {
+              ...c,
+              messages: c.messages.map((m: any) =>
+                m.id === baseMsg.id ? { ...m, content: accumulated } : m
+              ),
+            }
+          : c
+      ),
+    }));
+
+    // Realistic token streaming delay: ~18ms
+    await new Promise((r) => setTimeout(r, 18));
+  }
+
+  // 3. Finalize message status
+  set((state: any) => ({
+    activeAgentTypingId: null,
+    conversations: state.conversations.map((c: any) =>
+      c.id === convId
+        ? {
+            ...c,
+            messages: c.messages.map((m: any) =>
+              m.id === baseMsg.id
+                ? { ...m, content: fullContent, status: baseMsg.status || 'done' }
+                : m
+            ),
+          }
+        : c
+    ),
+  }));
+
+  return true;
+}
+
 interface ChatState {
   conversations: Conversation[];
   activeConversationId: string;
@@ -97,10 +172,12 @@ export const useChatStore = create<ChatState>()(
           ),
         }));
 
-        // STEP 1: Coordinator Agent starts thinking and responds
+        // STEP 1: Coordinator Agent starts thinking and streams response
         set({ activeAgentTypingId: 'agent-coordinator' });
-        await new Promise((r) => setTimeout(r, 1400));
+        await new Promise((r) => setTimeout(r, 600));
         if (!get().isSimulating) return;
+
+        const coordMsgText = `Requerimiento analizado con éxito: "${content.substring(0, 70)}..."\n\nHe activado el protocolo de colaboración autónoma:\n- Delegando análisis arquitectónico y definición de interfaz a **Architect Agent**.\n- Los resultados se transferirán a **Developer Agent** para codificación y tests.`;
 
         const coordMsg: Message = {
           id: generateId('msg'),
@@ -110,7 +187,7 @@ export const useChatStore = create<ChatState>()(
           senderName: 'Coordinator Agent',
           senderRole: 'Coordinator',
           status: 'done',
-          content: `Requerimiento analizado con éxito: "${content.substring(0, 70)}..."\n\nHe activado el protocolo de colaboración autónoma:\n- Delegando análisis arquitectónico y definición de interfaz a **Architect Agent**.\n- Los resultados se transferirán a **Developer Agent** para codificación y tests.`,
+          content: '',
           timestamp: new Date().toISOString(),
           thoughtTrace: 'Descompuse el requerimiento en especificación técnica, implementación y revisión de seguridad.',
           delegation: {
@@ -120,23 +197,35 @@ export const useChatStore = create<ChatState>()(
           },
         };
 
-        set((state) => ({
-          conversations: state.conversations.map((c) =>
+        const coordOk = await streamMessageTokens(
+          set,
+          get,
+          activeConv.id,
+          coordMsg,
+          coordMsgText,
+          'agent-coordinator'
+        );
+        if (!coordOk) return;
+
+        // Update delegation path
+        set((state: any) => ({
+          conversations: state.conversations.map((c: any) =>
             c.id === activeConv.id
               ? {
                   ...c,
                   activeAgentId: 'agent-architect',
                   currentDelegationPath: ['Usuario', 'Coordinator Agent', 'Architect Agent'],
-                  messages: [...c.messages, coordMsg],
                 }
               : c
           ),
         }));
 
-        // STEP 2: Architect Agent works
+        // STEP 2: Architect Agent works and streams response
         set({ activeAgentTypingId: 'agent-architect' });
-        await new Promise((r) => setTimeout(r, 1800));
+        await new Promise((r) => setTimeout(r, 800));
         if (!get().isSimulating) return;
+
+        const archMsgText = `Especificación técnica finalizada:\n\n\`\`\`typescript\ninterface TaskExecutionPayload {\n  taskId: string;\n  status: 'PENDING' | 'RUNNING' | 'COMPLETED';\n  metadata: Record<string, unknown>;\n  timestamp: number;\n}\n\`\`\`\n\nPatrón seleccionado: CQRS con eventos desacoplados. Delegando la implementación a **Developer Agent**.`;
 
         const archMsg: Message = {
           id: generateId('msg'),
@@ -146,7 +235,7 @@ export const useChatStore = create<ChatState>()(
           senderName: 'Architect Agent',
           senderRole: 'Architect',
           status: 'done',
-          content: `Especificación técnica finalizada:\n\n\`\`\`typescript\ninterface TaskExecutionPayload {\n  taskId: string;\n  status: 'PENDING' | 'RUNNING' | 'COMPLETED';\n  metadata: Record<string, unknown>;\n  timestamp: number;\n}\n\`\`\`\n\nPatrón seleccionado: CQRS con eventos desacoplados. Delegando la implementación a **Developer Agent**.`,
+          content: '',
           timestamp: new Date().toISOString(),
           thoughtTrace: 'Consultando esquema en MCP Filesystem para alinear firmas de tipos con la base de código.',
           toolExecutions: [
@@ -170,14 +259,24 @@ export const useChatStore = create<ChatState>()(
           },
         };
 
-        set((state) => ({
-          conversations: state.conversations.map((c) =>
+        const archOk = await streamMessageTokens(
+          set,
+          get,
+          activeConv.id,
+          archMsg,
+          archMsgText,
+          'agent-architect'
+        );
+        if (!archOk) return;
+
+        // Update delegation path
+        set((state: any) => ({
+          conversations: state.conversations.map((c: any) =>
             c.id === activeConv.id
               ? {
                   ...c,
                   activeAgentId: 'agent-developer',
                   currentDelegationPath: ['Usuario', 'Coordinator Agent', 'Architect Agent', 'Developer Agent'],
-                  messages: [...c.messages, archMsg],
                 }
               : c
           ),
@@ -185,10 +284,12 @@ export const useChatStore = create<ChatState>()(
 
         // STEP 3: Developer Agent responds with a write tool request needing human approval!
         set({ activeAgentTypingId: 'agent-developer' });
-        await new Promise((r) => setTimeout(r, 1600));
+        await new Promise((r) => setTimeout(r, 800));
         if (!get().isSimulating) return;
 
         const devApprovalId = generateId('appr');
+        const devMsgText = `He completado la implementación en memoria y los tests unitarios (98% de cobertura). De acuerdo con la política de seguridad Zero-Trust, requiero autorización humana para ejecutar la herramienta de escritura \`write_file\` y guardar los cambios en el proyecto.`;
+
         const devMsg: Message = {
           id: generateId('msg'),
           conversationId: activeConv.id,
@@ -197,7 +298,7 @@ export const useChatStore = create<ChatState>()(
           senderName: 'Developer Agent',
           senderRole: 'Developer',
           status: 'waiting_approval',
-          content: `He completado la implementación en memoria y los tests unitarios (98% de cobertura). De acuerdo con la política de seguridad Zero-Trust, requiero autorización humana para ejecutar la herramienta de escritura \`write_file\` y guardar los cambios en el proyecto.`,
+          content: '',
           timestamp: new Date().toISOString(),
           thoughtTrace: 'El agente no tiene permisos de auto-escritura en producción. Solicitando aprobación humana en la UI.',
           toolExecutions: [
@@ -234,15 +335,23 @@ export const useChatStore = create<ChatState>()(
           },
         };
 
-        set((state) => ({
+        await streamMessageTokens(
+          set,
+          get,
+          activeConv.id,
+          devMsg,
+          devMsgText,
+          'agent-developer'
+        );
+
+        set((state: any) => ({
           isSimulating: false,
           activeAgentTypingId: null,
-          conversations: state.conversations.map((c) =>
+          conversations: state.conversations.map((c: any) =>
             c.id === activeConv.id
               ? {
                   ...c,
                   status: 'waiting_approval',
-                  messages: [...c.messages, devMsg],
                 }
               : c
           ),
@@ -300,9 +409,11 @@ export const useChatStore = create<ChatState>()(
           return;
         }
 
-        // If approved, continue to Reviewer Agent -> Coordinator Agent completion
+        // If approved, continue to Reviewer Agent -> Coordinator Agent completion with streaming
         set({ isSimulating: true, activeAgentTypingId: 'agent-reviewer' });
-        await new Promise((r) => setTimeout(r, 1400));
+        await new Promise((r) => setTimeout(r, 600));
+
+        const revMsgText = `Auditoría de código finalizada:\n- **Seguridad**: Sin inyecciones ni exposición de secretos detectados.\n- **Cobertura**: 12/12 tests pasando.\n- **Veredicto**: **APROBADO** (Clean Code). Transfiriendo reporte a Coordinator.`;
 
         const revMsg: Message = {
           id: generateId('msg'),
@@ -312,7 +423,7 @@ export const useChatStore = create<ChatState>()(
           senderName: 'Reviewer Agent',
           senderRole: 'Reviewer',
           status: 'done',
-          content: `Auditoría de código finalizada:\n- **Seguridad**: Sin inyecciones ni exposición de secretos detectados.\n- **Cobertura**: 12/12 tests pasando.\n- **Veredicto**: **APROBADO** (Clean Code). Transfiriendo reporte a Coordinator.`,
+          content: '',
           timestamp: new Date().toISOString(),
           thoughtTrace: 'Verificación estática y linting pasados con 0 errores.',
           delegation: {
@@ -322,29 +433,21 @@ export const useChatStore = create<ChatState>()(
           },
         };
 
-        set((state) => ({
-          conversations: state.conversations.map((c) =>
-            c.id === activeConv.id
-              ? {
-                  ...c,
-                  activeAgentId: 'agent-coordinator',
-                  currentDelegationPath: [
-                    'Usuario',
-                    'Coordinator Agent',
-                    'Architect Agent',
-                    'Developer Agent',
-                    'Reviewer Agent',
-                    'Coordinator Agent',
-                  ],
-                  messages: [...c.messages, revMsg],
-                }
-              : c
-          ),
-        }));
+        const revOk = await streamMessageTokens(
+          set,
+          get,
+          activeConv.id,
+          revMsg,
+          revMsgText,
+          'agent-reviewer'
+        );
+        if (!revOk) return;
 
         // Final closing summary from Coordinator
         set({ activeAgentTypingId: 'agent-coordinator' });
-        await new Promise((r) => setTimeout(r, 1000));
+        await new Promise((r) => setTimeout(r, 600));
+
+        const finalCoordText = `Todas las etapas del ciclo multiagente se han completado con éxito:\n\n- Arquitectura definida y validada.\n- Código generado y persistido tras aprobación humana.\n- Auditoría de seguridad aprobada sin observaciones.\n\nEl sistema está listo para pruebas de integración.`;
 
         const finalCoordMsg: Message = {
           id: generateId('msg'),
@@ -354,20 +457,28 @@ export const useChatStore = create<ChatState>()(
           senderName: 'Coordinator Agent',
           senderRole: 'Coordinator',
           status: 'done',
-          content: `Todas las etapas del ciclo multiagente se han completado con éxito:\n\n- Arquitectura definida y validada.\n- Código generado y persistido tras aprobación humana.\n- Auditoría de seguridad aprobada sin observaciones.\n\nEl sistema está listo para pruebas de integración.`,
+          content: '',
           timestamp: new Date().toISOString(),
           thoughtTrace: 'Ciclo completo terminado con éxito. Todos los agentes reportaron estado OK.',
         };
 
-        set((state) => ({
+        await streamMessageTokens(
+          set,
+          get,
+          activeConv.id,
+          finalCoordMsg,
+          finalCoordText,
+          'agent-coordinator'
+        );
+
+        set((state: any) => ({
           isSimulating: false,
           activeAgentTypingId: null,
-          conversations: state.conversations.map((c) =>
+          conversations: state.conversations.map((c: any) =>
             c.id === activeConv.id
               ? {
                   ...c,
                   status: 'completed',
-                  messages: [...c.messages, finalCoordMsg],
                 }
               : c
           ),

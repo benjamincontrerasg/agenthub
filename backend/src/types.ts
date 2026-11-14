@@ -206,7 +206,7 @@ export interface Message {
   senderRole?: string;
   content: string;
   timestamp: string;
-  status?: 'thinking' | 'executing' | 'waiting_approval' | 'done' | 'failed';
+  status?: 'thinking' | 'streaming' | 'executing' | 'waiting_approval' | 'done' | 'failed';
   thoughtTrace?: string;
   toolExecutions?: ToolExecution[];
   delegation?: {
@@ -340,6 +340,8 @@ export type WSEventType =
   | 'agent.message'
   | 'agent.completed'
   | 'agent.failed'
+  | 'chat.stream_start'
+  | 'chat.token'
   | 'mcp.connected'
   | 'mcp.disconnected'
   | 'tool.requested'
