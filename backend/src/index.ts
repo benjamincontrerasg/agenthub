@@ -6,6 +6,7 @@ import { seedDatabase } from './db/seed.js';
 import { AppError } from './lib/errors.js';
 import { ZodError } from 'zod';
 import { wsManager } from './services/websocket.service.js';
+import { AuthUser, verifyJWT } from './lib/jwt.js';
 
 // Route plugins
 import { providersRoutes } from './routes/providers.routes.js';
@@ -20,13 +21,19 @@ import { authRoutes } from './routes/auth.routes.js';
 import { auditRoutes } from './routes/audit.routes.js';
 import { notificationsRoutes } from './routes/notifications.routes.js';
 
-const fastify = Fastify({
-  logger: {
-    level: 'info',
-  },
-});
+declare module 'fastify' {
+  interface FastifyRequest {
+    user?: AuthUser;
+  }
+}
 
-async function main() {
+export async function buildApp(opts: { logger?: any } = {}) {
+  const fastify = Fastify({
+    logger: opts.logger ?? {
+      level: 'info',
+    },
+  });
+
   // Ensure database has seed data
   await seedDatabase();
 
@@ -64,11 +71,112 @@ async function main() {
   // Register WebSocket
   await fastify.register(websocket);
 
-  // WebSocket Endpoint for real-time NEXORA events
-  fastify.register(async function (app) {
-    app.get('/ws', { websocket: true }, (socket, req) => {
+  // Global Authentication Hook
+  fastify.addHook('onRequest', async (request, reply) => {
+    // Permitir preflight CORS sin requerir credenciales
+    if (request.method === 'OPTIONS') {
+      return;
+    }
+
+    const urlPath = request.url.split('?')[0];
+    const method = request.method.toUpperCase();
+
+    // Lista blanca explícita de rutas públicas
+    const isHealthCheck = (urlPath === '/health' || urlPath === '/v1/health') && method === 'GET';
+    const isAuthLogin = (urlPath === '/auth/login' || urlPath === '/v1/auth/login') && method === 'POST';
+    const isAuthRegister = (urlPath === '/auth/register' || urlPath === '/v1/auth/register') && method === 'POST';
+    const isWebSocket = urlPath === '/ws' || urlPath === '/v1/ws';
+
+    if (isHealthCheck || isAuthLogin || isAuthRegister || isWebSocket) {
+      return;
+    }
+
+    // Exigir header Authorization: Bearer <token>
+    const authHeader = request.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return reply.status(401).send({
+        code: 'UNAUTHORIZED',
+        message: 'Cabecera Authorization Bearer requerida o ausente',
+      });
+    }
+
+    const token = authHeader.substring(7).trim();
+    if (!token) {
+      return reply.status(401).send({
+        code: 'UNAUTHORIZED',
+        message: 'Token de autenticación no proporcionado',
+      });
+    }
+
+    const user = verifyJWT(token);
+    if (!user) {
+      return reply.status(401).send({
+        code: 'UNAUTHORIZED',
+        message: 'Token JWT inválido, expirado o con firma alterada',
+      });
+    }
+
+    // Inyectar usuario autenticado en request.user
+    request.user = user;
+  });
+
+  // WebSocket Connection Handler con autenticación
+  const handleWebSocket = (socket: any, req: any) => {
+    // 1. Verificar si viene en query (?token=...)
+    const url = new URL(req.url, 'http://localhost');
+    const queryToken = url.searchParams.get('token') || (req.query as any)?.token;
+
+    if (queryToken) {
+      const user = verifyJWT(queryToken);
+      if (!user) {
+        try {
+          socket.close(1008, JSON.stringify({ code: 'UNAUTHORIZED', message: 'Token JWT inválido o expirado' }));
+        } catch {}
+        return;
+      }
       wsManager.registerClient(socket);
-    });
+      return;
+    }
+
+    // 2. Si no hay query param, esperar primer mensaje de autenticación ({ type: 'auth', token: '...' })
+    let authenticated = false;
+    const authTimeout = setTimeout(() => {
+      if (!authenticated) {
+        try {
+          socket.close(1008, JSON.stringify({ code: 'UNAUTHORIZED', message: 'Autenticación requerida. Cierre por timeout.' }));
+        } catch {}
+      }
+    }, 1000);
+
+    const onFirstMessage = (data: any) => {
+      try {
+        const raw = typeof data === 'string' ? data : data?.toString('utf8');
+        const msg = JSON.parse(raw);
+        if (msg.type === 'auth' && msg.token) {
+          const user = verifyJWT(msg.token);
+          if (user) {
+            authenticated = true;
+            clearTimeout(authTimeout);
+            socket.off('message', onFirstMessage);
+            wsManager.registerClient(socket);
+            return;
+          }
+        }
+      } catch {}
+
+      clearTimeout(authTimeout);
+      try {
+        socket.close(1008, JSON.stringify({ code: 'UNAUTHORIZED', message: 'Token JWT inválido o expirado' }));
+      } catch {}
+    };
+
+    socket.on('message', onFirstMessage);
+  };
+
+  // WebSocket Endpoints for real-time NEXORA events
+  fastify.register(async function (app) {
+    app.get('/ws', { websocket: true }, handleWebSocket);
+    app.get('/v1/ws', { websocket: true }, handleWebSocket);
   });
 
   // Global Error Handler
@@ -127,14 +235,22 @@ async function main() {
   // Auth routes (no prefix — /auth/login, /auth/register, /auth/me)
   await fastify.register(authRoutes);
 
+  return fastify;
+}
+
+async function main() {
+  const app = await buildApp();
   try {
-    await fastify.listen({ port: config.port, host: config.host });
+    await app.listen({ port: config.port, host: config.host });
     console.log(`🚀 NEXORA Backend operativo en http://${config.host}:${config.port}`);
     console.log(`🔌 WebSocket Stream en ws://${config.host}:${config.port}/ws`);
   } catch (err) {
-    fastify.log.error(err);
+    app.log.error(err);
     process.exit(1);
   }
 }
 
-main();
+// Iniciar servidor automáticamente salvo en entorno de pruebas (Vitest)
+if (process.env.NODE_ENV !== 'test' && !process.env.VITEST) {
+  main();
+}

@@ -23,6 +23,10 @@ export async function providersRoutes(fastify: FastifyInstance) {
     return providerService.disconnect(req.params.id);
   });
 
+  fastify.delete<{ Params: { id: string } }>('/providers/:id/connect', async (req) => {
+    return providerService.disconnect(req.params.id);
+  });
+
   fastify.patch<{ Params: { id: string }; Body: { defaultModelId: string } }>(
     '/providers/:id',
     async (req) => {
