@@ -13,8 +13,9 @@ import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { ProviderLogo } from '@/components/shared/ProviderLogo';
-import { KeyRound, ShieldAlert, Zap } from 'lucide-react';
+import { KeyRound, ShieldAlert, Zap, Globe, Sparkles, Wrench } from 'lucide-react';
 import { useConnectProvider, useTestProvider } from './hooks';
+import { PROVIDER_PRESETS } from './presets';
 
 interface ProviderModalProps {
   provider: AIProvider | null;
@@ -30,12 +31,23 @@ export const ProviderModal: React.FC<ProviderModalProps> = ({ provider, open, on
   const [apiKey, setApiKey] = useState('');
   const [selectedModel, setSelectedModel] = useState('');
   const [customEndpoint, setCustomEndpoint] = useState('');
+  const [selectedKind, setSelectedKind] = useState<'openai-compatible' | 'anthropic'>('openai-compatible');
+  const [selectedPresetKey, setSelectedPresetKey] = useState<string>('');
   const [testResult, setTestResult] = useState<string | null>(null);
 
   useEffect(() => {
     if (provider) {
       setSelectedModel(provider.defaultModelId || provider.models[0]?.id || '');
-      setCustomEndpoint(provider.apiEndpoint || '');
+      const preset = PROVIDER_PRESETS[provider.id];
+      if (preset) {
+        setSelectedPresetKey(provider.id);
+        setCustomEndpoint(provider.apiEndpoint || preset.baseUrl);
+        setSelectedKind(preset.kind);
+      } else {
+        setSelectedPresetKey('custom');
+        setCustomEndpoint(provider.apiEndpoint || '');
+        setSelectedKind((provider as any).kind || 'openai-compatible');
+      }
       setTestResult(null);
       setApiKey('');
     } else {
@@ -52,6 +64,18 @@ export const ProviderModal: React.FC<ProviderModalProps> = ({ provider, open, on
 
   if (!provider) return null;
 
+  const currentModel = provider.models.find((m) => m.id === selectedModel);
+  const currentModelSupportsTools = currentModel?.supportsToolCalling ?? true;
+
+  const handlePresetChange = (presetId: string) => {
+    setSelectedPresetKey(presetId);
+    if (presetId in PROVIDER_PRESETS) {
+      const p = PROVIDER_PRESETS[presetId];
+      setCustomEndpoint(p.baseUrl);
+      setSelectedKind(p.kind);
+    }
+  };
+
   const handleTest = async () => {
     setTestResult(null);
     try {
@@ -67,20 +91,22 @@ export const ProviderModal: React.FC<ProviderModalProps> = ({ provider, open, on
     try {
       await connectMutation.mutateAsync({
         id: provider.id,
-        apiKey: apiKey.trim(),
+        apiKey: apiKey.trim() || undefined,
         defaultModelId: selectedModel || undefined,
+        baseUrl: customEndpoint.trim() || undefined,
+        kind: selectedKind,
       });
-      // Clear sensitive memory immediately
+      // Limpiar credencial de la memoria del navegador inmediatamente
       setApiKey('');
       handleClose();
     } catch {
-      // Error is handled and toasted by the mutation
+      // Manejado y notificado por el hook de mutación
     }
   };
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent onClose={handleClose} className="sm:max-w-md">
+      <DialogContent onClose={handleClose} className="sm:max-w-lg">
         <form onSubmit={handleSave}>
           <DialogHeader>
             <div className="flex items-center gap-3">
@@ -91,58 +117,90 @@ export const ProviderModal: React.FC<ProviderModalProps> = ({ provider, open, on
                   <Badge variant="outline" className="text-caption">{provider.badge}</Badge>
                 </DialogTitle>
                 <DialogDescription>
-                  Credenciales de acceso y selección de modelos de inferencia.
+                  Ajustes de conexión unificada, endpoints y selección de modelos.
                 </DialogDescription>
               </div>
             </div>
           </DialogHeader>
 
           {/* Security Notice Box */}
-          <div className="mb-4 rounded-[6px] border border-fg-warning/60 bg-bg-warning/30 p-3 text-caption text-fg-warning flex items-start gap-2.5">
+          <div className="mb-4 rounded-[8px] border border-fg-warning/60 bg-bg-warning/30 p-3 text-caption text-fg-warning flex items-start gap-2.5">
             <ShieldAlert className="h-4 w-4 shrink-0 text-fg-warning mt-0.5" />
             <div className="space-y-1">
-              <span className="font-[510] block">Manejo de Credenciales Sensibles:</span>
+              <span className="font-[510] block">Manejo Seguro de Credenciales (Write-Only):</span>
               <p className="text-caption text-fg-warning/80 leading-relaxed">
-                Las API Keys se transmiten cifradas mediante TLS hacia el backend con cifrado AES-256-GCM. Nunca se almacenan en texto plano en el cliente ni se persisten en caché ni localStorage.
+                Por política Zero-Trust, el backend nunca retorna tu API key guardada. Si deseas conservarla sin cambios, deja el campo vacío. Las credenciales se cifran con AES-256-GCM y derivación HKDF.
               </p>
             </div>
           </div>
 
           <div className="space-y-4">
-            {/* API Key Input */}
-            {provider.id !== 'ollama' ? (
+            {/* Preset Selector */}
+            <div>
+              <label className="block text-caption font-medium text-fg-secondary mb-1.5 flex items-center gap-1.5">
+                <Sparkles className="h-3.5 w-3.5 text-fg-brand" />
+                Plantilla / Preset de Proveedor
+              </label>
+              <Select
+                value={selectedPresetKey}
+                onChange={(e) => handlePresetChange(e.target.value)}
+              >
+                {Object.values(PROVIDER_PRESETS).map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name} ({p.kind})
+                  </option>
+                ))}
+                <option value="custom">Personalizado / Endpoint propio (OpenAI-Compatible)</option>
+              </Select>
+            </div>
+
+            {/* Base URL Input */}
+            <div>
+              <label className="block text-caption font-medium text-fg-secondary mb-1.5 flex items-center gap-1.5">
+                <Globe className="h-3.5 w-3.5 text-fg-brand" />
+                URL Base de la API (Endpoint)
+              </label>
+              <Input
+                type="text"
+                placeholder="https://api.openai.com/v1"
+                value={customEndpoint}
+                onChange={(e) => setCustomEndpoint(e.target.value)}
+              />
+              <span className="text-[11px] text-fg-muted mt-1 block">
+                Protección SSRF activa: IPs privadas y metadatos están bloqueados salvo localhost en proveedores locales.
+              </span>
+            </div>
+
+            {/* API Key Input (Write-Only) */}
+            {provider.id !== 'ollama' && (
               <div>
                 <label className="block text-caption font-medium text-fg-secondary mb-1.5 flex items-center justify-between">
                   <span className="flex items-center gap-1.5">
                     <KeyRound className="h-3.5 w-3.5 text-fg-brand" />
                     API Key / Token Secreto
                   </span>
-                  {provider.hasApiKey && (
-                    <span className="text-caption text-fg-success font-mono">
+                  {provider.hasApiKey ? (
+                    <span className="text-caption text-fg-success font-mono font-medium">
                       ✓ Credencial configurada
+                    </span>
+                  ) : (
+                    <span className="text-caption text-fg-muted font-mono">
+                      Sin credencial
                     </span>
                   )}
                 </label>
                 <Input
                   type="password"
                   autoComplete="off"
-                  placeholder={provider.hasApiKey ? '••••••••••••••••••••••••••••••••' : 'sk-ant-api03-... o sk-proj-...'}
+                  placeholder={provider.hasApiKey ? '••••••••••••••••••••••••••••••••' : 'Ingresa la API key del proveedor'}
                   value={apiKey}
                   onChange={(e) => setApiKey(e.target.value)}
-                  required={!provider.hasApiKey}
                 />
-              </div>
-            ) : (
-              <div>
-                <label className="block text-caption font-medium text-fg-secondary mb-1.5">
-                  Endpoint HTTP Local (Ollama Server)
-                </label>
-                <Input
-                  type="text"
-                  placeholder="http://localhost:11434"
-                  value={customEndpoint}
-                  onChange={(e) => setCustomEndpoint(e.target.value)}
-                />
+                <span className="text-[11px] text-fg-muted mt-1 block">
+                  {provider.hasApiKey
+                    ? 'Deja este campo vacío para mantener la clave actual sin modificaciones.'
+                    : 'Requerida para realizar llamadas a través de este proveedor.'}
+                </span>
               </div>
             )}
 
@@ -157,11 +215,21 @@ export const ProviderModal: React.FC<ProviderModalProps> = ({ provider, open, on
               >
                 {provider.models.map((m) => (
                   <option key={m.id} value={m.id}>
-                    {m.name} ({m.contextWindow / 1000}k ctx - ${m.inputPricePerMillion}/M in)
+                    {m.name} ({Math.round(m.contextWindow / 1000)}k ctx · ${m.inputPricePerMillion}/M in · {m.supportsToolCalling ? 'Tools OK' : 'Sin Tools'})
                   </option>
                 ))}
               </Select>
             </div>
+
+            {/* Tool Capability Warning */}
+            {!currentModelSupportsTools && (
+              <div className="rounded-[6px] border border-status-warning/40 bg-status-warning/10 p-2.5 text-xs text-status-warning flex items-start gap-2">
+                <Wrench className="w-4 h-4 shrink-0 mt-0.5" />
+                <span>
+                  <strong>Advertencia Zero-Trust:</strong> El modelo seleccionado (<code>{currentModel?.name || selectedModel}</code>) no tiene soporte para Tool Calling. Si un agente con herramientas asignadas usa este modelo, las ejecuciones de tools fallarán.
+                </span>
+              </div>
+            )}
 
             {/* Test Connection Button and Feedback */}
             <div className="pt-2">

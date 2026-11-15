@@ -22,6 +22,7 @@ import { useAuthStore } from '@/stores/auth.store';
 import { useAgents } from '@/features/agents/hooks';
 import { useMCPStore } from '@/stores/mcp.store';
 import { useWorkflows } from '@/features/workflows/hooks';
+import { wsService, ConnectionStatus } from '@/services/websocket';
 
 interface HeaderProps {
   onOpenMobile: () => void;
@@ -53,6 +54,13 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [wsStatus, setWsStatus] = useState<ConnectionStatus>(wsService.getStatus());
+
+  useEffect(() => {
+    return wsService.onStatusChange((status) => {
+      setWsStatus(status);
+    });
+  }, []);
 
   const allTools = getAllTools();
 
@@ -150,13 +158,29 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
           </kbd>
         </button>
 
-        {/* Simulation Mode Compact Badge */}
-        <div className="hidden sm:flex items-center space-x-1.5 rounded-[6px] border border-border-brand/40 bg-bg-brand-subtle px-2.5 py-1 text-caption">
+        {/* WebSocket Connection Status Pill */}
+        <div className="hidden sm:flex items-center space-x-2 rounded-[6px] border border-border-default bg-bg-surface px-2.5 py-1 text-caption">
           <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-bg-cardg-brand opacity-75"></span>
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-bg-cardg-brand"></span>
+            {wsStatus === 'connected' ? (
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-fg-success"></span>
+            ) : wsStatus === 'reconnecting' || wsStatus === 'connecting' ? (
+              <>
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-fg-warning opacity-75"></span>
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-fg-warning"></span>
+              </>
+            ) : (
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-fg-error"></span>
+            )}
           </span>
-          <span className="text-fg-mutedg-primaryg-brand font-medium">Modo Simulación</span>
+          <span className="text-fg-secondary font-mono text-[11px]">
+            {wsStatus === 'connected'
+              ? 'WS En Línea'
+              : wsStatus === 'reconnecting'
+              ? 'WS Reconectando...'
+              : wsStatus === 'connecting'
+              ? 'WS Conectando...'
+              : 'WS Offline'}
+          </span>
         </div>
 
         {/* Notifications Popover */}

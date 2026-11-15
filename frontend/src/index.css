@@ -115,49 +115,93 @@
     --ring: 65 89% 54%;
     --radius: 6px;
   }
+}
 
-  html.light {
-    --color-void: #f9f9fb;
-    --color-carbon: #ffffff;
-    --color-obsidian: #f3f4f6;
-    --color-graphite: #e5e7eb;
-    --color-smoke: #d1d5db;
-    --color-ash: #6b7280;
-    --color-fog: #9ca3af;
-    --color-mist: #374151;
-    --color-bone: #1f2937;
-    --color-paper: #111827;
-    --color-bg-base: #f9f9fb;
-    --color-bg-card: #ffffff;
-    --color-bg-surface: #f3f4f6;
-    --color-bg-brand: #08090a;
-    --color-bg-brand-subtle: rgba(0, 0, 0, 0.05);
-    --color-fg-primary: #111827;
-    --color-fg-secondary: #4b5563;
-    --color-fg-muted: #6b7280;
-    --color-fg-brand: #111827;
-    --color-border-default: #e5e7eb;
-    --color-border-hover: #d1d5db;
-    --color-border-brand: rgba(0, 0, 0, 0.2);
+html.light,
+:root.light,
+[data-theme='light'] {
+  --color-void: #f9f9fb;
+  --color-carbon: #ffffff;
+  --color-obsidian: #f3f4f6;
+  --color-graphite: #e5e7eb;
+  --color-smoke: #d1d5db;
+  --color-ash: #6b7280;
+  --color-fog: #9ca3af;
+  --color-mist: #374151;
+  --color-bone: #1f2937;
+  --color-paper: #111827;
+  --color-bg-base: #f9f9fb;
+  --color-bg-card: #ffffff;
+  --color-bg-surface: #f3f4f6;
+  --color-bg-brand: #08090a;
+  --color-bg-brand-subtle: rgba(0, 0, 0, 0.05);
+  --color-fg-primary: #111827;
+  --color-fg-secondary: #4b5563;
+  --color-fg-muted: #6b7280;
+  --color-fg-brand: #111827;
+  --color-border-default: #e5e7eb;
+  --color-border-hover: #d1d5db;
+  --color-border-brand: rgba(0, 0, 0, 0.2);
 
-    --background: 0 0% 98%;
-    --foreground: 222 47% 11%;
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
-    --primary: 222 47% 11%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222 47% 11%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222 47% 11%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222 47% 11%;
-  }
+  --background: 0 0% 98%;
+  --foreground: 222 47% 11%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+  --primary: 222 47% 11%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 210 40% 96.1%;
+  --secondary-foreground: 222 47% 11%;
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  --accent: 210 40% 96.1%;
+  --accent-foreground: 222 47% 11%;
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 222 47% 11%;
+}
+
+html.light .bg-bg-card,
+html.light [class*="bg-bg-card"] {
+  background-color: #ffffff;
+}
+html.light [class*="bg-bg-card/"] {
+  background-color: #f3f4f6;
+}
+html.light .bg-bg-surface,
+html.light [class*="bg-bg-surface"] {
+  background-color: #f3f4f6;
+}
+html.light [class*="bg-bg-surface/"] {
+  background-color: #e5e7eb;
+}
+html.light .bg-bg-base {
+  background-color: #f9f9fb;
+}
+html.light .border-border-default {
+  border-color: #e5e7eb;
+}
+html.light .text-fg-primary {
+  color: #111827;
+}
+html.light .text-fg-secondary {
+  color: #4b5563;
+}
+html.light .text-fg-muted {
+  color: #6b7280;
+}
+
+/* Light mode form controls */
+html.light select option {
+  background-color: #ffffff;
+  color: #111827;
+}
+html.light select option:hover,
+html.light select option:focus,
+html.light select option:checked {
+  background-color: #f3f4f6;
+  color: #111827;
 }
 
 body {

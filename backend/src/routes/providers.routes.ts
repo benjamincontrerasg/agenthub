@@ -1,10 +1,15 @@
 import { FastifyInstance } from 'fastify';
 import { providerService } from '../services/provider.service.js';
 import { connectProviderSchema, updateProviderSchema } from '../lib/validators.js';
+import { PROVIDER_PRESETS } from '../providers/index.js';
 
 export async function providersRoutes(fastify: FastifyInstance) {
   fastify.get('/providers', async () => {
     return providerService.getAll();
+  });
+
+  fastify.get('/providers/presets', async () => {
+    return PROVIDER_PRESETS;
   });
 
   fastify.get<{ Params: { id: string } }>('/providers/:id', async (req) => {

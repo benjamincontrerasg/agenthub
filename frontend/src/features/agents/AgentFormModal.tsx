@@ -263,11 +263,19 @@ export const AgentFormModal: React.FC<AgentFormModalProps> = ({ agent, open, onC
                       options={(selectedProvider?.models || []).map((m) => ({
                         value: m.id,
                         label: m.name,
-                        description: `${m.contextWindow ? `${(m.contextWindow / 1000).toFixed(0)}k ctx` : ''} · $${m.inputPricePerMillion}/1M tokens`,
+                        description: `${m.contextWindow ? `${(m.contextWindow / 1000).toFixed(0)}k ctx` : ''} · $${m.inputPricePerMillion}/1M in · ${m.supportsToolCalling ? '✓ Tools' : '✗ Sin Tools'}`,
                       }))}
                     />
                   )}
                 />
+                {selectedTools.length > 0 && selectedProvider?.models.find((m) => m.id === watch('modelId'))?.supportsToolCalling === false && (
+                  <div className="mt-2 p-2 rounded-[6px] bg-status-warning/15 border border-status-warning/30 text-caption text-status-warning flex items-start gap-1.5">
+                    <span className="font-bold">⚠️ Advertencia:</span>
+                    <span>
+                      Este agente tiene {selectedTools.length} herramienta(s) asignadas, pero el modelo seleccionado no soporta Tool Calling.
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
 

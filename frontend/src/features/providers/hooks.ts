@@ -20,11 +20,15 @@ export function useConnectProvider() {
       id,
       apiKey,
       defaultModelId,
+      baseUrl,
+      kind,
     }: {
       id: ProviderId;
-      apiKey: string;
+      apiKey?: string;
       defaultModelId?: string;
-    }) => providersService.connectProvider(id, apiKey, defaultModelId),
+      baseUrl?: string;
+      kind?: string;
+    }) => providersService.connectProvider(id, apiKey, defaultModelId, baseUrl, kind),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: PROVIDERS_QUERY_KEY });
       toast.success('Proveedor conectado', data.message);
