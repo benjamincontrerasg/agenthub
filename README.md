@@ -1,8 +1,8 @@
 # NEXORA — Plataforma SaaS Multi-Agente & Orquestador MCP
 
-[![CI](https://github.com/benjamincontrerasg/agenthub/actions/workflows/ci.yml/badge.svg)](https://github.com/benjamincontrerasg/agenthub/actions/workflows/ci.yml)
+[![CI](https://github.com/benjamincontrerasg/nexora/actions/workflows/ci.yml/badge.svg)](https://github.com/benjamincontrerasg/nexora/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-violet.svg)](LICENSE)
-[![Tests](https://github.com/benjamincontrerasg/agenthub/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/benjamincontrerasg/agenthub/actions)
+[![Tests](https://github.com/benjamincontrerasg/nexora/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/benjamincontrerasg/nexora/actions)
 [![Node](https://img.shields.io/badge/Node-%3E%3D20-green.svg)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue.svg)](https://www.typescriptlang.org/)
 [![Fastify](https://img.shields.io/badge/Fastify-5.2-black.svg)](https://fastify.dev/)
@@ -214,8 +214,8 @@ Para transicionar de SQLite local hacia PostgreSQL de alta concurrencia:
 
 ### 1. Clonar y configurar variables de entorno
 ```bash
-git clone https://github.com/benjamincontrerasg/NEXORA.git
-cd NEXORA
+git clone https://github.com/benjamincontrerasg/nexora.git
+cd nexora
 
 # Configurar variables del backend
 cp backend/.env.example backend/.env
