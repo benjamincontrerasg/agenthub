@@ -1,4 +1,4 @@
-export type ProviderId = 'anthropic' | 'openai' | 'gemini' | 'ollama' | string;
+export type ProviderId = 'anthropic' | 'openai' | 'gemini' | 'ollama' | 'deepseek' | string;
 
 export interface AIModel {
   id: string;
