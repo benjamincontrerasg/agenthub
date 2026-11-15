@@ -46,7 +46,7 @@ async function start() {
 
   console.log(`
 ┌────────────────────────────────────────────────────────┐
-│               AGBNTHUB LOCAL AGENT BRIDGE              │
+│                NEXORA LOCAL AGENT BRIDGE               │
 │       Puente seguro para servidores MCP STDIO          │
 └────────────────────────────────────────────────────────┘
   `);
@@ -54,7 +54,7 @@ async function start() {
   console.log(`  🛡️  Sandbox STDIO: ${config.allowStdioExecution ? 'HABILITADO' : 'DESHABILITADO'}`);
   console.log(`  📁 Directorios autorizados:`);
   config.authorizedDirectories.forEach((d) => console.log(`     - ${d}`));
-  console.log(`  🔗 AgentHub Backend: ${config.backendUrl}`);
+  console.log(`  🔗 NEXORA Backend: ${config.backendUrl}`);
   console.log(`\n  Presiona Ctrl+C para detener el bridge.\n`);
 
   // Handle graceful shutdown

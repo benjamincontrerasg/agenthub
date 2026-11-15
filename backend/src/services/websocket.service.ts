@@ -32,6 +32,14 @@ class WebSocketManager {
     });
   }
 
+  public getClientCount(): number {
+    return this.clients.size;
+  }
+
+  public removeClient(ws: WebSocket) {
+    this.clients.delete(ws);
+  }
+
   public broadcast<T = any>(type: WSEventType, payload: T) {
     const event: WSEvent<T> = {
       type,

@@ -1,10 +1,10 @@
 {
-  "name": "@agenthub/bridge",
+  "name": "@nexora/bridge",
   "version": "0.1.0",
-  "description": "AgentHub Local Agent Bridge - Ejecutor seguro de procesos MCP STDIO en el host local",
+  "description": "NEXORA Local Agent Bridge - Ejecutor seguro de procesos MCP STDIO en el host local",
   "type": "module",
   "bin": {
-    "agenthub-bridge": "./dist/cli.js"
+    "nexora-bridge": "./dist/cli.js"
   },
   "scripts": {
     "dev": "tsx watch src/cli.ts",

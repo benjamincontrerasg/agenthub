@@ -30,7 +30,7 @@ describe('Local Agent Bridge HTTP API', () => {
     expect(response.statusCode).toBe(200);
     const body = JSON.parse(response.body);
     expect(body.status).toBe('healthy');
-    expect(body.role).toBe('AgentHub Local Agent Bridge');
+    expect(body.role).toBe('NEXORA Local Agent Bridge');
   });
 
   it('GET /status returns active configuration and processes', async () => {

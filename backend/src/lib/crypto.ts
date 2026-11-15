@@ -6,14 +6,27 @@ const IV_LENGTH = 16;
 const TAG_LENGTH = 16;
 const SALT_LENGTH = 16;
 
-function deriveKey(masterKey: string, salt: Buffer): Buffer {
-  return scryptSync(masterKey, salt, 32);
+// Key cache to avoid recomputing expensive scrypt derivations on every request
+const keyCache = new Map<string, Buffer>();
+
+function getOrDeriveKey(masterKey: string, salt: Buffer): Buffer {
+  const cacheKey = `${masterKey}:${salt.toString('hex')}`;
+  let key = keyCache.get(cacheKey);
+  if (!key) {
+    key = scryptSync(masterKey, salt, 32);
+    // Limit cache size to prevent unbounded memory growth
+    if (keyCache.size > 2000) {
+      keyCache.clear();
+    }
+    keyCache.set(cacheKey, key);
+  }
+  return key;
 }
 
 export function encryptWithKey(plaintext: string, masterKey: string): string {
   const salt = randomBytes(SALT_LENGTH);
   const iv = randomBytes(IV_LENGTH);
-  const key = deriveKey(masterKey, salt);
+  const key = getOrDeriveKey(masterKey, salt);
 
   const cipher = createCipheriv(ALGORITHM, key, iv);
   const encrypted = Buffer.concat([cipher.update(plaintext, 'utf8'), cipher.final()]);
@@ -31,7 +44,7 @@ export function decryptWithKey(ciphertext: string, masterKey: string): string {
   const tag = data.subarray(SALT_LENGTH + IV_LENGTH, SALT_LENGTH + IV_LENGTH + TAG_LENGTH);
   const encrypted = data.subarray(SALT_LENGTH + IV_LENGTH + TAG_LENGTH);
 
-  const key = deriveKey(masterKey, salt);
+  const key = getOrDeriveKey(masterKey, salt);
 
   const decipher = createDecipheriv(ALGORITHM, key, iv);
   decipher.setAuthTag(tag);

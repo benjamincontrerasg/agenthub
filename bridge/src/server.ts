@@ -9,31 +9,59 @@ export function createBridgeServer(config: BridgeConfig) {
   const sandbox = new SecuritySandbox(config.authorizedDirectories);
   const processManager = new MCPProcessManager(sandbox);
 
-  // Setup CORS to allow AgentHub frontend & backend requests
+  // Setup CORS to allow NEXORA frontend & backend requests
   fastify.register(cors, {
-    origin: true,
+    origin: (origin, cb) => {
+      // Reject unauthorized origins and DNS rebinding
+      if (!origin) {
+        return cb(null, true);
+      }
+      try {
+        const parsed = new URL(origin);
+        const allowedHosts = ['localhost', '127.0.0.1'];
+        if (allowedHosts.includes(parsed.hostname)) {
+          return cb(null, true);
+        }
+      } catch {}
+      return cb(new Error('Origin no autorizado por política Zero-Trust'), false);
+    },
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   });
 
-  // Zero-Trust Shared Token Authentication for Local Bridge
+  // Zero-Trust Shared Token Authentication for Local Bridge (Obligatorio)
   const authToken = config.token || process.env.BRIDGE_TOKEN;
-  if (authToken) {
-    fastify.addHook('preHandler', async (req, reply) => {
-      if (req.url === '/health') return;
+  if (!authToken && process.env.NODE_ENV === 'production') {
+    throw new Error('BRIDGE_TOKEN es obligatorio en entornos productivos para prevenir accesos no autorizados.');
+  }
 
+  fastify.addHook('preHandler', async (req, reply) => {
+    // Validar cabecera Host para prevenir ataques de DNS Rebinding
+    const host = req.headers.host;
+    if (host) {
+      const hostname = host.split(':')[0];
+      if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
+        return reply.status(403).send({
+          error: 'Host no autorizado. Solo conexiones directas a localhost o 127.0.0.1 están permitidas.',
+        });
+      }
+    }
+
+    if (req.url === '/health') return;
+
+    if (authToken) {
       const authHeader = req.headers.authorization;
       if (!authHeader || authHeader !== `Bearer ${authToken}`) {
         return reply.status(401).send({
           error: 'No autorizado. Se requiere token Bearer válido para acceder al Local Bridge.',
         });
       }
-    });
-  }
+    }
+  });
 
   // Health / Status Ping
   fastify.get('/health', async () => ({
     status: 'healthy',
-    role: 'AgentHub Local Agent Bridge',
+    role: 'NEXORA Local Agent Bridge',
     version: '0.1.0',
     platform: process.platform,
     arch: process.arch,
@@ -75,10 +103,10 @@ export function createBridgeServer(config: BridgeConfig) {
   });
 
   // Send JSON-RPC call to running MCP process
-  fastify.post<{ Body: { processId: string; request: JSONRPCRequest } }>('/mcp/call', async (req, reply) => {
+  fastify.post<{ Body: { processId: string; request: JSONRPCRequest; timeoutMs?: number } }>('/mcp/call', async (req, reply) => {
     try {
-      const { processId, request } = req.body;
-      const response = await processManager.sendJSONRPC(processId, request);
+      const { processId, request, timeoutMs } = req.body;
+      const response = await processManager.sendJSONRPC(processId, request, timeoutMs);
       return response;
     } catch (err: any) {
       return reply.status(500).send({

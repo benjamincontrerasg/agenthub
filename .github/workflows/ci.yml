@@ -1,11 +1,11 @@
 # ============================================================================
-# AgentHub - Pipeline de Integración y Despliegue Continuo (CI/CD)
+# NEXORA - Pipeline de Integración y Despliegue Continuo (CI/CD)
 # ============================================================================
 # Este workflow ejecuta verificaciones de calidad, seguridad y construcción
 # para cada push y pull request a la rama principal.
 # ============================================================================
 
-name: AgentHub CI/CD
+name: NEXORA CI/CD
 
 # ---------------------------------------------------------------------------
 # Disparadores: se ejecuta en push y pull request hacia la rama main
@@ -294,7 +294,7 @@ jobs:
           context: ./backend
           file: ./backend/Dockerfile
           push: false
-          tags: agenthub-backend:ci-${{ github.sha }}
+          tags: nexora-backend:ci-${{ github.sha }}
           cache-from: type=gha,scope=backend
           cache-to: type=gha,mode=max,scope=backend
 
@@ -305,6 +305,6 @@ jobs:
           context: ./frontend
           file: ./frontend/Dockerfile
           push: false
-          tags: agenthub-frontend:ci-${{ github.sha }}
+          tags: nexora-frontend:ci-${{ github.sha }}
           cache-from: type=gha,scope=frontend
           cache-to: type=gha,mode=max,scope=frontend

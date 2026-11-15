@@ -19,6 +19,20 @@ const ALLOWED_COMMANDS = new Set([
   'git.exe',
 ]);
 
+// Dangerous argument patterns that could execute arbitrary code or bypass sandbox
+const FORBIDDEN_ARG_PATTERNS = [
+  /^-c$/i,
+  /^-e$/i,
+  /^--eval$/i,
+  /^-v$/i,
+  /^--volume$/i,
+  /^--mount$/i,
+  /^--privileged$/i,
+  /^--net=host$/i,
+  /^--network=host$/i,
+  /^--pid=host$/i,
+];
+
 export class SecuritySandbox {
   private authorizedDirs: string[];
 
@@ -34,7 +48,7 @@ export class SecuritySandbox {
     return [...this.authorizedDirs];
   }
 
-  public validateCommand(command: string): { valid: boolean; reason?: string } {
+  public validateCommand(command: string, args: string[] = []): { valid: boolean; reason?: string } {
     const baseCmd = path.basename(command).toLowerCase();
     if (!ALLOWED_COMMANDS.has(baseCmd)) {
       return {
@@ -42,6 +56,19 @@ export class SecuritySandbox {
         reason: `Comando '${command}' no permitido por política de Sandbox Zero-Trust. Comandos autorizados: ${Array.from(ALLOWED_COMMANDS).join(', ')}`,
       };
     }
+
+    // Validate arguments to prevent inline code execution or volume mounts
+    for (const arg of args) {
+      for (const pattern of FORBIDDEN_ARG_PATTERNS) {
+        if (pattern.test(arg.trim())) {
+          return {
+            valid: false,
+            reason: `Argumento prohibido '${arg}' detectado. Por motivos de seguridad Zero-Trust, argumentos de evaluación directa o escape (-c, -e, --eval, montajes de volumen) están bloqueados.`,
+          };
+        }
+      }
+    }
+
     return { valid: true };
   }
 

@@ -15,7 +15,7 @@ export async function runMigrationCheck() {
   if (isPostgres) {
     console.log('\n[Postgres Migration Blueprint]');
     console.log('1. Asegúrate de tener instalada la extensión pgvector: CREATE EXTENSION IF NOT EXISTS vector;');
-    console.log('2. Drizzle schema configurado en: backend/src/db/schema.pg.ts');
+    console.log('2. Drizzle schema centralizado y único en: backend/src/db/schema.ts');
     console.log('3. Ejecuta "npm run db:push" configurando drizzle.config.ts para dialect: "postgresql".');
   } else {
     console.log('\n[SQLite Local Check]');

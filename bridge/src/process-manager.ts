@@ -26,8 +26,10 @@ export class MCPProcessManager {
   }
 
   public spawnProcess(req: SpawnRequest): MCPProcessInfo {
-    // 1. Validate Command against Sandbox
-    const cmdCheck = this.sandbox.validateCommand(req.command);
+    const args = req.args || [];
+
+    // 1. Validate Command and Arguments against Sandbox
+    const cmdCheck = this.sandbox.validateCommand(req.command, args);
     if (!cmdCheck.valid) {
       throw new Error(cmdCheck.reason);
     }
@@ -45,7 +47,6 @@ export class MCPProcessManager {
       this.stopProcess(req.id);
     }
 
-    const args = req.args || [];
     const child = spawn(req.command, args, {
       cwd: req.cwd || process.cwd(),
       env: { ...process.env, ...(req.env || {}) },
@@ -61,6 +62,7 @@ export class MCPProcessManager {
       pid: child.pid,
       status: 'running',
       startedAt: new Date().toISOString(),
+      defaultTimeoutMs: req.timeoutMs || 10000,
     };
 
     const active: ActiveProcess = {
@@ -112,17 +114,19 @@ export class MCPProcessManager {
     return info;
   }
 
-  public async sendJSONRPC(processId: string, req: JSONRPCRequest, timeoutMs = 10000): Promise<JSONRPCResponse> {
+  public async sendJSONRPC(processId: string, req: JSONRPCRequest, timeoutMs?: number): Promise<JSONRPCResponse> {
     const active = this.processes.get(processId);
     if (!active || active.info.status !== 'running') {
       throw new Error(`Proceso MCP '${processId}' no está en ejecución.`);
     }
 
+    const effectiveTimeout = timeoutMs || active.info.defaultTimeoutMs || 10000;
+
     return new Promise((resolve, reject) => {
       const timer = setTimeout(() => {
         active.pendingRequests.delete(req.id);
-        reject(new Error(`Timeout de comunicación JSON-RPC (${timeoutMs}ms) con proceso '${processId}'`));
-      }, timeoutMs);
+        reject(new Error(`Timeout de comunicación JSON-RPC (${effectiveTimeout}ms) con proceso '${processId}'`));
+      }, effectiveTimeout);
 
       active.pendingRequests.set(req.id, (res) => {
         clearTimeout(timer);

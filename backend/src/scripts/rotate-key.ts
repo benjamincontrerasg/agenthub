@@ -5,19 +5,19 @@ import { decryptWithKey, encryptWithKey } from '../lib/crypto.js';
 
 /**
  * Script de rotación de clave de cifrado (Zero-Downtime Key Rotation)
+ * Por seguridad Zero-Trust, se leen exclusivamente desde variables de entorno o stdin
+ * para evitar exponer secretos en el historial de comandos o lista de procesos de la terminal (ps/proc).
  * Uso:
- *   npx tsx src/scripts/rotate-key.ts <OLD_KEY> <NEW_KEY>
- * o mediante variables de entorno:
  *   OLD_ENCRYPTION_KEY=... NEW_ENCRYPTION_KEY=... npx tsx src/scripts/rotate-key.ts
  */
 async function rotateKeys() {
-  const oldKey = process.argv[2] || process.env.OLD_ENCRYPTION_KEY;
-  const newKey = process.argv[3] || process.env.NEW_ENCRYPTION_KEY;
+  const oldKey = process.env.OLD_ENCRYPTION_KEY;
+  const newKey = process.env.NEW_ENCRYPTION_KEY;
 
   if (!oldKey || !newKey) {
-    console.error('❌ Error: Se requieren la clave antigua y la clave nueva.');
-    console.error('Uso: npx tsx src/scripts/rotate-key.ts <OLD_KEY> <NEW_KEY>');
-    console.error('  o: OLD_ENCRYPTION_KEY=... NEW_ENCRYPTION_KEY=... npx tsx src/scripts/rotate-key.ts');
+    console.error('❌ Error de Seguridad: Las claves no deben pasarse como argumentos de línea de comandos.');
+    console.error('Configura las variables de entorno para ejecutarse de forma segura:');
+    console.error('  OLD_ENCRYPTION_KEY=... NEW_ENCRYPTION_KEY=... npm run rotate-key');
     process.exit(1);
   }
 

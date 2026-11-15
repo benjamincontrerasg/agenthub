@@ -1,8 +1,8 @@
 # NEXORA — Plataforma SaaS Multi-Agente & Orquestador MCP
 
-[![CI](https://github.com/benjamincontrerasg/NEXORA/actions/workflows/ci.yml/badge.svg)](https://github.com/benjamincontrerasg/NEXORA/actions/workflows/ci.yml)
+[![CI](https://github.com/benjamincontrerasg/agenthub/actions/workflows/ci.yml/badge.svg)](https://github.com/benjamincontrerasg/agenthub/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-violet.svg)](LICENSE)
-[![Tests Passing](https://img.shields.io/badge/Tests-39%20Passing-success.svg)](https://github.com/benjamincontrerasg/NEXORA)
+[![Tests](https://github.com/benjamincontrerasg/agenthub/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/benjamincontrerasg/agenthub/actions)
 [![Node](https://img.shields.io/badge/Node-%3E%3D20-green.svg)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue.svg)](https://www.typescriptlang.org/)
 [![Fastify](https://img.shields.io/badge/Fastify-5.2-black.svg)](https://fastify.dev/)

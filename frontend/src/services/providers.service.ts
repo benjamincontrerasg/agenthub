@@ -7,6 +7,10 @@ let mockModeOverride: boolean | null = null;
 
 export const isMockMode = (): boolean => {
   if (mockModeOverride !== null) return mockModeOverride;
+  // In production builds (import.meta.env.PROD), never fallback to mock mode unless explicitly forced via VITE_USE_MOCK=true
+  if (import.meta.env.PROD) {
+    return import.meta.env.VITE_USE_MOCK === 'true';
+  }
   return import.meta.env.VITE_USE_MOCK !== 'false';
 };
 

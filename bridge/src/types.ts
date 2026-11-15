@@ -16,6 +16,7 @@ export interface MCPProcessInfo {
   status: 'running' | 'stopped' | 'error';
   startedAt: string;
   lastError?: string;
+  defaultTimeoutMs?: number;
 }
 
 export interface SpawnRequest {
@@ -25,6 +26,7 @@ export interface SpawnRequest {
   args?: string[];
   cwd?: string;
   env?: Record<string, string>;
+  timeoutMs?: number;
 }
 
 export interface JSONRPCRequest {

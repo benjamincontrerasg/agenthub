@@ -1,33 +1,41 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# NEXORA — Entorno Docker para Desarrollo Local
+# ⚠️ ADVERTENCIA ZERO-TRUST:
+# Esta configuración de docker-compose está diseñada EXCLUSIVAMENTE para desarrollo local.
+# Para despliegues en producción corporativos, se requiere un Reverse Proxy con terminación
+# TLS/HTTPS (Nginx/Traefik/Cloudflare), autenticación JWT obligatoria en todas las rutas
+# y aislamiento de red sin exposición de puertos administrativos sin cifrar.
+# ─────────────────────────────────────────────────────────────────────────────
+
 services:
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: agenthub-backend
+    container_name: nexora-backend
     restart: unless-stopped
     ports:
-      - "3001:3001"
-    # ⚠️ Copia .env.example como .env y configura ENCRYPTION_KEY antes de ejecutar
+      - "127.0.0.1:3001:3001"
     environment:
       - PORT=3001
       - HOST=0.0.0.0
-      - DATABASE_URL=./data/agenthub.db
+      - DATABASE_URL=./data/nexora.db
       - CORS_ORIGIN=http://localhost:5173,http://localhost:80,http://localhost
       - ENCRYPTION_KEY=${ENCRYPTION_KEY:?⚠️  Define ENCRYPTION_KEY en un archivo .env en la raíz del proyecto}
     volumes:
-      - agenthub-db-data:/app/data
+      - nexora-db-data:/app/data
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: agenthub-frontend
+    container_name: nexora-frontend
     restart: unless-stopped
     ports:
-      - "80:80"
+      - "127.0.0.1:80:80"
     depends_on:
       - backend
 
 volumes:
-  agenthub-db-data:
+  nexora-db-data:
     driver: local
