@@ -32,6 +32,7 @@ import { useWorkflowsStore } from '@/stores/workflows.store';
 import { useSaveWorkflow } from './hooks';
 import { WorkflowNodeType } from '@/types';
 import { generateId } from '@/lib/utils';
+import { ProviderLogo } from '@/components/shared/ProviderLogo';
 import {
   Play,
   Square,
@@ -53,9 +54,48 @@ import {
   Globe,
   Check,
   RotateCcw,
+  ChevronRight,
 } from 'lucide-react';
 import { toast } from '@/stores/toast.store';
 import { WORKFLOW_TEMPLATES, WorkflowTemplate } from './templates';
+
+const AI_AGENT_PRESETS = [
+  {
+    id: 'gemini',
+    providerId: 'gemini',
+    name: 'Google Gemini',
+    description: 'Inferencia autónoma con Gemini 2.0 / 1.5 Pro',
+    label: 'Gemini Agent',
+  },
+  {
+    id: 'openai',
+    providerId: 'openai',
+    name: 'OpenAI (ChatGPT)',
+    description: 'Inferencia autónoma con GPT-4o / o1-preview',
+    label: 'OpenAI Agent',
+  },
+  {
+    id: 'anthropic',
+    providerId: 'anthropic',
+    name: 'Anthropic Claude',
+    description: 'Inferencia autónoma con Claude 3.7 Sonnet',
+    label: 'Claude Agent',
+  },
+  {
+    id: 'ollama',
+    providerId: 'ollama',
+    name: 'Ollama (Local LLM)',
+    description: 'Inferencia local con Llama 3 / Mistral',
+    label: 'Ollama Agent',
+  },
+  {
+    id: 'deepseek',
+    providerId: 'deepseek',
+    name: 'DeepSeek',
+    description: 'Inferencia avanzada con DeepSeek R1 / V3',
+    label: 'DeepSeek Agent',
+  },
+];
 
 const nodeTypes = {
   // Primary custom node definitions
@@ -111,6 +151,7 @@ export const WorkflowBuilderPage: React.FC = () => {
   const [showTemplatesModal, setShowTemplatesModal] = useState(false);
   const [showWebhookModal, setShowWebhookModal] = useState(false);
   const [copiedWebhook, setCopiedWebhook] = useState(false);
+  const [agentMenuOpen, setAgentMenuOpen] = useState(false);
 
   // Sync state if active workflow changes
   React.useEffect(() => {
@@ -165,7 +206,11 @@ export const WorkflowBuilderPage: React.FC = () => {
     setSelectedNode(node);
   }, []);
 
-  const handleAddNode = (type: WorkflowNodeType, label: string) => {
+  const handleAddNode = (
+    type: WorkflowNodeType,
+    label: string,
+    extraData: Record<string, any> = {}
+  ) => {
     const typeMapping: Record<WorkflowNodeType, string> = {
       start: 'startNode',
       agent: 'agentNode',
@@ -185,6 +230,7 @@ export const WorkflowBuilderPage: React.FC = () => {
         label,
         nodeType: type,
         status: 'idle',
+        ...extraData,
       },
     };
 
@@ -444,18 +490,60 @@ export const WorkflowBuilderPage: React.FC = () => {
       </div>
 
       {/* Floating Node Palette */}
-      <div className="absolute left-4 top-16 z-20 hidden md:flex flex-col gap-1.5 p-2 rounded-[12px] border border-border-default bg-bg-card/90 shadow-xl backdrop-blur-md">
+      <div className="absolute left-4 top-16 z-20 hidden md:flex flex-col gap-1.5 p-2 rounded-[12px] border border-border-default bg-bg-card/90 shadow-xl backdrop-blur-md w-56">
         <span className="text-caption font-[510] uppercase tracking-wider text-fg-secondary px-2 py-0.5">
           Agregar Nodos
         </span>
 
-        <button
-          onClick={() => handleAddNode('agent', 'AI Agent')}
-          className="flex items-center gap-2 px-2.5 py-1.5 rounded-[6px] text-caption font-medium text-fg-secondary hover:bg-bg-surface hover:text-[#ffffff] transition-colors cursor-pointer"
-        >
-          <Bot className="h-3.5 w-3.5 text-fg-brand" />
-          <span>AI Agent</span>
-        </button>
+        {/* AI Agent with Collapsible Submenu */}
+        <div className="relative">
+          <button
+            onClick={() => setAgentMenuOpen((prev) => !prev)}
+            className={`w-full flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-[6px] text-caption font-medium transition-all cursor-pointer ${
+              agentMenuOpen
+                ? 'bg-bg-surface text-fg-brand border border-border-brand/40 shadow-sm'
+                : 'text-fg-secondary hover:bg-bg-surface hover:text-[#ffffff]'
+            }`}
+            title="Seleccionar tipo de Agente / Motor de IA"
+          >
+            <div className="flex items-center gap-2">
+              <Bot className="h-3.5 w-3.5 text-fg-brand" />
+              <span>AI Agent</span>
+            </div>
+            <ChevronRight
+              className={`h-3 w-3 text-fg-muted transition-transform duration-200 ${
+                agentMenuOpen ? 'rotate-90 text-fg-brand' : ''
+              }`}
+            />
+          </button>
+
+          {agentMenuOpen && (
+            <div className="mt-1 pl-1.5 pr-1 py-1 space-y-1 border-l-2 border-border-brand/40 animate-in fade-in slide-in-from-top-1 duration-150">
+              <span className="text-[10px] font-mono uppercase text-fg-muted tracking-wider block px-1.5 pb-0.5">
+                Elegir IA / Proveedor:
+              </span>
+              {AI_AGENT_PRESETS.map((preset) => (
+                <button
+                  key={preset.id}
+                  onClick={() => {
+                    handleAddNode('agent', preset.label, {
+                      providerId: preset.providerId,
+                      description: preset.description,
+                    });
+                    setAgentMenuOpen(false);
+                  }}
+                  className="w-full flex items-center justify-between gap-2 px-2 py-1.5 rounded-[6px] text-caption font-medium text-fg-secondary hover:bg-bg-surface hover:text-fg-primary transition-colors text-left cursor-pointer group"
+                >
+                  <div className="flex items-center gap-2 min-w-0">
+                    <ProviderLogo providerId={preset.providerId} size="xs" rounded="sm" className="shrink-0" />
+                    <span className="text-xs truncate group-hover:text-fg-primary">{preset.name}</span>
+                  </div>
+                  <Plus className="h-3 w-3 text-fg-muted group-hover:text-fg-brand shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
 
         <button
           onClick={() => handleAddNode('mcp_tool', 'MCP Tool')}

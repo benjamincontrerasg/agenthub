@@ -79,21 +79,47 @@ export const NodeConfigDrawer: React.FC<NodeConfigDrawerProps> = ({
 
         {/* Dynamic configuration according to node type */}
         {nodeType === 'agent' && (
-          <div>
-            <label className="block text-caption font-medium text-fg-secondary mb-1">
-              Agente Autónomo Responsable
-            </label>
-            <Select
-              value={data.agentId || ''}
-              onChange={(e) => handleChange('agentId', e.target.value)}
-            >
-              <option value="">Selecciona un agente...</option>
-              {agents.map((a) => (
-                <option key={a.id} value={a.id}>
-                  {a.name} ({a.role})
-                </option>
-              ))}
-            </Select>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-caption font-medium text-fg-secondary mb-1">
+                Proveedor de IA (Motor LLM)
+              </label>
+              <Select
+                value={data.providerId || 'anthropic'}
+                onChange={(e) => handleChange('providerId', e.target.value)}
+              >
+                <option value="gemini">Google Gemini (Gemini 2.0 / 1.5 Pro)</option>
+                <option value="openai">OpenAI (GPT-4o / o1-preview)</option>
+                <option value="anthropic">Anthropic (Claude 3.7 Sonnet)</option>
+                <option value="ollama">Ollama (Llama 3 / Mistral Local)</option>
+                <option value="deepseek">DeepSeek (R1 / V3)</option>
+              </Select>
+            </div>
+
+            <div>
+              <label className="block text-caption font-medium text-fg-secondary mb-1">
+                Agente Autónomo Responsable
+              </label>
+              <Select
+                value={data.agentId || ''}
+                onChange={(e) => {
+                  const agent = agents.find((a) => a.id === e.target.value);
+                  onUpdate(selectedNode.id, {
+                    ...data,
+                    agentId: e.target.value,
+                    providerId: agent?.providerId || data.providerId,
+                    label: agent ? agent.name : data.label,
+                  });
+                }}
+              >
+                <option value="">(Ninguno / Agente Genérico)</option>
+                {agents.map((a) => (
+                  <option key={a.id} value={a.id}>
+                    {a.name} ({a.role} · {a.providerId})
+                  </option>
+                ))}
+              </Select>
+            </div>
           </div>
         )}
 

@@ -386,10 +386,8 @@ export const AgentNode = memo((props: any) => {
     <div
       className="animate-in fade-in zoom-in-95 duration-200"
       onDoubleClick={(e) => {
-        if (isClaude) {
-          e.stopPropagation();
-          setInternalExpanded(false);
-        }
+        e.stopPropagation();
+        setInternalExpanded(false);
       }}
     >
       <NodeWrapper
