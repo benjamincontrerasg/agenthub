@@ -43,7 +43,7 @@ export function signJWT(user: AuthUser, expiresInSec = 86400 * 7): string {
   const encodedPayload = base64UrlEncode(JSON.stringify(payload));
   const data = `${encodedHeader}.${encodedPayload}`;
 
-  const signature = createHmac('sha256', config.encryptionKey)
+  const signature = createHmac('sha256', config.jwtSecret)
     .update(data)
     .digest('base64')
     .replace(/=/g, '')
@@ -61,7 +61,7 @@ export function verifyJWT(token: string): JWTPayload | null {
     const [encodedHeader, encodedPayload, signature] = parts;
     const data = `${encodedHeader}.${encodedPayload}`;
 
-    const expectedSignature = createHmac('sha256', config.encryptionKey)
+    const expectedSignature = createHmac('sha256', config.jwtSecret)
       .update(data)
       .digest('base64')
       .replace(/=/g, '')

@@ -22,6 +22,7 @@ services:
       - DATABASE_URL=./data/nexora.db
       - CORS_ORIGIN=http://localhost:5173,http://localhost:80,http://localhost
       - ENCRYPTION_KEY=${ENCRYPTION_KEY:?⚠️  Define ENCRYPTION_KEY en un archivo .env en la raíz del proyecto}
+      - JWT_SECRET=${JWT_SECRET:?⚠️  Define JWT_SECRET en un archivo .env en la raíz del proyecto}
     volumes:
       - nexora-db-data:/app/data
 

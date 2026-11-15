@@ -153,7 +153,16 @@ npm test
 Las claves de API de los proveedores (Anthropic, OpenAI, Gemini) se tratan como secretos de nivel bancario:
 - **Derivación de Clave:** Se deriva una clave de 256 bits mediante `scrypt` a partir de `ENCRYPTION_KEY` con un `salt` criptográfico único de 16 bytes.
 - **Autenticación del Cifrado:** Cada registro almacena `salt:iv:tag:ciphertext`. El tag de autenticación GCM impide ataques de manipulación o bit-flipping.
+- **Separación Criptográfica de Secretos:** La firma y verificación de tokens de sesión JWT utiliza exclusivamente `JWT_SECRET` (mínimo 32 caracteres), desacoplada por completo de `ENCRYPTION_KEY`.
 - **Cero Fugas en Cliente:** El frontend recibe únicamente `hasApiKey: boolean` y `status: 'connected' | 'disconnected'`. La clave nunca viaja de vuelta al navegador.
+
+> ⚠️ **AVISO CRÍTICO SOBRE `ENCRYPTION_KEY`:**
+> Cambiar o rotar `ENCRYPTION_KEY` sin ejecutar el procedimiento de migración invalida todas las API keys ya cifradas en la base de datos existente. Para rotar la clave sin pérdida de datos, utiliza siempre el script `npm run rotate-key`.
+>
+> Para generar claves criptográficamente seguras de 64 caracteres hexadecimales (256 bits):
+> ```bash
+> node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+> ```
 
 ### 2. Rotación de Clave de Cifrado sin Downtime (`rotate-key`)
 El backend incluye un script para rotar la clave maestra de cifrado:
