@@ -142,46 +142,79 @@ export const AgentNode = memo((props: any) => {
 
   const isClaude = providerId === 'anthropic';
 
-  return (
-    <NodeWrapper
-      selected={selected}
-      status={data?.status}
-      title={data?.label || 'AI Agent'}
-      icon={Bot}
-      providerId={providerId}
-      isClaude={isClaude}
-      badgeText={data?.agentId ? 'Autonomous' : 'Agent'}
-      badgeVariant="default"
-      borderColor={isClaude && selected ? 'border-orange-500/80' : 'border-border-brand/50'}
-      accentColor="text-fg-brand"
-    >
-      <Handle type="target" position={Position.Left} className="!bg-violet-500 !w-2.5 !h-2.5" />
-      <p className="text-caption text-fg-secondary line-clamp-2">{data?.description || 'Ejecuta inferencia con LLM'}</p>
-      
-      <div className="mt-2 pt-1.5 border-t border-border-default flex items-center justify-between text-caption">
-        <div className={`flex items-center gap-1.5 px-1.5 py-0.5 rounded border transition-colors ${
-          isClaude && selected ? 'bg-orange-500/10 border-orange-500/30' : 'bg-bg-card/70 border-border-default'
-        }`}>
-          <ProviderLogo
-            providerId={providerId}
-            size="xs"
-            showBackground={false}
-            active={isClaude ? selected : false}
+  // Si es Claude y NO está seleccionado: mostrar únicamente el logo pixel-art en estado base
+  if (isClaude && !selected) {
+    return (
+      <div className="relative group cursor-pointer transition-all duration-300 transform hover:scale-110">
+        <Handle
+          type="target"
+          position={Position.Left}
+          className="!bg-orange-500 !w-3 !h-3 !border-2 !border-slate-900"
+        />
+
+        <div className="p-3 rounded-2xl border-2 border-orange-500/40 bg-bg-card/90 shadow-2xl backdrop-blur-md flex flex-col items-center justify-center gap-1.5 hover:border-orange-500 hover:shadow-orange-500/20 transition-all">
+          <img
+            src="/logos/claude-base.png"
+            alt="Claude"
+            className="w-14 h-14 object-contain drop-shadow-md select-none pointer-events-none"
           />
-          <span className={`font-mono capitalize text-caption ${
-            isClaude && selected ? 'text-orange-400 font-semibold' : 'text-fg-secondary'
-          }`}>
-            {isClaude ? 'Claude' : providerId}
+          <span className="text-[11px] font-bold text-orange-300 font-mono tracking-tight px-1.5 py-0.5 rounded bg-orange-500/10 border border-orange-500/20">
+            {data?.label || 'Claude'}
           </span>
         </div>
-        {data?.agentId && (
-          <span className="font-mono text-fg-secondary truncate max-w-[90px]">
-            {data.agentId}
-          </span>
-        )}
+
+        <Handle
+          type="source"
+          position={Position.Right}
+          className="!bg-orange-500 !w-3 !h-3 !border-2 !border-slate-900"
+        />
       </div>
-      <Handle type="source" position={Position.Right} className="!bg-violet-500 !w-2.5 !h-2.5" />
-    </NodeWrapper>
+    );
+  }
+
+  // Estado expandido (cuando se clickea / está seleccionado, o para otros agentes)
+  return (
+    <div className="animate-in fade-in zoom-in-95 duration-200">
+      <NodeWrapper
+        selected={selected}
+        status={data?.status}
+        title={data?.label || 'AI Agent'}
+        icon={Bot}
+        providerId={providerId}
+        isClaude={isClaude}
+        badgeText={data?.agentId ? 'Autonomous' : 'Agent'}
+        badgeVariant={isClaude ? 'default' : 'default'}
+        borderColor={isClaude ? 'border-orange-500 ring-2 ring-orange-500/40 shadow-orange-500/30' : 'border-border-brand/50'}
+        accentColor="text-fg-brand"
+      >
+        <Handle type="target" position={Position.Left} className="!bg-violet-500 !w-2.5 !h-2.5" />
+        <p className="text-caption text-fg-secondary line-clamp-2">{data?.description || 'Ejecuta inferencia con LLM'}</p>
+        
+        <div className="mt-2 pt-1.5 border-t border-border-default flex items-center justify-between text-caption">
+          <div className={`flex items-center gap-1.5 px-2 py-1 rounded-lg border transition-colors ${
+            isClaude ? 'bg-orange-500/15 border-orange-500/40' : 'bg-bg-card/70 border-border-default'
+          }`}>
+            <ProviderLogo
+              providerId={providerId}
+              size="sm"
+              showBackground={false}
+              active={true}
+            />
+            <span className={`font-mono capitalize text-caption ${
+              isClaude ? 'text-orange-400 font-bold' : 'text-fg-secondary'
+            }`}>
+              {isClaude ? 'Claude' : providerId}
+            </span>
+          </div>
+          {data?.agentId && (
+            <span className="font-mono text-fg-secondary truncate max-w-[90px]">
+              {data.agentId}
+            </span>
+          )}
+        </div>
+        <Handle type="source" position={Position.Right} className="!bg-violet-500 !w-2.5 !h-2.5" />
+      </NodeWrapper>
+    </div>
   );
 });
 
