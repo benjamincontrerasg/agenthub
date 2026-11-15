@@ -6,6 +6,7 @@ import { NotFoundError } from '../lib/errors.js';
 import { wsManager } from './websocket.service.js';
 import { aiEngine } from './ai-engine.js';
 import { agentService } from './agent.service.js';
+import { memoryService } from './memory.service.js';
 
 export const chatService = {
   async getConversations(): Promise<Conversation[]> {
@@ -304,6 +305,20 @@ export const chatService = {
       const targetMsgId = `msg-agent-${Date.now()}`;
       const targetNow = new Date().toISOString();
 
+      // Inyección de memoria semántica relevante (RAG)
+      let enrichedPrompt = userPrompt;
+      try {
+        const memories = await memoryService.searchMemories(targetAgent.id, userPrompt, 3);
+        if (memories.length > 0) {
+          const contextBlocks = memories
+            .map((m, idx) => `[Memoria ${idx + 1}]: ${m.content}`)
+            .join('\n');
+          enrichedPrompt = `Contexto Relevante de Memoria RAG:\n${contextBlocks}\n\nInstrucción:\n${userPrompt}`;
+        }
+      } catch (err) {
+        console.warn('[RAG Memory Warning] No se pudo recuperar memoria:', err);
+      }
+
       wsManager.broadcast('chat.stream_start', {
         conversationId,
         messageId: targetMsgId,
@@ -315,7 +330,7 @@ export const chatService = {
       const aiResult = await aiEngine.generateAgentResponse(
         fullAgent,
         conv.messages,
-        userPrompt,
+        enrichedPrompt,
         (chunk: string) => {
           wsManager.broadcast('chat.token', {
             conversationId,

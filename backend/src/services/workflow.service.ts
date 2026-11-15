@@ -177,19 +177,21 @@ export const workflowService = {
         totalSteps: wf.nodes.length,
       });
 
+      const isAgentNode = node.data?.nodeType === 'agent' || node.type === 'agent';
+
       // Insert step
       db.insert(schema.executionSteps).values({
         id: stepId,
         executionId,
         nodeId: node.id,
         name: node.data.label,
-        type: node.data.nodeType,
+        type: node.data?.nodeType || (node.type as string) || 'task',
         agentOrToolName: node.data.agentId || node.data.toolId || 'Workflow Engine',
         status: 'completed',
         startedAt: stepStart,
         completedAt: new Date().toISOString(),
         durationMs: 800 + Math.floor(Math.random() * 400),
-        tokensUsed: node.data.nodeType === 'agent' ? 1200 : 0,
+        tokensUsed: isAgentNode ? 1200 : 0,
         outputSummary: `Nodo '${node.data.label}' completado exitosamente con estado OK.`,
         logs: JSON.stringify([
           `Iniciando ejecución de nodo: ${node.data.label}`,
@@ -198,7 +200,7 @@ export const workflowService = {
         ]),
       }).run();
 
-      if (node.data.nodeType === 'agent') {
+      if (isAgentNode) {
         currentTokens += 1200;
       }
       if (node.data.toolId) {
@@ -249,6 +251,13 @@ export const workflowService = {
     if (!existing) {
       throw new NotFoundError('Workflow', id);
     }
+
+    // Cascade delete any executions and steps for this workflow
+    const execs = db.select().from(schema.workflowExecutions).where(eq(schema.workflowExecutions.workflowId, id)).all();
+    for (const exec of execs) {
+      db.delete(schema.executionSteps).where(eq(schema.executionSteps.executionId, exec.id)).run();
+    }
+    db.delete(schema.workflowExecutions).where(eq(schema.workflowExecutions.workflowId, id)).run();
 
     db.delete(schema.workflows).where(eq(schema.workflows.id, id)).run();
     return { success: true };

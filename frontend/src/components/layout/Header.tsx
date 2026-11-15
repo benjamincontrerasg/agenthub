@@ -19,7 +19,7 @@ import { Badge } from '@/components/ui/badge';
 import { useSettingsStore } from '@/stores/settings.store';
 import { useAgents } from '@/features/agents/hooks';
 import { useMCPStore } from '@/stores/mcp.store';
-import { useWorkflowsStore } from '@/stores/workflows.store';
+import { useWorkflows } from '@/features/workflows/hooks';
 
 interface HeaderProps {
   onOpenMobile: () => void;
@@ -43,7 +43,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
   const { settings } = useSettingsStore();
   const { data: agents = [] } = useAgents();
   const { getAllTools } = useMCPStore();
-  const { workflows } = useWorkflowsStore();
+  const { data: workflows = [] } = useWorkflows();
 
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
