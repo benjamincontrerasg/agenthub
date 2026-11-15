@@ -287,9 +287,11 @@ export const AgentDetailPage: React.FC = () => {
 
         <Card>
           <CardContent className="p-4">
-            <span className="text-caption text-fg-secondary">Modelo Asociado</span>
+            <span className="text-caption text-fg-secondary">Modelo & Credencial</span>
             <p className="text-body font-[510] text-fg-primary mt-1.5 truncate">{agent.modelId}</p>
-            <span className="text-caption text-fg-brand font-mono">Temp: {agent.temperature}</span>
+            <span className="text-caption text-fg-brand font-mono truncate block">
+              {agent.credentialName ? `🔑 ${agent.credentialName}` : `Temp: ${agent.temperature}`}
+            </span>
           </CardContent>
         </Card>
       </div>

@@ -7,6 +7,7 @@ import { seedDatabase } from '../../db/seed.js';
 
 describe('Backend Provider Integration & Security Tests (Phase 2)', () => {
   beforeEach(async () => {
+    delete process.env.ALLOWED_PRIVATE_HOSTS;
     await seedDatabase();
   });
 

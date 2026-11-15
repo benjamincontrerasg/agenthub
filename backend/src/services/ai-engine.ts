@@ -28,10 +28,22 @@ export class AIEngine {
   ): Promise<AIExecutionResult> {
     const providerRecord = db.select().from(schema.providers).where(eq(schema.providers.id, agent.providerId)).get();
 
-    // 1. Resolver API Key desde base de datos cifrada o variable de entorno
+    // 1. Resolver API Key: prioridad a la credencial nombrada asignada al agente
     let apiKey: string | undefined;
 
-    if (providerRecord?.encryptedApiKey) {
+    if (agent.credentialId) {
+      try {
+        const credRecord = db.select().from(schema.apiCredentials).where(eq(schema.apiCredentials.id, agent.credentialId)).get();
+        if (credRecord?.encryptedKey) {
+          apiKey = decrypt(credRecord.encryptedKey);
+        }
+      } catch (e) {
+        console.warn(`[AI Engine] No se pudo descifrar la credencial ${agent.credentialId} asignada al agente ${agent.name}`);
+      }
+    }
+
+    // Fallback: clave predeterminada configurada a nivel de proveedor
+    if (!apiKey && providerRecord?.encryptedApiKey) {
       try {
         apiKey = decrypt(providerRecord.encryptedApiKey);
       } catch (e) {

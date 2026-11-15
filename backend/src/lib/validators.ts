@@ -13,11 +13,18 @@ export const updateProviderSchema = z.object({
   kind: z.string().optional(),
 });
 
+export const createCredentialSchema = z.object({
+  name: z.string().min(1, 'Nombre es requerido').max(100),
+  providerId: z.string().min(1, 'Proveedor es requerido'),
+  apiKey: z.string().min(1, 'API key es requerida'),
+});
+
 export const createAgentSchema = z.object({
   name: z.string().min(1, 'Nombre es requerido').max(100),
   description: z.string().max(500).default(''),
   role: z.string().min(1, 'Rol es requerido').max(100),
   providerId: z.string().min(1, 'Proveedor es requerido'),
+  credentialId: z.string().nullable().optional(),
   modelId: z.string().min(1, 'Modelo es requerido'),
   systemPrompt: z.string().default(''),
   temperature: z.number().min(0).max(2).default(0.7),
@@ -33,6 +40,7 @@ export const updateAgentSchema = z.object({
   description: z.string().max(500).optional(),
   role: z.string().min(1).max(100).optional(),
   providerId: z.string().optional(),
+  credentialId: z.string().nullable().optional(),
   modelId: z.string().optional(),
   systemPrompt: z.string().optional(),
   temperature: z.number().min(0).max(2).optional(),

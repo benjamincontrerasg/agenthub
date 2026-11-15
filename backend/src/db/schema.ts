@@ -48,6 +48,18 @@ export const providerModels = sqliteTable('provider_models', {
   primaryKey({ columns: [table.providerId, table.modelId] })
 ]);
 
+// --- API Credentials Vault ---
+
+export const apiCredentials = sqliteTable('api_credentials', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  providerId: text('provider_id').notNull().references(() => providers.id, { onDelete: 'cascade' }),
+  encryptedKey: text('encrypted_key').notNull(),
+  maskedKey: text('masked_key').notNull(),
+  createdAt: text('created_at').notNull(),
+  updatedAt: text('updated_at').notNull(),
+});
+
 // --- Agents ---
 
 export const agents = sqliteTable('agents', {
@@ -56,6 +68,7 @@ export const agents = sqliteTable('agents', {
   description: text('description').notNull(),
   role: text('role').notNull(),
   providerId: text('provider_id').notNull().references(() => providers.id),
+  credentialId: text('credential_id').references(() => apiCredentials.id),
   modelId: text('model_id').notNull(),
   systemPrompt: text('system_prompt').notNull(),
   temperature: real('temperature').notNull().default(0.7),
@@ -312,6 +325,15 @@ export const auditLogs = sqliteTable('audit_logs', {
 export const providersRelations = relations(providers, ({ many }) => ({
   models: many(models),
   agents: many(agents),
+  credentials: many(apiCredentials),
+}));
+
+export const apiCredentialsRelations = relations(apiCredentials, ({ one, many }) => ({
+  provider: one(providers, {
+    fields: [apiCredentials.providerId],
+    references: [providers.id],
+  }),
+  agents: many(agents),
 }));
 
 export const modelsRelations = relations(models, ({ one }) => ({
@@ -325,6 +347,10 @@ export const agentsRelations = relations(agents, ({ one, many }) => ({
   provider: one(providers, {
     fields: [agents.providerId],
     references: [providers.id],
+  }),
+  credential: one(apiCredentials, {
+    fields: [agents.credentialId],
+    references: [apiCredentials.id],
   }),
   allowedTools: many(agentAllowedTools),
   communications: many(agentCommunications, { relationName: 'agent_comms' }),

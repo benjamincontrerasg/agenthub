@@ -43,12 +43,23 @@ export interface AgentStats {
   successRate: number;
 }
 
+export interface APICredential {
+  id: string;
+  name: string;
+  providerId: ProviderId;
+  maskedKey: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Agent {
   id: string;
   name: string;
   description: string;
   role: AgentRole;
   providerId: ProviderId;
+  credentialId?: string;
+  credentialName?: string;
   modelId: string;
   systemPrompt: string;
   temperature: number;

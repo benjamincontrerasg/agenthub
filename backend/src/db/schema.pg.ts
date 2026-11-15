@@ -48,12 +48,23 @@ export const providerModels = pgTable('provider_models', {
   primaryKey({ columns: [table.providerId, table.modelId] })
 ]);
 
+export const apiCredentials = pgTable('api_credentials', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  providerId: text('provider_id').notNull().references(() => providers.id, { onDelete: 'cascade' }),
+  encryptedKey: text('encrypted_key').notNull(),
+  maskedKey: text('masked_key').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
 export const agents = pgTable('agents', {
   id: text('id').primaryKey(),
   name: text('name').notNull(),
   description: text('description').notNull(),
   role: text('role').notNull(),
   providerId: text('provider_id').notNull().references(() => providers.id),
+  credentialId: text('credential_id').references(() => apiCredentials.id),
   modelId: text('model_id').notNull(),
   systemPrompt: text('system_prompt').notNull(),
   temperature: real('temperature').notNull().default(0.7),
