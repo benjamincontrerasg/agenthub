@@ -10,7 +10,8 @@
     "test": "vitest run",
     "db:push": "drizzle-kit push",
     "seed": "tsx src/db/seed.ts",
-    "rotate-key": "tsx src/scripts/rotate-key.ts"
+    "rotate-key": "tsx src/scripts/rotate-key.ts",
+    "db:check": "tsx src/scripts/migrate-db.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.36.3",
