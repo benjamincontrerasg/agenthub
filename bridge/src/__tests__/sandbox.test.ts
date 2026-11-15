@@ -18,21 +18,24 @@ describe('Local Agent Security Sandbox', () => {
     expect(sandbox.validateCommand('curl').valid).toBe(false);
   });
 
-  it('blocks dangerous argument patterns (-c, -e, --eval, volume mounts)', () => {
+  it('blocks dangerous argument patterns (-c, -e, --eval, volume mounts, privileged)', () => {
     const sandbox = new SecuritySandbox();
     expect(sandbox.validateCommand('python', ['-c', 'import os']).valid).toBe(false);
     expect(sandbox.validateCommand('node', ['-e', 'process.exit()']).valid).toBe(false);
     expect(sandbox.validateCommand('node', ['--eval', 'console.log(1)']).valid).toBe(false);
     expect(sandbox.validateCommand('docker', ['run', '-v', '/:/host']).valid).toBe(false);
     expect(sandbox.validateCommand('docker', ['run', '--volume', '/:/host']).valid).toBe(false);
+    expect(sandbox.validateCommand('docker', ['run', '--privileged']).valid).toBe(false);
+    expect(sandbox.validateCommand('git', ['-c', 'core.editor=calc']).valid).toBe(false);
     expect(sandbox.validateCommand('node', ['server.js']).valid).toBe(true);
     expect(sandbox.validateCommand('python', ['script.py']).valid).toBe(true);
   });
 
-  it('restricts path access to authorized sandbox directories', () => {
+  it('restricts path access to authorized sandbox directories and blocks directory traversal', () => {
     const sandbox = new SecuritySandbox(['C:/projects/safe', 'C:/work/mcp']);
     expect(sandbox.validatePath('C:/projects/safe/data.json').valid).toBe(true);
     expect(sandbox.validatePath('C:/work/mcp/subfolder/file.ts').valid).toBe(true);
+    expect(sandbox.validatePath('C:/projects/safe/../../Windows/System32').valid).toBe(false);
     expect(sandbox.validatePath('C:/Windows/System32/cmd.exe').valid).toBe(false);
   });
 });

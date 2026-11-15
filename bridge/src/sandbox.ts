@@ -19,18 +19,63 @@ const ALLOWED_COMMANDS = new Set([
   'git.exe',
 ]);
 
-// Dangerous argument patterns that could execute arbitrary code or bypass sandbox
-const FORBIDDEN_ARG_PATTERNS = [
+export interface BinarySecurityPolicy {
+  blockedArgs: RegExp[];
+  description: string;
+}
+
+export const BINARY_SECURITY_POLICIES: Record<string, BinarySecurityPolicy> = {
+  node: {
+    blockedArgs: [/^-e$/i, /^--eval$/i, /^-p$/i, /^--print$/i, /^--inspect/i],
+    description: 'Bloquea evaluación directa (-e, --eval, -p) y depuración remota',
+  },
+  python: {
+    blockedArgs: [/^-c$/i, /^--command$/i, /^-m$/i],
+    description: 'Bloquea comandos en línea (-c, -m)',
+  },
+  python3: {
+    blockedArgs: [/^-c$/i, /^--command$/i, /^-m$/i],
+    description: 'Bloquea comandos en línea (-c, -m)',
+  },
+  docker: {
+    blockedArgs: [
+      /^-v$/i,
+      /^--volume/i,
+      /^--mount/i,
+      /^--privileged/i,
+      /^--net=host/i,
+      /^--network=host/i,
+      /^--pid=host/i,
+      /^--cap-add/i,
+    ],
+    description: 'Bloquea montaje de volúmenes de host y contenedores privilegiados',
+  },
+  git: {
+    blockedArgs: [/^-c$/i, /^--exec-path/i, /^--config-env/i, /^--upload-pack/i],
+    description: 'Bloquea inyección de configuración y ejecución de comandos remotos',
+  },
+  npx: {
+    blockedArgs: [/^-e$/i, /^--eval$/i, /^-c$/i],
+    description: 'Bloquea evaluación directa no empaquetada',
+  },
+  uvx: {
+    blockedArgs: [/^-c$/i, /^--command$/i],
+    description: 'Bloquea ejecución directa en línea',
+  },
+};
+
+// Global forbidden argument patterns
+const GLOBAL_FORBIDDEN_ARG_PATTERNS = [
   /^-c$/i,
   /^-e$/i,
   /^--eval$/i,
   /^-v$/i,
-  /^--volume$/i,
-  /^--mount$/i,
-  /^--privileged$/i,
-  /^--net=host$/i,
-  /^--network=host$/i,
-  /^--pid=host$/i,
+  /^--volume/i,
+  /^--mount/i,
+  /^--privileged/i,
+  /^--net=host/i,
+  /^--network=host/i,
+  /^--pid=host/i,
 ];
 
 export class SecuritySandbox {
@@ -49,21 +94,39 @@ export class SecuritySandbox {
   }
 
   public validateCommand(command: string, args: string[] = []): { valid: boolean; reason?: string } {
-    const baseCmd = path.basename(command).toLowerCase();
-    if (!ALLOWED_COMMANDS.has(baseCmd)) {
+    const rawBase = path.basename(command).toLowerCase();
+    const baseCmd = rawBase.replace(/\.(exe|cmd|bat)$/i, '');
+
+    if (!ALLOWED_COMMANDS.has(rawBase) && !ALLOWED_COMMANDS.has(baseCmd)) {
       return {
         valid: false,
         reason: `Comando '${command}' no permitido por política de Sandbox Zero-Trust. Comandos autorizados: ${Array.from(ALLOWED_COMMANDS).join(', ')}`,
       };
     }
 
-    // Validate arguments to prevent inline code execution or volume mounts
+    const binaryPolicy = BINARY_SECURITY_POLICIES[baseCmd];
+
     for (const arg of args) {
-      for (const pattern of FORBIDDEN_ARG_PATTERNS) {
-        if (pattern.test(arg.trim())) {
+      const trimmed = arg.trim();
+
+      // Validación por binario específico
+      if (binaryPolicy) {
+        for (const pattern of binaryPolicy.blockedArgs) {
+          if (pattern.test(trimmed)) {
+            return {
+              valid: false,
+              reason: `Argumento prohibido '${arg}' para el binario '${baseCmd}'. Política Zero-Trust: ${binaryPolicy.description}.`,
+            };
+          }
+        }
+      }
+
+      // Validación global defensiva
+      for (const pattern of GLOBAL_FORBIDDEN_ARG_PATTERNS) {
+        if (pattern.test(trimmed)) {
           return {
             valid: false,
-            reason: `Argumento prohibido '${arg}' detectado. Por motivos de seguridad Zero-Trust, argumentos de evaluación directa o escape (-c, -e, --eval, montajes de volumen) están bloqueados.`,
+            reason: `Argumento prohibido '${arg}' detectado por política global del Sandbox Zero-Trust.`,
           };
         }
       }
@@ -74,19 +137,31 @@ export class SecuritySandbox {
 
   public validatePath(targetPath: string): { valid: boolean; reason?: string } {
     if (this.authorizedDirs.length === 0) {
-      // If no directories restricted, allow current working dir
       return { valid: true };
     }
 
     const resolved = path.resolve(targetPath);
-    const isAuthorized = this.authorizedDirs.some(
-      (dir) => resolved === dir || resolved.startsWith(dir + path.sep)
-    );
+    let realTarget: string;
+    try {
+      realTarget = fs.existsSync(resolved) ? fs.realpathSync(resolved) : resolved;
+    } catch {
+      realTarget = resolved;
+    }
+
+    const isAuthorized = this.authorizedDirs.some((dir) => {
+      let realDir: string;
+      try {
+        realDir = fs.existsSync(dir) ? fs.realpathSync(dir) : dir;
+      } catch {
+        realDir = dir;
+      }
+      return realTarget === realDir || realTarget.startsWith(realDir + path.sep);
+    });
 
     if (!isAuthorized) {
       return {
         valid: false,
-        reason: `Ruta '${targetPath}' fuera del sandbox autorizado. Directorios permitidos: ${this.authorizedDirs.join('; ')}`,
+        reason: `Ruta '${targetPath}' fuera del sandbox autorizado (verificación de symlinks y ../). Directorios permitidos: ${this.authorizedDirs.join('; ')}`,
       };
     }
 

@@ -1,20 +1,20 @@
 import { describe, it, expect } from 'vitest';
 import { encrypt, decrypt, encryptWithKey, decryptWithKey } from '../crypto.js';
+import { createCipheriv, randomBytes, scryptSync } from 'crypto';
 
-describe('Crypto Service (AES-256-GCM)', () => {
-  it('correctly encrypts and decrypts a sensitive API key', () => {
+describe('Crypto Service (AES-256-GCM v2 with Legacy Compatibility)', () => {
+  it('correctly encrypts with modern v2: format and decrypts accurately', () => {
     const rawApiKey = 'sk-ant-api03-test-key-sample-1234567890';
     const encrypted = encrypt(rawApiKey);
 
+    expect(encrypted.startsWith('v2:')).toBe(true);
     expect(encrypted).not.toBe(rawApiKey);
-    expect(typeof encrypted).toBe('string');
-    expect(encrypted.length).toBeGreaterThan(32);
 
     const decrypted = decrypt(encrypted);
     expect(decrypted).toBe(rawApiKey);
   });
 
-  it('produces different ciphertexts for the same plaintext due to random IV and salt', () => {
+  it('produces different ciphertexts for the same plaintext due to random 12-byte IV', () => {
     const secret = 'sk-proj-openai-secret-key-abcdef';
     const enc1 = encrypt(secret);
     const enc2 = encrypt(secret);
@@ -24,7 +24,27 @@ describe('Crypto Service (AES-256-GCM)', () => {
     expect(decrypt(enc2)).toBe(secret);
   });
 
-  it('fails to decrypt if ciphertext is tampered with', () => {
+  it('maintains backward compatibility with legacy v1 format (salt:iv:tag:ciphertext)', () => {
+    const secret = 'legacy-key-from-database-v1';
+    const masterKey = 'dev-encryption-key-change-in-production-32chars!!';
+
+    // Generar formato v1 clásico
+    const salt = randomBytes(16);
+    const iv = randomBytes(16);
+    const key = scryptSync(masterKey, salt, 32);
+    const cipher = createCipheriv('aes-256-gcm', key, iv);
+    const encrypted = Buffer.concat([cipher.update(secret, 'utf8'), cipher.final()]);
+    const tag = cipher.getAuthTag();
+    const legacyCiphertext = Buffer.concat([salt, iv, tag, encrypted]).toString('base64');
+
+    expect(legacyCiphertext.startsWith('v2:')).toBe(false);
+
+    // decryptWithKey debe ser capaz de descifrar el formato v1 antiguo sin errores
+    const decrypted = decryptWithKey(legacyCiphertext, masterKey);
+    expect(decrypted).toBe(secret);
+  });
+
+  it('fails to decrypt if ciphertext or auth tag is tampered with', () => {
     const secret = 'sensitive-data';
     const encrypted = encrypt(secret);
     const tampered = encrypted.substring(0, encrypted.length - 4) + 'AAAA';

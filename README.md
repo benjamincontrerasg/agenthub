@@ -242,23 +242,69 @@ npm run dev        # Inicia Vite en http://localhost:5173 (o 5174)
 
 ---
 
-## 🐳 Despliegue con Docker Compose
+## 🐳 Despliegue con Docker Compose (Solo Desarrollo Local)
 
-El proyecto incluye un `docker-compose.yml` multicapa listo para producción:
+> [!WARNING]
+> **Aviso de Seguridad Zero-Trust:** La configuración predeterminada de `docker-compose.yml` está diseñada **EXCLUSIVAMENTE para desarrollo local** (puertos enlazados a `127.0.0.1`). Para exponer NEXORA a una red pública o corporativa, es **obligatorio** habilitar autenticación y configurar un Reverse Proxy con terminación TLS/HTTPS (Nginx, Caddy o Cloudflare Tunnel).
 
 ```bash
 # 1. Configura la clave en el archivo .env de la raíz
 cp .env.example .env
 
-# 2. Levantar los contenedores
+# 2. Levantar los contenedores en loopback
 docker compose up -d --build
 ```
 
 | Contenedor | URL | Puerto | Función |
 | :--- | :--- | :---: | :--- |
-| **frontend** | `http://localhost:80` | 80 | Nginx sirviendo la SPA de React con proxy reverso a `/v1` |
-| **backend** | `http://localhost:3001` | 3001 | API Fastify 5 + WebSocket Stream |
-| **db-volume** | — | — | Volumen persistente de datos `NEXORA-db-data` |
+| **frontend** | `http://127.0.0.1:80` | 80 | Nginx sirviendo la SPA de React con proxy reverso a `/v1` |
+| **backend** | `http://127.0.0.1:3001` | 3001 | API Fastify 5 + WebSocket Stream |
+| **db-volume** | — | — | Volumen persistente de datos `nexora-db-data` |
+
+---
+
+## 🔒 Guía Mínima de Terminación TLS / HTTPS (Reverse Proxy)
+
+Para exponer la plataforma de forma segura con certificados SSL/TLS automáticos utilizando Caddy o Nginx:
+
+### Configuración con Caddy (Recomendado)
+```caddy
+nexora.tuempresa.com {
+    encode gzip zstd
+    reverse_proxy 127.0.0.1:80
+}
+```
+
+### Configuración con Nginx
+```nginx
+server {
+    listen 443 ssl http2;
+    server_name nexora.tuempresa.com;
+
+    ssl_certificate /etc/letsencrypt/live/nexora.tuempresa.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/nexora.tuempresa.com/privkey.pem;
+
+    location / {
+        proxy_pass http://127.0.0.1:80;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+    }
+}
+```
+
+---
+
+## 🛡️ Política de Seguridad del Local Bridge por Binario
+
+| Binario | Parámetros Permitidos | Parámetros Bloqueados (Zero-Trust) | Mitigación |
+| :--- | :--- | :--- | :--- |
+| `node` | Archivos de script locales | `-e`, `--eval`, `-p`, `--print`, `--inspect*` | Previene ejecución arbitraria en memoria y depuradores |
+| `python` / `python3` | Scripts `.py` en directorios autorizados | `-c`, `--command`, `-m` | Bloquea inyección de comandos inline |
+| `docker` | Subcomandos inspect / build aislados | `-v`, `--volume`, `--mount`, `--privileged`, `--net=host` | Evita escape de contenedor al sistema de archivos del host |
+| `git` | clone, status, diff, log | `-c`, `--exec-path`, `--config-env`, hooks | Bloquea override de configuración maliciosa y ejecución remota |
+| `npx` / `uvx` | Paquetes de servidores MCP declarados | `-e`, `--eval`, `-c` | Previene scripts ad-hoc no auditados |
 
 ---
 
