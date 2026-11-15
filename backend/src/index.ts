@@ -37,9 +37,17 @@ export async function buildApp(opts: { logger?: any } = {}) {
   // Ensure database has seed data
   await seedDatabase();
 
-  // Register CORS
+  // Register CORS con lista blanca estricta de orígenes permitidos
   await fastify.register(cors, {
-    origin: true, // Allow frontend dev origins
+    origin: (origin: string | undefined, cb: (err: Error | null, allow: boolean) => void) => {
+      // Permitir peticiones sin header Origin (herramientas locales, scripts o server-to-server)
+      // y validar estrictamente contra la lista de orígenes autorizados
+      if (!origin || config.corsOrigins.includes(origin)) {
+        cb(null, true);
+      } else {
+        cb(null, false);
+      }
+    },
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     credentials: true,
   });

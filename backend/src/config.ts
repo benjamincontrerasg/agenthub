@@ -26,11 +26,18 @@ if (jwtSecret === encryptionKey) {
   );
 }
 
+const corsOriginRaw = process.env.CORS_ORIGIN || 'http://localhost:5173';
+const corsOrigins = corsOriginRaw
+  .split(',')
+  .map((o) => o.trim())
+  .filter(Boolean);
+
 export const config = {
   port: parseInt(process.env.PORT || '3001', 10),
   host: process.env.HOST || '0.0.0.0',
   databaseUrl: process.env.DATABASE_URL || './data/nexora.db',
-  corsOrigin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+  corsOrigin: corsOriginRaw,
+  corsOrigins: corsOrigins.length > 0 ? corsOrigins : ['http://localhost:5173'],
   encryptionKey,
   jwtSecret,
 } as const;
