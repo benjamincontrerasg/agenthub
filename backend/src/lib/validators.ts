@@ -3,10 +3,24 @@ import { z } from 'zod';
 export const connectProviderSchema = z.object({
   apiKey: z.string().min(1, 'API key es requerida'),
   defaultModelId: z.string().optional(),
+  baseUrl: z.string().url('URL inválida').optional(),
+  kind: z.string().optional(),
 });
 
 export const updateProviderSchema = z.object({
-  defaultModelId: z.string().min(1, 'defaultModelId es requerido'),
+  defaultModelId: z.string().min(1, 'defaultModelId es requerido').optional(),
+  baseUrl: z.string().url('URL inválida').optional(),
+  kind: z.string().optional(),
+});
+
+export const createCredentialSchema = z.object({
+  name: z.string().min(1, 'Nombre es requerido').max(100),
+  providerId: z.string().min(1, 'Proveedor es requerido'),
+  apiKey: z.string().min(1, 'API key es requerida'),
+});
+
+export const updateCredentialSchema = z.object({
+  name: z.string().min(1, 'Nombre es requerido').max(100),
 });
 
 export const createAgentSchema = z.object({
@@ -14,6 +28,7 @@ export const createAgentSchema = z.object({
   description: z.string().max(500).default(''),
   role: z.string().min(1, 'Rol es requerido').max(100),
   providerId: z.string().min(1, 'Proveedor es requerido'),
+  credentialId: z.string().nullable().optional(),
   modelId: z.string().min(1, 'Modelo es requerido'),
   systemPrompt: z.string().default(''),
   temperature: z.number().min(0).max(2).default(0.7),
@@ -29,6 +44,7 @@ export const updateAgentSchema = z.object({
   description: z.string().max(500).optional(),
   role: z.string().min(1).max(100).optional(),
   providerId: z.string().optional(),
+  credentialId: z.string().nullable().optional(),
   modelId: z.string().optional(),
   systemPrompt: z.string().optional(),
   temperature: z.number().min(0).max(2).optional(),
@@ -78,4 +94,11 @@ export const sendMessageSchema = z.object({
 
 export const respondApprovalSchema = z.object({
   approved: z.boolean(),
+  rememberForSession: z.boolean().optional(),
+});
+
+export const respondToolApprovalSchema = z.object({
+  approved: z.boolean(),
+  rememberForSession: z.boolean().optional(),
+  sessionId: z.string().optional(),
 });

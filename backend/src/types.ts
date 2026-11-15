@@ -1,4 +1,4 @@
-export type ProviderId = 'anthropic' | 'openai' | 'gemini' | 'ollama' | string;
+export type ProviderId = 'anthropic' | 'openai' | 'gemini' | 'ollama' | 'deepseek' | string;
 
 export interface AIModel {
   id: string;
@@ -21,6 +21,8 @@ export interface AIProvider {
   badge: string;
   status: 'connected' | 'disconnected' | 'error' | 'testing';
   defaultModelId: string;
+  kind?: string;
+  baseUrl?: string;
   models: AIModel[];
   hasApiKey: boolean;
   apiEndpoint?: string;
@@ -41,12 +43,23 @@ export interface AgentStats {
   successRate: number;
 }
 
+export interface APICredential {
+  id: string;
+  name: string;
+  providerId: ProviderId;
+  maskedKey: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Agent {
   id: string;
   name: string;
   description: string;
   role: AgentRole;
   providerId: ProviderId;
+  credentialId?: string;
+  credentialName?: string;
   modelId: string;
   systemPrompt: string;
   temperature: number;
@@ -69,6 +82,8 @@ export interface MCPToolParameter {
   required?: boolean;
 }
 
+export type ToolRiskLevel = 'read' | 'write' | 'destructive';
+
 export interface MCPTool {
   id: string;
   serverId: string;
@@ -82,6 +97,7 @@ export interface MCPTool {
   };
   isWriteOperation: boolean;
   requiresApproval: boolean;
+  toolRiskLevel?: ToolRiskLevel;
   assignedAgentIds: string[];
 }
 
@@ -197,6 +213,20 @@ export interface Approval {
   respondedAt?: string;
 }
 
+export interface ToolApproval {
+  id: string;
+  toolName: string;
+  toolArgs: Record<string, any>;
+  agentId: string;
+  agentName: string;
+  riskLevel: ToolRiskLevel;
+  status: 'pending' | 'approved' | 'rejected' | 'expired';
+  affectedPath?: string;
+  expiresAt: string;
+  createdAt: string;
+  respondedAt?: string;
+}
+
 export interface Message {
   id: string;
   conversationId: string;
@@ -280,8 +310,8 @@ export interface AnalyticsSummary {
   activeAgents: number;
   connectedProviders: number;
   connectedMCPServers: number;
-  tokensByProvider: { provider: string; tokens: number; cost: number }[];
-  tokensByAgent: { agent: string; tokens: number; cost: number }[];
+  tokensByProvider: { provider: string; tokens: number; cost: number | null }[];
+  tokensByAgent: { agent: string; tokens: number; cost: number | null }[];
   activityTimeline: {
     date: string;
     tokens: number;
@@ -346,6 +376,8 @@ export type WSEventType =
   | 'mcp.disconnected'
   | 'tool.requested'
   | 'tool.approval_required'
+  | 'tool.approval_requested'
+  | 'tool.approval_responded'
   | 'workflow.progress';
 
 export interface WSEvent<T = any> {

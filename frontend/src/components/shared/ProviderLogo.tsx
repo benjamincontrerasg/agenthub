@@ -1,6 +1,6 @@
 import React from 'react';
 
-export type ProviderId = 'anthropic' | 'openai' | 'gemini' | 'ollama' | string;
+export type ProviderId = 'anthropic' | 'openai' | 'gemini' | 'ollama' | 'deepseek' | string;
 
 interface ProviderLogoProps {
   providerId?: ProviderId;
@@ -63,6 +63,14 @@ export const OllamaLogo: React.FC<{ className?: string }> = ({ className = 'h-fu
   />
 );
 
+export const DeepSeekLogo: React.FC<{ className?: string }> = ({ className = 'h-full w-full' }) => (
+  <img
+    src="/logos/deepseek-filled.png"
+    alt="DeepSeek"
+    className={`object-contain select-none transition-transform duration-200 ${className}`}
+  />
+);
+
 export const ProviderLogo: React.FC<ProviderLogoProps> = ({
   providerId,
   name,
@@ -105,6 +113,14 @@ export const ProviderLogo: React.FC<ProviderLogoProps> = ({
     return (
       <div className={`relative shrink-0 flex items-center justify-center ${dimensionClass} ${roundedClass} ${className}`}>
         <OllamaLogo className="h-full w-full" />
+      </div>
+    );
+  }
+
+  if (normId.includes('deepseek')) {
+    return (
+      <div className={`relative shrink-0 flex items-center justify-center ${dimensionClass} ${roundedClass} ${className}`}>
+        <DeepSeekLogo className="h-full w-full" />
       </div>
     );
   }

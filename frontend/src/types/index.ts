@@ -1,4 +1,4 @@
-export type ProviderId = 'anthropic' | 'openai' | 'gemini' | 'ollama' | string;
+export type ProviderId = 'anthropic' | 'openai' | 'gemini' | 'ollama' | 'deepseek' | string;
 
 export interface AIModel {
   id: string;
@@ -41,12 +41,23 @@ export interface AgentStats {
   successRate: number;
 }
 
+export interface APICredential {
+  id: string;
+  name: string;
+  providerId: ProviderId;
+  maskedKey: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Agent {
   id: string;
   name: string;
   description: string;
   role: AgentRole;
   providerId: ProviderId;
+  credentialId?: string;
+  credentialName?: string;
   modelId: string;
   systemPrompt: string;
   temperature: number;
@@ -69,6 +80,8 @@ export interface MCPToolParameter {
   required?: boolean;
 }
 
+export type ToolRiskLevel = 'read' | 'write' | 'destructive';
+
 export interface MCPTool {
   id: string;
   serverId: string;
@@ -82,6 +95,7 @@ export interface MCPTool {
   };
   isWriteOperation: boolean;
   requiresApproval: boolean;
+  toolRiskLevel?: ToolRiskLevel;
   assignedAgentIds: string[];
 }
 
@@ -195,6 +209,18 @@ export interface Approval {
   status: 'pending' | 'approved' | 'rejected';
   requestedAt: string;
   respondedAt?: string;
+}
+
+export interface ToolApprovalRequest {
+  approvalId: string;
+  toolName: string;
+  toolArgs: Record<string, any>;
+  agentId: string;
+  agentName: string;
+  riskLevel: ToolRiskLevel;
+  affectedPath?: string;
+  expiresAt: string;
+  allowRememberSession?: boolean;
 }
 
 export interface Message {

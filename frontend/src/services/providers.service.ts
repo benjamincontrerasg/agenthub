@@ -41,8 +41,10 @@ export const providersService = {
 
   async connectProvider(
     id: ProviderId,
-    apiKey: string,
-    defaultModelId?: string
+    apiKey?: string,
+    defaultModelId?: string,
+    baseUrl?: string,
+    kind?: string
   ): Promise<{ success: boolean; message: string }> {
     if (isMockMode()) {
       await new Promise((r) => setTimeout(r, 100));
@@ -50,7 +52,9 @@ export const providersService = {
       if (!target) throw new Error(`Proveedor '${id}' no encontrado`);
 
       target.status = 'connected';
-      target.hasApiKey = true;
+      if (apiKey) target.hasApiKey = true;
+      if (baseUrl) target.apiEndpoint = baseUrl;
+      if (kind) (target as any).kind = kind;
       target.lastTested = new Date().toISOString();
       target.latencyMs = Math.floor(Math.random() * 80) + 40;
 
@@ -70,7 +74,7 @@ export const providersService = {
 
     return apiClient<{ success: boolean; message: string }>(`/providers/${id}/connect`, {
       method: 'POST',
-      body: JSON.stringify({ apiKey, defaultModelId }),
+      body: JSON.stringify({ apiKey: apiKey || undefined, defaultModelId, baseUrl, kind }),
     });
   },
 

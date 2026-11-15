@@ -242,23 +242,127 @@ npm run dev        # Inicia Vite en http://localhost:5173 (o 5174)
 
 ---
 
-## 🐳 Despliegue con Docker Compose
+## 🐳 Despliegue con Docker Compose (Solo Desarrollo Local)
 
-El proyecto incluye un `docker-compose.yml` multicapa listo para producción:
+> [!WARNING]
+> **Aviso de Seguridad Zero-Trust:** La configuración predeterminada de `docker-compose.yml` está diseñada **EXCLUSIVAMENTE para desarrollo local** (puertos enlazados a `127.0.0.1`). Para exponer NEXORA a una red pública o corporativa, es **obligatorio** habilitar autenticación y configurar un Reverse Proxy con terminación TLS/HTTPS (Nginx, Caddy o Cloudflare Tunnel).
 
 ```bash
 # 1. Configura la clave en el archivo .env de la raíz
 cp .env.example .env
 
-# 2. Levantar los contenedores
+# 2. Levantar los contenedores en loopback
 docker compose up -d --build
 ```
 
 | Contenedor | URL | Puerto | Función |
 | :--- | :--- | :---: | :--- |
-| **frontend** | `http://localhost:80` | 80 | Nginx sirviendo la SPA de React con proxy reverso a `/v1` |
-| **backend** | `http://localhost:3001` | 3001 | API Fastify 5 + WebSocket Stream |
-| **db-volume** | — | — | Volumen persistente de datos `NEXORA-db-data` |
+| **frontend** | `http://127.0.0.1:80` | 80 | Nginx sirviendo la SPA de React con proxy reverso a `/v1` |
+| **backend** | `http://127.0.0.1:3001` | 3001 | API Fastify 5 + WebSocket Stream |
+| **db-volume** | — | — | Volumen persistente de datos `nexora-db-data` |
+
+---
+
+## 🔒 Guía Mínima de Terminación TLS / HTTPS (Reverse Proxy)
+
+Para exponer la plataforma de forma segura con certificados SSL/TLS automáticos utilizando Caddy o Nginx:
+
+### Configuración con Caddy (Recomendado)
+```caddy
+nexora.tuempresa.com {
+    encode gzip zstd
+    reverse_proxy 127.0.0.1:80
+}
+```
+
+### Configuración con Nginx
+```nginx
+server {
+    listen 443 ssl http2;
+    server_name nexora.tuempresa.com;
+
+    ssl_certificate /etc/letsencrypt/live/nexora.tuempresa.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/nexora.tuempresa.com/privkey.pem;
+
+    location / {
+        proxy_pass http://127.0.0.1:80;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+    }
+}
+```
+
+---
+
+## 🔌 Añadir un Nuevo Proveedor LLM en 1 Línea
+
+Gracias a la capa unificada `LLMProvider` basada en el adaptador universal `OpenAICompatibleProvider`, agregar cualquier proveedor compatible con la API de OpenAI (Groq, Together, DeepSeek, Mistral, xAI, LM Studio, etc.) no requiere escribir código nuevo ni instalar SDKs adicionales. Solo se añade una entrada al diccionario `PROVIDER_PRESETS` en [`backend/src/providers/registry.ts`](backend/src/providers/registry.ts):
+
+```typescript
+// backend/src/providers/registry.ts
+export const PROVIDER_PRESETS: Record<string, ProviderPreset> = {
+  // ...
+  xai: {
+    id: 'xai',
+    name: 'xAI (Grok)',
+    kind: 'openai-compatible',
+    baseUrl: 'https://api.x.ai/v1',
+    description: 'Modelos Grok-2 y Grok-beta',
+  },
+  deepseek: {
+    id: 'deepseek',
+    name: 'DeepSeek',
+    kind: 'openai-compatible',
+    baseUrl: 'https://api.deepseek.com/v1',
+    description: 'Modelos DeepSeek-V3 y DeepSeek-R1',
+  },
+};
+```
+
+### Tabla de Presets Soportados
+
+| Proveedor ID | Nombre Oficial | Tipo de Adaptador | Endpoint Base Predeterminado | Modelos Destacados |
+| :--- | :--- | :--- | :--- | :--- |
+| `openai` | OpenAI | `openai-compatible` | `https://api.openai.com/v1` | GPT-4o, GPT-4o-mini, o1 |
+| `anthropic` | Anthropic | `anthropic` | `https://api.anthropic.com/v1` | Claude 3.7 Sonnet, Claude 3.5 Sonnet, Haiku |
+| `gemini` | Google Gemini | `openai-compatible` | `https://generativelanguage.googleapis.com/v1beta/openai` | Gemini 2.0 Flash, Gemini 1.5 Pro |
+| `groq` | Groq Cloud | `openai-compatible` | `https://api.groq.com/openai/v1` | Llama 3.3 70B, Mixtral 8x7B (LPUs) |
+| `openrouter` | OpenRouter | `openai-compatible` | `https://openrouter.ai/api/v1` | Enrutador unificado (+200 modelos) |
+| `deepseek` | DeepSeek | `openai-compatible` | `https://api.deepseek.com/v1` | DeepSeek-V3, DeepSeek-R1 |
+| `mistral` | Mistral AI | `openai-compatible` | `https://api.mistral.ai/v1` | Mistral Large, Codestral, Pixtral |
+| `together` | Together AI | `openai-compatible` | `https://api.together.xyz/v1` | Llama 3.3, Qwen 2.5, DeepSeek |
+| `xai` | xAI | `openai-compatible` | `https://api.x.ai/v1` | Grok-2, Grok-beta |
+| `ollama` | Ollama (Local) | `openai-compatible` | `http://localhost:11434/v1` | Llama 3, Mistral, Qwen (local) |
+| `lmstudio` | LM Studio (Local) | `openai-compatible` | `http://localhost:1234/v1` | Inferencia local compatible con OpenAI |
+
+> ℹ️ *Nota sobre dependencias de SDK:* La inferencia de chat y streaming de todos los agentes se ejecuta 100% mediante `fetch` nativo de Node 20 en la capa unificada sin usar SDKs de terceros. Los paquetes `@google/generative-ai` y `openai` se mantienen exclusivamente en `memory.service.ts` para la generación de vectores de incrustación (embeddings) en la búsqueda semántica RAG.
+
+---
+
+## 🛡️ Política de Seguridad del Local Bridge por Binario
+
+| Binario | Parámetros Permitidos | Parámetros Bloqueados (Zero-Trust) | Mitigación |
+| :--- | :--- | :--- | :--- |
+| `node` | Archivos de script locales | `-e`, `--eval`, `-p`, `--print`, `--inspect*` | Previene ejecución arbitraria en memoria y depuradores |
+| `python` / `python3` | Scripts `.py` en directorios autorizados | `-c`, `--command`, `-m` | Bloquea inyección de comandos inline |
+| `docker` | Subcomandos inspect / build aislados | `-v`, `--volume`, `--mount`, `--privileged`, `--net=host` | Evita escape de contenedor al sistema de archivos del host |
+| `git` | clone, status, diff, log | `-c`, `--exec-path`, `--config-env`, hooks | Bloquea override de configuración maliciosa y ejecución remota |
+| `npx` / `uvx` | Paquetes de servidores MCP declarados | `-e`, `--eval`, `-c` | Previene scripts ad-hoc no auditados |
+
+---
+
+## 🗺️ Roadmap de Seguridad y Despliegue Empresarial
+
+- [x] **Capa Unificada de Proveedores LLM:** Adaptador agnóstico, streaming SSE con acumulación fragmentada de herramientas y aislamiento total de API keys.
+- [x] **Seguridad Zero-Trust en Bridge Local:** Autenticación Bearer obligatoria (`timingSafeEqual`), mitigación de CSRF/DNS Rebinding y lista blanca de argumentos por binario.
+- [x] **Cifrado Robusto en Reposo (v2):** AES-256-GCM con derivación HKDF e IV de 12 bytes; rotación de claves idempotente sin downtime.
+- [x] **Política de Aprobación de Herramientas MCP:** Clasificación de riesgo (`read`, `write`, `destructive`), persistencia de aprobaciones para reconexión y defensa contra prompt injection indirecto.
+- [ ] **Autenticación Multiusuario & JWT:** Soporte de inicio de sesión con tokens de acceso/refresco y revocación.
+- [ ] **Control de Acceso Basado en Roles (RBAC):** Roles de Administrador, Operador, Auditor y Visor con políticas granulares por recurso.
+- [ ] **Multi-Tenancy Aislado:** Espacios de trabajo (workspaces) y organizaciones con aislamiento de bases de datos o esquemas.
+- [ ] **Integración Nativa OIDC / SSO:** Autenticación corporativa mediante Google Workspace, Okta y Microsoft Entra ID.
 
 ---
 

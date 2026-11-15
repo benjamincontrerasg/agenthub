@@ -158,17 +158,26 @@ jobs:
         working-directory: bridge
         run: npm ci
 
-      # Ejecutar tests del frontend (fallo graceful si no hay tests)
+      # Ejecutar tests del frontend
       - name: 🧪 Ejecutar tests del frontend
-        run: npm run test:frontend || echo "⚠️ No se encontraron tests del frontend o fallaron. Continuando..."
+        run: npm run test:frontend
         env:
           CI: true
 
-      # Ejecutar tests del backend (fallo graceful si no hay tests)
+      # Ejecutar tests del backend
       - name: 🧪 Ejecutar tests del backend
-        run: npm run test:backend || echo "⚠️ No se encontraron tests del backend o fallaron. Continuando..."
+        run: npm run test:backend
         env:
           CI: true
+          ENCRYPTION_KEY: "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+          DATABASE_URL: "file:./data/nexora.db"
+
+      # Ejecutar tests del bridge
+      - name: 🧪 Ejecutar tests del bridge
+        run: npm run test:bridge
+        env:
+          CI: true
+          BRIDGE_TOKEN: "ci-test-bridge-token-32-chars-ok"
 
   # -------------------------------------------------------------------------
   # Job 3: Auditoría de Seguridad

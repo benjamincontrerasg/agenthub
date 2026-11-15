@@ -10,6 +10,7 @@ export const agentService = {
     const allAgents = db.select().from(schema.agents).all();
     const allAllowedTools = db.select().from(schema.agentAllowedTools).all();
     const allCommunications = db.select().from(schema.agentCommunications).all();
+    const allCredentials = db.select().from(schema.apiCredentials).all();
 
     return allAgents.map((a) => {
       const allowedToolIds = allAllowedTools
@@ -18,6 +19,7 @@ export const agentService = {
       const allowedAgentCommunicationIds = allCommunications
         .filter((c) => c.agentId === a.id)
         .map((c) => c.targetAgentId);
+      const cred = a.credentialId ? allCredentials.find((c) => c.id === a.credentialId) : undefined;
 
       return {
         id: a.id,
@@ -25,6 +27,8 @@ export const agentService = {
         description: a.description,
         role: a.role as AgentRole,
         providerId: a.providerId as ProviderId,
+        credentialId: a.credentialId ?? undefined,
+        credentialName: cred?.name,
         modelId: a.modelId,
         systemPrompt: a.systemPrompt,
         temperature: a.temperature,
@@ -65,12 +69,20 @@ export const agentService = {
       .all()
       .map((c) => c.targetAgentId);
 
+    let credentialName: string | undefined;
+    if (a.credentialId) {
+      const cred = db.select().from(schema.apiCredentials).where(eq(schema.apiCredentials.id, a.credentialId)).get();
+      credentialName = cred?.name;
+    }
+
     return {
       id: a.id,
       name: a.name,
       description: a.description,
       role: a.role as AgentRole,
       providerId: a.providerId as ProviderId,
+      credentialId: a.credentialId ?? undefined,
+      credentialName,
       modelId: a.modelId,
       systemPrompt: a.systemPrompt,
       temperature: a.temperature,
@@ -95,6 +107,7 @@ export const agentService = {
     description: string;
     role: string;
     providerId: string;
+    credentialId?: string | null;
     modelId: string;
     systemPrompt: string;
     temperature?: number;
@@ -113,6 +126,7 @@ export const agentService = {
       description: data.description,
       role: data.role,
       providerId: data.providerId,
+      credentialId: data.credentialId ?? null,
       modelId: data.modelId,
       systemPrompt: data.systemPrompt,
       temperature: data.temperature ?? 0.7,
@@ -162,6 +176,7 @@ export const agentService = {
         description: updates.description ?? existing.description,
         role: updates.role ?? existing.role,
         providerId: updates.providerId ?? existing.providerId,
+        credentialId: updates.credentialId !== undefined ? updates.credentialId : existing.credentialId,
         modelId: updates.modelId ?? existing.modelId,
         systemPrompt: updates.systemPrompt ?? existing.systemPrompt,
         temperature: updates.temperature ?? existing.temperature,

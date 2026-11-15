@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ProviderModal } from './ProviderModal';
 import { ProviderLogo } from '@/components/shared/ProviderLogo';
+import { CredentialsVaultSection } from '@/features/credentials/CredentialsVaultSection';
 import { AIProvider } from '@/types';
 import { formatDate } from '@/lib/utils';
 import { useProviders, useTestProvider, useDisconnectProvider } from './hooks';
@@ -258,6 +259,9 @@ export const ProvidersPage: React.FC = () => {
           })}
         </div>
       )}
+
+      {/* Named Credentials / API Keys Vault Section */}
+      <CredentialsVaultSection />
 
       {/* Provider Configuration Modal */}
       <ProviderModal

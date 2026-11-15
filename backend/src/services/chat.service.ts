@@ -8,6 +8,7 @@ import { aiEngine } from './ai-engine.js';
 import { agentService } from './agent.service.js';
 import { memoryService } from './memory.service.js';
 import { auditService } from './audit.service.js';
+import { toolPolicyService } from './tool-policy.service.js';
 
 export const chatService = {
   async getConversations(): Promise<Conversation[]> {
@@ -194,7 +195,7 @@ export const chatService = {
     return userMessage;
   },
 
-  async respondApproval(approvalId: string, approved: boolean): Promise<{ success: boolean }> {
+  async respondApproval(approvalId: string, approved: boolean, rememberForSession?: boolean): Promise<{ success: boolean }> {
     const app = db.select().from(schema.approvals).where(eq(schema.approvals.id, approvalId)).get();
     if (!app) {
       throw new NotFoundError('Aprobación requerida', approvalId);
@@ -210,6 +211,14 @@ export const chatService = {
       })
       .where(eq(schema.approvals.id, approvalId))
       .run();
+
+    // Si el usuario marcó recordar en sesión y la herramienta no es destructiva, guardar en memoria
+    if (approved && rememberForSession && app.conversationId) {
+      const risk = toolPolicyService.determineRiskLevel(app.toolName);
+      if (risk === 'write') {
+        toolPolicyService.rememberToolForSession(app.conversationId, app.toolName);
+      }
+    }
 
     // Update corresponding tool execution
     db.update(schema.toolExecutions)
@@ -276,136 +285,139 @@ export const chatService = {
       ? agents.find((a) => a.role === 'Architect') || coordinator
       : agents.find((a) => a.role === 'Developer') || coordinator;
 
-    const coordMsgId = `msg-coord-${Date.now()}`;
-    const coordNow = new Date().toISOString();
+    const isDelegated = targetAgent.id !== coordinator.id;
+    const actingAgent = targetAgent;
 
-    const delegation = targetAgent.id !== coordinator.id ? {
-      targetAgentId: targetAgent.id,
-      targetAgentName: targetAgent.name,
-      reason: `Delegación de tarea técnica especializada a ${targetAgent.name} (${targetAgent.role})`,
-    } : undefined;
+    if (isDelegated) {
+      const coordMsgId = `msg-coord-${Date.now()}`;
+      const coordNow = new Date().toISOString();
 
-    db.insert(schema.messages).values({
-      id: coordMsgId,
-      conversationId,
-      senderType: 'agent',
-      senderId: coordinator.id,
-      senderName: coordinator.name,
-      senderRole: coordinator.role,
-      content: `Analizando requerimiento: "${userPrompt.slice(0, 80)}...". Coordinando ejecución y asignando recursos especializados.`,
-      timestamp: coordNow,
-      status: 'done',
-      thoughtTrace: `Descomponiendo requerimiento. Estrategia: delegación autónoma a ${targetAgent.name}.`,
-      delegation: delegation ? JSON.stringify(delegation) : null,
-    }).run();
-
-    wsManager.broadcast('agent.message', {
-      id: coordMsgId,
-      conversationId,
-      senderType: 'agent',
-      senderId: coordinator.id,
-      senderName: coordinator.name,
-      senderRole: coordinator.role,
-      content: `Analizando requerimiento: "${userPrompt.slice(0, 80)}...". Coordinando ejecución y asignando recursos especializados.`,
-      timestamp: coordNow,
-      status: 'done',
-      thoughtTrace: `Descomponiendo requerimiento. Estrategia: delegación autónoma a ${targetAgent.name}.`,
-      delegation,
-    });
-
-    if (targetAgent.id !== coordinator.id) {
-      // 3. Delegate to specialized agent & call real AI engine with streaming chunks
-      const fullAgent = await agentService.getById(targetAgent.id);
-      const targetMsgId = `msg-agent-${Date.now()}`;
-      const targetNow = new Date().toISOString();
-
-      // Inyección de memoria semántica relevante (RAG)
-      let enrichedPrompt = userPrompt;
-      try {
-        const memories = await memoryService.searchMemories(targetAgent.id, userPrompt, 3);
-        if (memories.length > 0) {
-          const contextBlocks = memories
-            .map((m, idx) => `[Memoria ${idx + 1}]: ${m.content}`)
-            .join('\n');
-          enrichedPrompt = `Contexto Relevante de Memoria RAG:\n${contextBlocks}\n\nInstrucción:\n${userPrompt}`;
-        }
-      } catch (err) {
-        console.warn('[RAG Memory Warning] No se pudo recuperar memoria:', err);
-      }
-
-      wsManager.broadcast('chat.stream_start', {
-        conversationId,
-        messageId: targetMsgId,
-        agentId: targetAgent.id,
-        agentName: targetAgent.name,
-        senderRole: targetAgent.role,
-      });
-
-      const aiResult = await aiEngine.generateAgentResponse(
-        fullAgent,
-        conv.messages,
-        enrichedPrompt,
-        (chunk: string) => {
-          wsManager.broadcast('chat.token', {
-            conversationId,
-            messageId: targetMsgId,
-            agentId: targetAgent.id,
-            chunk,
-          });
-        }
-      );
+      const delegation = {
+        targetAgentId: targetAgent.id,
+        targetAgentName: targetAgent.name,
+        reason: `Delegación de tarea técnica especializada a ${targetAgent.name} (${targetAgent.role})`,
+      };
 
       db.insert(schema.messages).values({
-        id: targetMsgId,
+        id: coordMsgId,
         conversationId,
         senderType: 'agent',
-        senderId: targetAgent.id,
-        senderName: targetAgent.name,
-        senderRole: targetAgent.role,
-        content: aiResult.content,
-        timestamp: targetNow,
+        senderId: coordinator.id,
+        senderName: coordinator.name,
+        senderRole: coordinator.role,
+        content: `Analizando requerimiento: "${userPrompt.slice(0, 80)}...". Coordinando ejecución y asignando recursos especializados.`,
+        timestamp: coordNow,
         status: 'done',
-        thoughtTrace: aiResult.thoughtTrace,
+        thoughtTrace: `Descomponiendo requerimiento. Estrategia: delegación autónoma a ${targetAgent.name}.`,
+        delegation: JSON.stringify(delegation),
       }).run();
 
-      // Record real token usage
-      if (aiResult.tokensUsed > 0) {
-        db.insert(schema.tokenUsage).values({
-          id: `usage-${Date.now()}`,
-          providerId: targetAgent.providerId,
-          agentId: targetAgent.id,
-          tokens: aiResult.tokensUsed,
-          costUsd: aiResult.costUsd,
-          timestamp: targetNow,
-        }).run();
-
-        // Increment agent stats
-        db.update(schema.agents)
-          .set({
-            totalRuns: (fullAgent.stats.totalRuns || 0) + 1,
-            totalTokens: (fullAgent.stats.totalTokens || 0) + aiResult.tokensUsed,
-          })
-          .where(eq(schema.agents.id, targetAgent.id))
-          .run();
-      }
-
       wsManager.broadcast('agent.message', {
-        id: targetMsgId,
+        id: coordMsgId,
         conversationId,
         senderType: 'agent',
-        senderId: targetAgent.id,
-        senderName: targetAgent.name,
-        senderRole: targetAgent.role,
-        content: aiResult.content,
-        timestamp: targetNow,
+        senderId: coordinator.id,
+        senderName: coordinator.name,
+        senderRole: coordinator.role,
+        content: `Analizando requerimiento: "${userPrompt.slice(0, 80)}...". Coordinando ejecución y asignando recursos especializados.`,
+        timestamp: coordNow,
         status: 'done',
-        thoughtTrace: aiResult.thoughtTrace,
+        thoughtTrace: `Descomponiendo requerimiento. Estrategia: delegación autónoma a ${targetAgent.name}.`,
+        delegation,
       });
     }
 
+    // Call real AI engine with streaming chunks
+    const fullAgent = await agentService.getById(actingAgent.id);
+    const targetMsgId = `msg-agent-${Date.now()}`;
+    const targetNow = new Date().toISOString();
+
+    // Inyección de memoria semántica relevante (RAG)
+    let enrichedPrompt = userPrompt;
+    try {
+      const memories = await memoryService.searchMemories(actingAgent.id, userPrompt, 3);
+      if (memories.length > 0) {
+        const contextBlocks = memories
+          .map((m, idx) => `[Memoria ${idx + 1}]: ${m.content}`)
+          .join('\n');
+        enrichedPrompt = `Contexto Relevante de Memoria RAG:\n${contextBlocks}\n\nInstrucción:\n${userPrompt}`;
+      }
+    } catch (err) {
+      console.warn('[RAG Memory Warning] No se pudo recuperar memoria:', err);
+    }
+
+    wsManager.broadcast('chat.stream_start', {
+      conversationId,
+      messageId: targetMsgId,
+      agentId: actingAgent.id,
+      agentName: actingAgent.name,
+      senderRole: actingAgent.role,
+    });
+
+    const aiResult = await aiEngine.generateAgentResponse(
+      fullAgent,
+      conv.messages,
+      enrichedPrompt,
+      (chunk: string) => {
+        wsManager.broadcast('chat.token', {
+          conversationId,
+          messageId: targetMsgId,
+          agentId: actingAgent.id,
+          chunk,
+        });
+      }
+    );
+
+    db.insert(schema.messages).values({
+      id: targetMsgId,
+      conversationId,
+      senderType: 'agent',
+      senderId: actingAgent.id,
+      senderName: actingAgent.name,
+      senderRole: actingAgent.role,
+      content: aiResult.content,
+      timestamp: targetNow,
+      status: 'done',
+      thoughtTrace: aiResult.thoughtTrace,
+    }).run();
+
+    // Record real token usage
+    if (aiResult.tokensUsed > 0) {
+      db.insert(schema.tokenUsage).values({
+        id: `usage-${Date.now()}`,
+        providerId: actingAgent.providerId,
+        agentId: actingAgent.id,
+        tokens: aiResult.tokensUsed,
+        costUsd: aiResult.costUsd,
+        timestamp: targetNow,
+      }).run();
+
+      // Increment agent stats
+      db.update(schema.agents)
+        .set({
+          totalRuns: (fullAgent.stats.totalRuns || 0) + 1,
+          totalTokens: (fullAgent.stats.totalTokens || 0) + aiResult.tokensUsed,
+        })
+        .where(eq(schema.agents.id, actingAgent.id))
+        .run();
+    }
+
+    wsManager.broadcast('agent.message', {
+      id: targetMsgId,
+      conversationId,
+      senderType: 'agent',
+      senderId: actingAgent.id,
+      senderName: actingAgent.name,
+      senderRole: actingAgent.role,
+      content: aiResult.content,
+      timestamp: targetNow,
+      status: 'done',
+      thoughtTrace: aiResult.thoughtTrace,
+    });
+
     wsManager.broadcast('agent.completed', {
       conversationId,
-      agentId: targetAgent.id,
+      agentId: actingAgent.id,
       status: 'success',
     });
   },

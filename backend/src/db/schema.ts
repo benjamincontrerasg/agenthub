@@ -9,6 +9,8 @@ export const providers = sqliteTable('providers', {
   description: text('description').notNull(),
   logo: text('logo').notNull(),
   badge: text('badge').notNull(),
+  kind: text('kind').notNull().default('openai-compatible'),
+  baseUrl: text('base_url'),
   status: text('status', { enum: ['connected', 'disconnected', 'error', 'testing'] }).notNull().default('disconnected'),
   defaultModelId: text('default_model_id').notNull(),
   hasApiKey: integer('has_api_key', { mode: 'boolean' }).notNull().default(false),
@@ -35,6 +37,29 @@ export const models = sqliteTable('models', {
   isDefault: integer('is_default', { mode: 'boolean' }).notNull().default(false),
 });
 
+export const providerModels = sqliteTable('provider_models', {
+  providerId: text('provider_id').notNull().references(() => providers.id, { onDelete: 'cascade' }),
+  modelId: text('model_id').notNull(),
+  contextWindow: integer('context_window').default(128000),
+  inputCostPer1M: real('input_cost_per_1m'),
+  outputCostPer1M: real('output_cost_per_1m'),
+  supportsTools: integer('supports_tools', { mode: 'boolean' }).notNull().default(true),
+}, (table) => [
+  primaryKey({ columns: [table.providerId, table.modelId] })
+]);
+
+// --- API Credentials Vault ---
+
+export const apiCredentials = sqliteTable('api_credentials', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  providerId: text('provider_id').notNull().references(() => providers.id, { onDelete: 'cascade' }),
+  encryptedKey: text('encrypted_key').notNull(),
+  maskedKey: text('masked_key').notNull(),
+  createdAt: text('created_at').notNull(),
+  updatedAt: text('updated_at').notNull(),
+});
+
 // --- Agents ---
 
 export const agents = sqliteTable('agents', {
@@ -43,6 +68,7 @@ export const agents = sqliteTable('agents', {
   description: text('description').notNull(),
   role: text('role').notNull(),
   providerId: text('provider_id').notNull().references(() => providers.id),
+  credentialId: text('credential_id').references(() => apiCredentials.id),
   modelId: text('model_id').notNull(),
   systemPrompt: text('system_prompt').notNull(),
   temperature: real('temperature').notNull().default(0.7),
@@ -106,6 +132,7 @@ export const mcpTools = sqliteTable('mcp_tools', {
   inputSchema: text('input_schema').notNull(), // JSON schema
   isWriteOperation: integer('is_write_operation', { mode: 'boolean' }).notNull().default(false),
   requiresApproval: integer('requires_approval', { mode: 'boolean' }).notNull().default(true),
+  toolRiskLevel: text('tool_risk_level', { enum: ['read', 'write', 'destructive'] }).notNull().default('read'),
 });
 
 export const mcpToolAssignments = sqliteTable('mcp_tool_assignments', {
@@ -231,6 +258,20 @@ export const approvals = sqliteTable('approvals', {
   respondedAt: text('responded_at'),
 });
 
+export const toolApprovals = sqliteTable('tool_approvals', {
+  id: text('id').primaryKey(),
+  toolName: text('tool_name').notNull(),
+  toolArgs: text('tool_args').notNull(), // JSON string
+  agentId: text('agent_id').notNull(),
+  agentName: text('agent_name').notNull(),
+  riskLevel: text('risk_level', { enum: ['read', 'write', 'destructive'] }).notNull(),
+  status: text('status', { enum: ['pending', 'approved', 'rejected', 'expired'] }).notNull().default('pending'),
+  affectedPath: text('affected_path'),
+  expiresAt: text('expires_at').notNull(),
+  createdAt: text('created_at').notNull(),
+  respondedAt: text('responded_at'),
+});
+
 export const toolExecutions = sqliteTable('tool_executions', {
   id: text('id').primaryKey(),
   messageId: text('message_id').references(() => messages.id, { onDelete: 'cascade' }),
@@ -284,6 +325,15 @@ export const auditLogs = sqliteTable('audit_logs', {
 export const providersRelations = relations(providers, ({ many }) => ({
   models: many(models),
   agents: many(agents),
+  credentials: many(apiCredentials),
+}));
+
+export const apiCredentialsRelations = relations(apiCredentials, ({ one, many }) => ({
+  provider: one(providers, {
+    fields: [apiCredentials.providerId],
+    references: [providers.id],
+  }),
+  agents: many(agents),
 }));
 
 export const modelsRelations = relations(models, ({ one }) => ({
@@ -297,6 +347,10 @@ export const agentsRelations = relations(agents, ({ one, many }) => ({
   provider: one(providers, {
     fields: [agents.providerId],
     references: [providers.id],
+  }),
+  credential: one(apiCredentials, {
+    fields: [agents.credentialId],
+    references: [apiCredentials.id],
   }),
   allowedTools: many(agentAllowedTools),
   communications: many(agentCommunications, { relationName: 'agent_comms' }),

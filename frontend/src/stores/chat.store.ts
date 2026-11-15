@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware';
 import { Conversation, Message, Approval, ToolExecution } from '@/types';
 import { initialConversations } from '@/services/mock-data';
 import { generateId } from '@/lib/utils';
+import { chatService } from '@/services/chat.service';
 
 let wsClient: WebSocket | null = null;
 
@@ -169,7 +170,7 @@ interface ChatState {
   getActiveConversation: () => Conversation | undefined;
   createConversation: (title: string, participantAgentIds: string[]) => Conversation;
   sendMessage: (content: string) => Promise<void>;
-  respondToApproval: (approvalId: string, approved: boolean) => Promise<void>;
+  respondToApproval: (approvalId: string, approved: boolean, rememberForSession?: boolean) => Promise<void>;
   pauseSimulation: () => void;
   resumeSimulation: () => void;
   cancelSimulation: () => void;
@@ -453,9 +454,15 @@ export const useChatStore = create<ChatState>()(
         }));
       },
 
-      respondToApproval: async (approvalId, approved) => {
+      respondToApproval: async (approvalId, approved, rememberForSession) => {
         const activeConv = get().getActiveConversation();
         if (!activeConv) return;
+
+        try {
+          await chatService.respondApproval(approvalId, approved, rememberForSession);
+        } catch (e) {
+          console.warn('[Chat Store] Error enviando respuesta de aprobación al backend:', e);
+        }
 
         // Update the approval state inside messages
         set((state) => ({

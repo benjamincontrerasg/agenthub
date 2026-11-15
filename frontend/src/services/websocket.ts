@@ -1,51 +1,123 @@
+import { z } from 'zod';
 import { WSEvent, WSEventType } from '@/types';
 
+export const wsEventSchema = z.object({
+  type: z.string(),
+  payload: z.any(),
+  timestamp: z.string().optional(),
+});
+
+export type ConnectionStatus = 'connected' | 'connecting' | 'disconnected' | 'reconnecting';
+
 type EventHandler<T = any> = (payload: T) => void;
+type StatusHandler = (status: ConnectionStatus) => void;
+type ResyncHandler = () => Promise<void> | void;
 
 class WebSocketService {
   private ws: WebSocket | null = null;
-  private listeners: Map<WSEventType, Set<EventHandler>> = new Map();
-  private reconnectInterval = 5000;
-  private isConnecting = false;
-  private mockMode = true;
+  private listeners: Map<string, Set<EventHandler>> = new Map();
+  private statusListeners: Set<StatusHandler> = new Set();
+  private resyncHandlers: Set<ResyncHandler> = new Set();
+  private status: ConnectionStatus = 'disconnected';
+  private reconnectAttempts = 0;
+  private reconnectTimer: any = null;
+  private heartbeatTimer: any = null;
+  private url: string = '';
+  private mockMode = false;
 
   constructor() {
-    this.mockMode = import.meta.env.VITE_USE_MOCK !== 'false';
+    this.mockMode = import.meta.env.VITE_USE_MOCKS === 'true' || import.meta.env.VITE_USE_MOCK === 'true';
   }
 
-  public connect(url: string = import.meta.env.VITE_WS_URL || 'wss://api.NEXORA.dev/ws') {
+  public getStatus(): ConnectionStatus {
+    return this.status;
+  }
+
+  private setStatus(newStatus: ConnectionStatus) {
+    if (this.status !== newStatus) {
+      this.status = newStatus;
+      this.statusListeners.forEach((fn) => {
+        try {
+          fn(newStatus);
+        } catch (e) {
+          console.error('[WS Status Listener Error]', e);
+        }
+      });
+    }
+  }
+
+  public onStatusChange(handler: StatusHandler): () => void {
+    this.statusListeners.add(handler);
+    handler(this.status);
+    return () => this.statusListeners.delete(handler);
+  }
+
+  public onResync(handler: ResyncHandler): () => void {
+    this.resyncHandlers.add(handler);
+    return () => this.resyncHandlers.delete(handler);
+  }
+
+  public connect(url: string = import.meta.env.VITE_WS_URL || 'ws://localhost:3001/ws') {
+    this.url = url;
+
     if (this.mockMode) {
-      // In mock mode, we do not attempt raw TCP connection
+      this.setStatus('connected');
       return;
     }
 
-    if (this.ws?.readyState === WebSocket.OPEN || this.isConnecting) {
+    if (this.ws?.readyState === WebSocket.OPEN) {
       return;
     }
 
-    this.isConnecting = true;
+    this.cleanupHeartbeat();
+    clearTimeout(this.reconnectTimer);
+    this.setStatus(this.reconnectAttempts > 0 ? 'reconnecting' : 'connecting');
 
     try {
       this.ws = new WebSocket(url);
 
-      this.ws.onopen = () => {
-        this.isConnecting = false;
-        console.info('[NEXORA WS] Conectado al stream de eventos en tiempo real.');
+      this.ws.onopen = async () => {
+        const wasReconnecting = this.reconnectAttempts > 0;
+        this.reconnectAttempts = 0;
+        this.setStatus('connected');
+        this.startHeartbeat();
+
+        // Si se reconectó tras una caída, ejecutar resincronización por HTTP
+        if (wasReconnecting) {
+          console.info('[NEXORA WS] Conexión restablecida. Ejecutando resincronización de estado HTTP...');
+          for (const resync of this.resyncHandlers) {
+            try {
+              await resync();
+            } catch (err) {
+              console.warn('[WS Resync Warning]', err);
+            }
+          }
+        }
       };
 
       this.ws.onmessage = (event) => {
         try {
-          const parsed: WSEvent = JSON.parse(event.data);
-          this.emit(parsed.type, parsed.payload);
+          const raw = JSON.parse(event.data);
+          const validated = wsEventSchema.safeParse(raw);
+          if (!validated.success) {
+            console.warn('[NEXORA WS] Mensaje descartado por fallo de validación Zod:', validated.error);
+            return;
+          }
+
+          if (validated.data.type === 'pong') {
+            return;
+          }
+
+          this.emit(validated.data.type as WSEventType, validated.data.payload);
         } catch (err) {
-          console.warn('[NEXORA WS] Mensaje no parseable:', event.data);
+          console.warn('[NEXORA WS] Error deserializando evento WebSocket:', event.data);
         }
       };
 
       this.ws.onclose = () => {
-        this.isConnecting = false;
+        this.cleanupHeartbeat();
         this.ws = null;
-        setTimeout(() => this.connect(url), this.reconnectInterval);
+        this.scheduleReconnect();
       };
 
       this.ws.onerror = (err) => {
@@ -53,12 +125,39 @@ class WebSocketService {
         this.ws?.close();
       };
     } catch (e) {
-      this.isConnecting = false;
-      console.warn('[NEXORA WS] No se pudo inicializar WebSocket:', e);
+      console.warn('[NEXORA WS] Error al instanciar socket:', e);
+      this.scheduleReconnect();
     }
   }
 
-  public on<T = any>(eventType: WSEventType, handler: EventHandler<T>): () => void {
+  private scheduleReconnect() {
+    this.setStatus('reconnecting');
+    this.reconnectAttempts++;
+    // Backoff exponencial: 1s, 1.5s, 2.25s ... hasta máx 30s
+    const delay = Math.min(1000 * Math.pow(1.5, this.reconnectAttempts), 30000);
+    clearTimeout(this.reconnectTimer);
+    this.reconnectTimer = setTimeout(() => {
+      this.connect(this.url);
+    }, delay);
+  }
+
+  private startHeartbeat() {
+    this.cleanupHeartbeat();
+    this.heartbeatTimer = setInterval(() => {
+      if (this.ws?.readyState === WebSocket.OPEN) {
+        this.ws.send(JSON.stringify({ action: 'ping', timestamp: new Date().toISOString() }));
+      }
+    }, 30000); // Heartbeat cada 30 segundos
+  }
+
+  private cleanupHeartbeat() {
+    if (this.heartbeatTimer) {
+      clearInterval(this.heartbeatTimer);
+      this.heartbeatTimer = null;
+    }
+  }
+
+  public on<T = any>(eventType: string, handler: EventHandler<T>): () => void {
     if (!this.listeners.has(eventType)) {
       this.listeners.set(eventType, new Set());
     }
@@ -69,7 +168,7 @@ class WebSocketService {
     };
   }
 
-  public emit<T = any>(eventType: WSEventType, payload: T) {
+  public emit<T = any>(eventType: string, payload: T) {
     const handlers = this.listeners.get(eventType);
     if (handlers) {
       handlers.forEach((fn) => {
@@ -91,13 +190,15 @@ class WebSocketService {
   }
 
   public disconnect() {
+    clearTimeout(this.reconnectTimer);
+    this.cleanupHeartbeat();
     if (this.ws) {
       this.ws.close();
       this.ws = null;
     }
+    this.setStatus('disconnected');
     this.listeners.clear();
   }
 }
 
 export const wsService = new WebSocketService();
-

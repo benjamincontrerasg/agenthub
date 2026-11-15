@@ -1,22 +1,43 @@
-import { db } from '../db/connection.js';
+import { db, sqlite } from '../db/connection.js';
 import * as schema from '../db/schema.js';
 import { eq, isNotNull } from 'drizzle-orm';
 import { decryptWithKey, encryptWithKey } from '../lib/crypto.js';
+import readline from 'readline';
+
+async function readFromStdin(prompt: string): Promise<string> {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+  return new Promise((resolve) => {
+    rl.question(prompt, (answer) => {
+      rl.close();
+      resolve(answer.trim());
+    });
+  });
+}
 
 /**
- * Script de rotación de clave de cifrado (Zero-Downtime Key Rotation)
+ * Script de rotación de clave de cifrado (Zero-Downtime Key Rotation).
  * Por seguridad Zero-Trust, se leen exclusivamente desde variables de entorno o stdin
  * para evitar exponer secretos en el historial de comandos o lista de procesos de la terminal (ps/proc).
- * Uso:
- *   OLD_ENCRYPTION_KEY=... NEW_ENCRYPTION_KEY=... npx tsx src/scripts/rotate-key.ts
+ *
+ * Se ejecuta dentro de una transacción SQLite para garantizar atomicidad e idempotencia.
  */
 async function rotateKeys() {
-  const oldKey = process.env.OLD_ENCRYPTION_KEY;
-  const newKey = process.env.NEW_ENCRYPTION_KEY;
+  let oldKey = process.env.OLD_ENCRYPTION_KEY;
+  let newKey = process.env.NEW_ENCRYPTION_KEY;
+
+  if (!oldKey && process.stdin.isTTY) {
+    oldKey = await readFromStdin('Introduce la clave de cifrado antigua (OLD_ENCRYPTION_KEY): ');
+  }
+  if (!newKey && process.stdin.isTTY) {
+    newKey = await readFromStdin('Introduce la clave de cifrado nueva (NEW_ENCRYPTION_KEY): ');
+  }
 
   if (!oldKey || !newKey) {
-    console.error('❌ Error de Seguridad: Las claves no deben pasarse como argumentos de línea de comandos.');
-    console.error('Configura las variables de entorno para ejecutarse de forma segura:');
+    console.error('❌ Error de Seguridad: Las claves deben definirse en variables de entorno o por stdin.');
+    console.error('Uso seguro:');
     console.error('  OLD_ENCRYPTION_KEY=... NEW_ENCRYPTION_KEY=... npm run rotate-key');
     process.exit(1);
   }
@@ -26,7 +47,12 @@ async function rotateKeys() {
     process.exit(1);
   }
 
-  console.log('🔄 Iniciando rotación de credenciales cifradas con AES-256-GCM...');
+  if (oldKey.length < 32 || newKey.length < 32) {
+    console.error('❌ Error: Las claves deben contener al menos 32 caracteres para AES-256.');
+    process.exit(1);
+  }
+
+  console.log('🔄 Iniciando rotación atómica de credenciales a formato v2 (AES-256-GCM)...');
 
   const records = db
     .select()
@@ -37,15 +63,33 @@ async function rotateKeys() {
   console.log(`📋 Encontrados ${records.length} proveedores con credenciales cifradas.`);
 
   let reEncryptedCount = 0;
+  let alreadyRotatedCount = 0;
 
-  for (const record of records) {
-    if (!record.encryptedApiKey) continue;
+  // Ejecución transaccional e idempotente
+  const transaction = sqlite.transaction(() => {
+    for (const record of records) {
+      if (!record.encryptedApiKey) continue;
 
-    try {
+      // Idempotencia: Verificar si ya está cifrado con la nueva clave
+      try {
+        decryptWithKey(record.encryptedApiKey, newKey);
+        alreadyRotatedCount++;
+        continue;
+      } catch {
+        // No está cifrado con newKey, proceder a rotar
+      }
+
       // 1. Desencriptar con la clave antigua
-      const plainKey = decryptWithKey(record.encryptedApiKey, oldKey);
+      let plainKey: string;
+      try {
+        plainKey = decryptWithKey(record.encryptedApiKey, oldKey);
+      } catch (err: any) {
+        throw new Error(
+          `No se pudo descifrar la credencial del proveedor '${record.id}'. Verifica que OLD_ENCRYPTION_KEY sea correcta.`
+        );
+      }
 
-      // 2. Re-encriptar con la clave nueva
+      // 2. Re-encriptar con la clave nueva (formato moderno v2:)
       const reEncryptedKey = encryptWithKey(plainKey, newKey);
 
       // 3. Actualizar registro en base de datos
@@ -58,16 +102,20 @@ async function rotateKeys() {
         .run();
 
       reEncryptedCount++;
-      console.log(`  ✓ Proveedor '${record.name}' (${record.id}) re-cifrado con éxito.`);
-    } catch (err: any) {
-      console.error(`  ✗ Error al rotar credenciales de '${record.id}':`, err.message);
-      console.error('  ⚠️ Asegúrate de que la OLD_KEY proporcionada sea correcta.');
-      process.exit(1);
+      console.log(`  ✓ Proveedor '${record.name}' (${record.id}) migrado a formato v2.`);
     }
-  }
+  });
 
-  console.log(`\n🎉 Rotación completada con éxito: ${reEncryptedCount} credenciales migradas a la nueva clave.`);
-  console.log('💡 Recuerda actualizar ENCRYPTION_KEY en tu archivo .env o gestor de secretos.');
+  try {
+    transaction();
+    console.log(
+      `\n🎉 Rotación completada con éxito: ${reEncryptedCount} credenciales re-cifradas (${alreadyRotatedCount} ya estaban actualizadas).`
+    );
+    console.log('💡 Establece PREVIOUS_ENCRYPTION_KEY si requieres ventana de transición sin downtime.');
+  } catch (err: any) {
+    console.error('\n❌ Transacción revertida (Rollback). Error durante la rotación:', err.message);
+    process.exit(1);
+  }
 }
 
 rotateKeys().catch((err) => {

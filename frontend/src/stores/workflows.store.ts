@@ -15,6 +15,7 @@ interface WorkflowsState {
   createWorkflow: (name: string, description: string) => Workflow;
   duplicateWorkflow: (id: string) => Workflow | undefined;
   deleteWorkflow: (id: string) => void;
+  resetWorkflowToDefault: (id: string) => void;
   startSimulation: (workflowId: string, onProgress?: (nodeId: string, status: string) => void) => Promise<void>;
   stopSimulation: () => void;
 }
@@ -111,6 +112,19 @@ export const useWorkflowsStore = create<WorkflowsState>()(
           workflows: state.workflows.filter((w) => w.id !== id),
           activeWorkflowId: state.activeWorkflowId === id ? (state.workflows[0]?.id || '') : state.activeWorkflowId,
         }));
+      },
+
+      resetWorkflowToDefault: (id) => {
+        const original = initialWorkflows.find((w) => w.id === id);
+        if (original) {
+          const restored = {
+            ...structuredClone(original),
+            updatedAt: new Date().toISOString(),
+          };
+          set((state) => ({
+            workflows: state.workflows.map((wf) => (wf.id === id ? restored : wf)),
+          }));
+        }
       },
 
       startSimulation: async (workflowId, onProgress) => {

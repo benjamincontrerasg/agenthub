@@ -4,6 +4,7 @@ import { eq } from 'drizzle-orm';
 import { Workflow, WorkflowExecution } from '../types.js';
 import { NotFoundError } from '../lib/errors.js';
 import { wsManager } from './websocket.service.js';
+import { executionService } from './execution.service.js';
 
 function evaluateCondition(expr: string | undefined, context: Record<string, any>): boolean {
   if (!expr || expr.trim() === '') return true;
@@ -196,13 +197,18 @@ export const workflowService = {
   },
 
   async runWorkflowAsync(wf: Workflow, executionId: string, inputs?: Record<string, any>) {
+    const signal = executionService.getExecutionSignal(executionId);
     let currentTokens = 0;
     const toolsUsed: string[] = [];
     const context: Record<string, any> = { ...(inputs || {}) };
     const skippedNodeIds = new Set<string>();
 
-    // Traverse nodes sequentially with conditional branching support
-    for (let i = 0; i < wf.nodes.length; i++) {
+    try {
+      // Traverse nodes sequentially with conditional branching support
+      for (let i = 0; i < wf.nodes.length; i++) {
+        if (signal.aborted) {
+          return;
+        }
       const node = wf.nodes[i];
       const stepId = `step-${executionId}-${i + 1}`;
       const stepStart = new Date().toISOString();
@@ -338,6 +344,9 @@ export const workflowService = {
       status: 'completed',
       message: `Workflow '${wf.name}' finalizado con éxito.`,
     });
+    } finally {
+      executionService.finishExecution(executionId);
+    }
   },
 
   async delete(id: string): Promise<{ success: boolean }> {

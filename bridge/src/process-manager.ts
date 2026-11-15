@@ -9,6 +9,39 @@ interface ActiveProcess {
   pendingRequests: Map<string | number, (response: JSONRPCResponse) => void>;
 }
 
+const SAFE_ENV_VARS = [
+  'PATH',
+  'Path',
+  'SYSTEMROOT',
+  'SystemRoot',
+  'COMSPEC',
+  'ComSpec',
+  'PATHEXT',
+  'TEMP',
+  'TMP',
+  'HOME',
+  'USERPROFILE',
+  'HOMEDRIVE',
+  'HOMEPATH',
+  'APPDATA',
+  'LOCALAPPDATA',
+  'LANG',
+  'LC_ALL',
+  'NODE_ENV',
+];
+
+function buildSanitizedEnv(customEnv?: Record<string, string>): Record<string, string> {
+  const sanitized: Record<string, string> = {};
+  for (const key of SAFE_ENV_VARS) {
+    if (process.env[key] !== undefined) {
+      sanitized[key] = process.env[key]!;
+    }
+  }
+  return { ...sanitized, ...(customEnv || {}) };
+}
+
+export const MAX_CONCURRENT_PROCESSES = 10;
+
 export class MCPProcessManager {
   private processes: Map<string, ActiveProcess> = new Map();
   private sandbox: SecuritySandbox;
@@ -28,30 +61,36 @@ export class MCPProcessManager {
   public spawnProcess(req: SpawnRequest): MCPProcessInfo {
     const args = req.args || [];
 
-    // 1. Validate Command and Arguments against Sandbox
+    // 1. Validar límite de procesos simultáneos
+    if (this.processes.size >= MAX_CONCURRENT_PROCESSES && !this.processes.has(req.id)) {
+      throw new Error(`Límite máximo de procesos MCP simultáneos alcanzado (${MAX_CONCURRENT_PROCESSES}). Detén procesos inactivos.`);
+    }
+
+    // 2. Validar Comando y Argumentos contra el Sandbox
     const cmdCheck = this.sandbox.validateCommand(req.command, args);
     if (!cmdCheck.valid) {
       throw new Error(cmdCheck.reason);
     }
 
-    // 2. Validate Working Directory if provided
-    if (req.cwd) {
-      const pathCheck = this.sandbox.validatePath(req.cwd);
-      if (!pathCheck.valid) {
-        throw new Error(pathCheck.reason);
-      }
+    // 3. Validar y confinar Directorio de Trabajo
+    const targetCwd = req.cwd || process.cwd();
+    const pathCheck = this.sandbox.validatePath(targetCwd);
+    if (!pathCheck.valid) {
+      throw new Error(pathCheck.reason);
     }
 
-    // Stop existing process if running with same id
+    // Detener proceso anterior con el mismo ID si existía
     if (this.processes.has(req.id)) {
       this.stopProcess(req.id);
     }
 
+    // 4. Confinamiento: spawn sin shell y con entorno mínimo sanitizado
+    const sanitizedEnv = buildSanitizedEnv(req.env);
     const child = spawn(req.command, args, {
-      cwd: req.cwd || process.cwd(),
-      env: { ...process.env, ...(req.env || {}) },
+      cwd: targetCwd,
+      env: sanitizedEnv,
       stdio: ['pipe', 'pipe', 'pipe'],
-      shell: process.platform === 'win32',
+      shell: false,
     });
 
     const info: MCPProcessInfo = {
@@ -62,7 +101,7 @@ export class MCPProcessManager {
       pid: child.pid,
       status: 'running',
       startedAt: new Date().toISOString(),
-      defaultTimeoutMs: req.timeoutMs || 10000,
+      defaultTimeoutMs: Math.min(Math.max(req.timeoutMs || 30000, 1000), 300000),
     };
 
     const active: ActiveProcess = {
@@ -88,7 +127,7 @@ export class MCPProcessManager {
             resolver(parsed);
           }
         } catch {
-          // stdout might include debug logging from MCP server
+          // Salida de depuración no JSON-RPC ignorada
         }
       }
     });
@@ -120,7 +159,8 @@ export class MCPProcessManager {
       throw new Error(`Proceso MCP '${processId}' no está en ejecución.`);
     }
 
-    const effectiveTimeout = timeoutMs || active.info.defaultTimeoutMs || 10000;
+    const requestedTimeout = timeoutMs || active.info.defaultTimeoutMs || 30000;
+    const effectiveTimeout = Math.min(Math.max(requestedTimeout, 1000), 300000);
 
     return new Promise((resolve, reject) => {
       const timer = setTimeout(() => {

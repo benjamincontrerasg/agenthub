@@ -41,11 +41,11 @@ export async function chatRoutes(fastify: FastifyInstance) {
     }
   );
 
-  fastify.post<{ Params: { id: string }; Body: { approved: boolean } }>(
+  fastify.post<{ Params: { id: string }; Body: { approved: boolean; rememberForSession?: boolean } }>(
     '/chat/approvals/:id/respond',
     async (req) => {
       const parsed = respondApprovalSchema.parse(req.body);
-      return chatService.respondApproval(req.params.id, parsed.approved);
+      return chatService.respondApproval(req.params.id, parsed.approved, parsed.rememberForSession);
     }
   );
 }

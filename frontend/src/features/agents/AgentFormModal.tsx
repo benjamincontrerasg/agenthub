@@ -24,6 +24,7 @@ import { CustomSelect } from '@/components/ui/custom-select';
 import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
 import { useProviders } from '@/features/providers/hooks';
+import { useCredentials } from '@/features/credentials/hooks';
 import { useMCPStore } from '@/stores/mcp.store';
 import { useAgents, useCreateAgent, useUpdateAgent } from './hooks';
 
@@ -32,6 +33,7 @@ const agentSchema = z.object({
   description: z.string().min(5, 'La descripción debe tener al menos 5 caracteres'),
   role: z.string().min(1, 'Selecciona un rol para el agente'),
   providerId: z.string().min(1, 'Selecciona un proveedor de IA'),
+  credentialId: z.string().optional(),
   modelId: z.string().min(1, 'Selecciona un modelo de inferencia'),
   systemPrompt: z.string().min(10, 'El prompt del sistema debe tener al menos 10 caracteres'),
   temperature: z.number().min(0).max(2),
@@ -49,6 +51,7 @@ interface AgentFormModalProps {
 
 export const AgentFormModal: React.FC<AgentFormModalProps> = ({ agent, open, onClose }) => {
   const { data: providers = [] } = useProviders();
+  const { data: credentials = [] } = useCredentials();
   const { getAllTools } = useMCPStore();
   const { data: agents = [] } = useAgents();
   const createAgentMutation = useCreateAgent();
@@ -70,6 +73,7 @@ export const AgentFormModal: React.FC<AgentFormModalProps> = ({ agent, open, onC
     control,
     watch,
     setValue,
+    getValues,
     reset,
     formState: { errors, isSubmitting },
   } = useForm<AgentFormData>({
@@ -79,6 +83,7 @@ export const AgentFormModal: React.FC<AgentFormModalProps> = ({ agent, open, onC
       description: agent?.description || '',
       role: agent?.role || 'Developer',
       providerId: agent?.providerId || 'anthropic',
+      credentialId: agent?.credentialId || '',
       modelId: agent?.modelId || 'claude-3-7-sonnet',
       systemPrompt: agent?.systemPrompt || '',
       temperature: agent?.temperature ?? 0.3,
@@ -98,6 +103,7 @@ export const AgentFormModal: React.FC<AgentFormModalProps> = ({ agent, open, onC
         description: agent.description,
         role: agent.role,
         providerId: agent.providerId,
+        credentialId: agent.credentialId || '',
         modelId: agent.modelId,
         systemPrompt: agent.systemPrompt,
         temperature: agent.temperature,
@@ -112,6 +118,7 @@ export const AgentFormModal: React.FC<AgentFormModalProps> = ({ agent, open, onC
         description: '',
         role: 'Developer',
         providerId: 'anthropic',
+        credentialId: '',
         modelId: 'claude-3-7-sonnet',
         systemPrompt: 'Eres un agente especializado en implementar código limpio y modular...',
         temperature: 0.3,
@@ -136,11 +143,13 @@ export const AgentFormModal: React.FC<AgentFormModalProps> = ({ agent, open, onC
   };
 
   const onSubmit = async (data: AgentFormData) => {
+    const credentialId = data.credentialId ? data.credentialId : undefined;
     if (agent) {
       await updateAgentMutation.mutateAsync({
         id: agent.id,
         updates: {
           ...data,
+          credentialId,
           allowedToolIds: selectedTools,
           allowedAgentCommunicationIds: selectedPeers,
         },
@@ -148,6 +157,7 @@ export const AgentFormModal: React.FC<AgentFormModalProps> = ({ agent, open, onC
     } else {
       await createAgentMutation.mutateAsync({
         ...data,
+        credentialId,
         allowedToolIds: selectedTools,
         allowedAgentCommunicationIds: selectedPeers,
         status: data.status,
@@ -238,6 +248,13 @@ export const AgentFormModal: React.FC<AgentFormModalProps> = ({ agent, open, onC
                         if (p && p.models.length > 0) {
                           setValue('modelId', p.models[0].id);
                         }
+                        const currentCredId = getValues('credentialId');
+                        if (currentCredId) {
+                          const cred = credentials.find((c) => c.id === currentCredId);
+                          if (cred && cred.providerId && cred.providerId !== val) {
+                            setValue('credentialId', '');
+                          }
+                        }
                       }}
                       options={providers.map((p) => ({
                         value: p.id,
@@ -263,12 +280,63 @@ export const AgentFormModal: React.FC<AgentFormModalProps> = ({ agent, open, onC
                       options={(selectedProvider?.models || []).map((m) => ({
                         value: m.id,
                         label: m.name,
-                        description: `${m.contextWindow ? `${(m.contextWindow / 1000).toFixed(0)}k ctx` : ''} · $${m.inputPricePerMillion}/1M tokens`,
+                        description: `${m.contextWindow ? `${(m.contextWindow / 1000).toFixed(0)}k ctx` : ''} · $${m.inputPricePerMillion}/1M in · ${m.supportsToolCalling ? '✓ Tools' : '✗ Sin Tools'}`,
                       }))}
                     />
                   )}
                 />
+                {selectedTools.length > 0 && selectedProvider?.models.find((m) => m.id === watch('modelId'))?.supportsToolCalling === false && (
+                  <div className="mt-2 p-2 rounded-[6px] bg-status-warning/15 border border-status-warning/30 text-caption text-status-warning flex items-start gap-1.5">
+                    <span className="font-bold">⚠️ Advertencia:</span>
+                    <span>
+                      Este agente tiene {selectedTools.length} herramienta(s) asignadas, pero el modelo seleccionado no soporta Tool Calling.
+                    </span>
+                  </div>
+                )}
               </div>
+            </div>
+
+            {/* Credencial / API Key Nombrada */}
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-caption font-medium text-fg-secondary">
+                  API Key Asignada (Credencial por Nombre)
+                </label>
+                <span className="text-xs text-fg-secondary">Bóveda Cifrada</span>
+              </div>
+              <Controller
+                name="credentialId"
+                control={control}
+                render={({ field }) => {
+                  const matchingCredentials = credentials.filter(
+                    (c) => !c.providerId || c.providerId === selectedProviderId
+                  );
+
+                  return (
+                    <CustomSelect
+                      value={field.value || ''}
+                      onChange={(val) => field.onChange(val)}
+                      options={[
+                        {
+                          value: '',
+                          label: `(Predeterminada) Clave general de ${selectedProvider?.name || 'proveedor'}`,
+                          description: selectedProvider?.hasApiKey
+                            ? 'Usa la clave global configurada en la sección de Proveedores'
+                            : 'Sin clave global guardada en el proveedor',
+                        },
+                        ...matchingCredentials.map((c) => ({
+                          value: c.id,
+                          label: `🔑 ${c.name}`,
+                          description: `${c.maskedKey} · Bóveda`,
+                        })),
+                      ]}
+                    />
+                  );
+                }}
+              />
+              <p className="mt-1 text-xs text-fg-secondary">
+                Al seleccionar una credencial por su nombre, el agente utilizará esa clave sin revelar la API key completa ni tener que escribirla de nuevo.
+              </p>
             </div>
 
             {/* System Prompt */}

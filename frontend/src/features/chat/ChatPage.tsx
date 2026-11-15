@@ -25,9 +25,10 @@ import { Badge } from '@/components/ui/badge';
 import { useChatStore } from '@/stores/chat.store';
 import { useAgents } from '@/features/agents/hooks';
 import { formatDate } from '@/lib/utils';
-import { Message, Approval } from '@/types';
+import { Message, Approval, ToolApprovalRequest } from '@/types';
 import { AgentAvatar } from '@/components/shared/AgentAvatar';
 import { ProviderLogo } from '@/components/shared/ProviderLogo';
+import { ToolApprovalModal } from '@/components/modals/ToolApprovalModal';
 
 export const ChatPage: React.FC = () => {
   const {
@@ -58,6 +59,22 @@ export const ChatPage: React.FC = () => {
   ]);
   const [newChatModalOpen, setNewChatModalOpen] = useState(false);
   const [newChatTitle, setNewChatTitle] = useState('');
+  const [modalApprovalRequest, setModalApprovalRequest] = useState<ToolApprovalRequest | null>(null);
+
+  const openApprovalModal = (appr: Approval) => {
+    const isDestructive = appr.toolName.includes('delete') || appr.toolName.includes('drop') || appr.toolName.includes('destroy');
+    setModalApprovalRequest({
+      approvalId: appr.id,
+      toolName: appr.toolName,
+      toolArgs: appr.payload || {},
+      agentId: appr.agentId,
+      agentName: appr.agentName,
+      riskLevel: isDestructive ? 'destructive' : 'write',
+      affectedPath: (appr.payload as any)?.path || (appr.payload as any)?.filePath || undefined,
+      expiresAt: new Date(Date.now() + 30 * 60 * 1000).toISOString(),
+      allowRememberSession: !isDestructive,
+    });
+  };
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -299,6 +316,14 @@ export const ChatPage: React.FC = () => {
             </div>
             <div className="flex items-center gap-2 shrink-0">
               <Button
+                variant="outline"
+                size="sm"
+                className="h-8 px-2.5 text-xs font-medium border-fg-warning/40 text-fg-primary hover:bg-fg-warning/10"
+                onClick={() => openApprovalModal(activePendingApproval)}
+              >
+                Examinar
+              </Button>
+              <Button
                 variant="default"
                 size="sm"
                 className="bg-fg-success hover:bg-emerald-500 text-[#08090a] font-[510] px-3.5 h-8 shadow-sm"
@@ -449,6 +474,14 @@ export const ChatPage: React.FC = () => {
 
                       <div className="flex items-center gap-3 pt-1">
                         <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-body h-9 px-3 border-fg-warning/40 text-fg-primary hover:bg-fg-warning/10"
+                          onClick={() => openApprovalModal(msg.approvalRequest!)}
+                        >
+                          Examinar Parámetros
+                        </Button>
+                        <Button
                           variant="default"
                           size="sm"
                           className="text-body h-9 px-4 bg-fg-success hover:bg-emerald-500 text-[#08090a] font-[510] shadow-md"
@@ -590,6 +623,17 @@ export const ChatPage: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Accessible Tool Approval Modal (Zero-Trust) */}
+      <ToolApprovalModal
+        request={modalApprovalRequest}
+        isOpen={!!modalApprovalRequest}
+        onClose={() => setModalApprovalRequest(null)}
+        onRespond={(id, approved, remember) => {
+          respondToApproval(id, approved, remember);
+          setModalApprovalRequest(null);
+        }}
+      />
     </div>
   );
 };

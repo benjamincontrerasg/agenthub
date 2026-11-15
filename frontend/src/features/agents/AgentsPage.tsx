@@ -155,6 +155,11 @@ export const AgentsPage: React.FC = () => {
                             <ProviderLogo providerId={agent.providerId} size="xs" showBackground={false} />
                             <span>{provider?.name.split(' ')[0] || agent.providerId}</span>
                           </div>
+                          {agent.credentialName && (
+                            <Badge variant="secondary" className="text-xs font-mono py-0 px-1.5 gap-1 bg-fg-brand/10 text-fg-brand border-fg-brand/20">
+                              🔑 {agent.credentialName}
+                            </Badge>
+                          )}
                         </div>
                       </div>
                     </div>
