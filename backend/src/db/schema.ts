@@ -265,6 +265,20 @@ export const tokenUsage = sqliteTable('token_usage', {
   executionId: text('execution_id'),
 });
 
+// --- Zero-Trust Security Audit Logs ---
+
+export const auditLogs = sqliteTable('audit_logs', {
+  id: text('id').primaryKey(),
+  userId: text('user_id'),
+  userEmail: text('user_email'),
+  action: text('action').notNull(),
+  resource: text('resource').notNull(),
+  ip: text('ip'),
+  status: text('status', { enum: ['success', 'failure', 'pending'] }).notNull().default('success'),
+  details: text('details'), // JSON metadata
+  timestamp: text('timestamp').notNull(),
+});
+
 // --- Relations ---
 
 export const providersRelations = relations(providers, ({ many }) => ({

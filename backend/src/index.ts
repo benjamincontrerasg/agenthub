@@ -17,6 +17,7 @@ import { executionsRoutes } from './routes/executions.routes.js';
 import { analyticsRoutes } from './routes/analytics.routes.js';
 import { settingsRoutes } from './routes/settings.routes.js';
 import { authRoutes } from './routes/auth.routes.js';
+import { auditRoutes } from './routes/audit.routes.js';
 
 const fastify = Fastify({
   logger: {
@@ -100,6 +101,7 @@ async function main() {
     await app.register(executionsRoutes);
     await app.register(analyticsRoutes);
     await app.register(settingsRoutes);
+    await app.register(auditRoutes);
   };
 
   // Register routes under /v1

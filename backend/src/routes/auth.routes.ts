@@ -1,6 +1,13 @@
 import { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import { signJWT, verifyJWT, AuthUser } from '../lib/jwt.js';
+import { auditService } from '../services/audit.service.js';
+import { createRateLimiter } from '../lib/rate-limiter.js';
+
+const authRateLimiter = createRateLimiter({
+  maxRequests: 10,
+  windowMs: 60_000,
+});
 
 const loginSchema = z.object({
   email: z.string().email('Email inválido'),
@@ -35,11 +42,20 @@ const DEMO_USERS: Record<string, AuthUser & { password: string }> = {
 };
 
 export async function authRoutes(fastify: FastifyInstance) {
-  fastify.post('/auth/login', async (req, reply) => {
+  fastify.post('/auth/login', { preHandler: [authRateLimiter] }, async (req, reply) => {
     const parsed = loginSchema.parse(req.body);
     const existing = DEMO_USERS[parsed.email.toLowerCase()];
 
     if (!existing || existing.password !== parsed.password) {
+      await auditService.log({
+        userEmail: parsed.email,
+        action: 'auth.login',
+        resource: 'system:auth',
+        ip: req.ip,
+        status: 'failure',
+        details: { reason: 'Credenciales inválidas' },
+      });
+
       return reply.status(401).send({
         code: 'INVALID_CREDENTIALS',
         message: 'Credenciales inválidas. Usa admin@agenthub.dev / admin123 para desarrollo.',
@@ -49,6 +65,16 @@ export async function authRoutes(fastify: FastifyInstance) {
     const { password, ...user } = existing;
     const token = signJWT(user);
 
+    await auditService.log({
+      userId: user.id,
+      userEmail: user.email,
+      action: 'auth.login',
+      resource: 'system:auth',
+      ip: req.ip,
+      status: 'success',
+      details: { role: user.role },
+    });
+
     return {
       success: true,
       token,
@@ -56,7 +82,7 @@ export async function authRoutes(fastify: FastifyInstance) {
     };
   });
 
-  fastify.post('/auth/register', async (req, reply) => {
+  fastify.post('/auth/register', { preHandler: [authRateLimiter] }, async (req, reply) => {
     const parsed = registerSchema.parse(req.body);
     const emailNorm = parsed.email.toLowerCase();
 
@@ -79,6 +105,16 @@ export async function authRoutes(fastify: FastifyInstance) {
     DEMO_USERS[emailNorm] = newUser;
     const { password, ...user } = newUser;
     const token = signJWT(user);
+
+    await auditService.log({
+      userId: user.id,
+      userEmail: user.email,
+      action: 'auth.register',
+      resource: 'system:auth',
+      ip: req.ip,
+      status: 'success',
+      details: { role: user.role },
+    });
 
     return {
       success: true,

@@ -25,6 +25,18 @@ export async function seedDatabase() {
       embedding TEXT NOT NULL,
       created_at TEXT NOT NULL
     );
+
+    CREATE TABLE IF NOT EXISTS audit_logs (
+      id TEXT PRIMARY KEY,
+      user_id TEXT,
+      user_email TEXT,
+      action TEXT NOT NULL,
+      resource TEXT NOT NULL,
+      ip TEXT,
+      status TEXT NOT NULL DEFAULT 'success',
+      details TEXT,
+      timestamp TEXT NOT NULL
+    );
   `);
 
   // 1. Providers and Models

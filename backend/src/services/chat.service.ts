@@ -7,6 +7,7 @@ import { wsManager } from './websocket.service.js';
 import { aiEngine } from './ai-engine.js';
 import { agentService } from './agent.service.js';
 import { memoryService } from './memory.service.js';
+import { auditService } from './audit.service.js';
 
 export const chatService = {
   async getConversations(): Promise<Conversation[]> {
@@ -229,6 +230,19 @@ export const chatService = {
         ? `Operación aprobada por el operador humano para la herramienta '${app.toolName}'. Continuando flujo...`
         : `Operación rechazada por el operador humano para la herramienta '${app.toolName}'.`,
       timestamp: now,
+    });
+
+    // Log Zero-Trust audit entry
+    await auditService.log({
+      action: approved ? 'security_gate.approved' : 'security_gate.rejected',
+      resource: `mcp:tool:${app.toolName}`,
+      status: approved ? 'success' : 'failure',
+      details: {
+        approvalId,
+        toolName: app.toolName,
+        agentId: app.agentId,
+        agentName: app.agentName,
+      },
     });
 
     return { success: true };
