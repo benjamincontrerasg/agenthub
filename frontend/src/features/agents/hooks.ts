@@ -1,9 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { agentsService } from '@/services/agents.service';
+import { agentsService, AgentMemoryItem } from '@/services/agents.service';
 import { Agent } from '@/types';
 import { toast } from '@/stores/toast.store';
 
 export const AGENTS_QUERY_KEY = ['agents'] as const;
+export const MEMORIES_QUERY_KEY = ['agent_memories'] as const;
 
 export function useAgents() {
   return useQuery<Agent[], Error>({
@@ -82,6 +83,45 @@ export function useToggleAgentStatus() {
     },
     onError: (error: Error) => {
       toast.error('Error de estado', error.message || 'No se pudo cambiar el estado del agente');
+    },
+  });
+}
+
+export function useAgentMemories(agentId?: string) {
+  return useQuery<AgentMemoryItem[], Error>({
+    queryKey: [...MEMORIES_QUERY_KEY, agentId],
+    queryFn: () => agentsService.getMemories(agentId!),
+    enabled: Boolean(agentId),
+  });
+}
+
+export function useAddAgentMemory(agentId?: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ content, metadata }: { content: string; metadata?: Record<string, any> }) =>
+      agentsService.addMemory(agentId!, content, metadata),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [...MEMORIES_QUERY_KEY, agentId] });
+      toast.success('Memoria Almacenada', 'El conocimiento semántico fue indexado en el vector store.');
+    },
+    onError: (error: Error) => {
+      toast.error('Error al guardar memoria', error.message || 'No se pudo guardar la memoria');
+    },
+  });
+}
+
+export function useDeleteAgentMemory(agentId?: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (memoryId: string) => agentsService.deleteMemory(agentId!, memoryId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [...MEMORIES_QUERY_KEY, agentId] });
+      toast.success('Memoria Eliminada', 'El recuerdo fue purgado de la memoria semántica.');
+    },
+    onError: (error: Error) => {
+      toast.error('Error al eliminar memoria', error.message || 'No se pudo eliminar el registro');
     },
   });
 }

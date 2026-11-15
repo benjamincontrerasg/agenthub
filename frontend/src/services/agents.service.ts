@@ -2,6 +2,37 @@ import { Agent } from '@/types';
 import { initialAgents } from '@/services/mock-data';
 import { apiClient } from '@/services/api';
 
+export interface AgentMemoryItem {
+  id: string;
+  agentId: string;
+  content: string;
+  metadata?: Record<string, any>;
+  embedding?: number[];
+  createdAt: string;
+  similarity?: number;
+}
+
+let mockMemories: Record<string, AgentMemoryItem[]> = {
+  'agent-coordinator': [
+    {
+      id: 'mem-seed-1',
+      agentId: 'agent-coordinator',
+      content: 'Estrategia de delegación: arquitectos analizan diseño, desarrolladores generan código con pruebas.',
+      metadata: { category: 'orchestration', confidence: 0.98 },
+      createdAt: new Date().toISOString(),
+    },
+  ],
+  'agent-architect': [
+    {
+      id: 'mem-seed-2',
+      agentId: 'agent-architect',
+      content: 'Arquitectura Zero-Trust: todo comando de modificación MCP requiere confirmación humana obligatoria.',
+      metadata: { category: 'security', confidence: 0.99 },
+      createdAt: new Date().toISOString(),
+    },
+  ],
+};
+
 let mockAgents: Agent[] = structuredClone(initialAgents);
 let mockModeOverride: boolean | null = null;
 
@@ -89,6 +120,56 @@ export const agentsService = {
     }
 
     return apiClient<{ success: boolean }>(`/agents/${id}`, {
+      method: 'DELETE',
+    });
+  },
+
+  async getMemories(agentId: string): Promise<AgentMemoryItem[]> {
+    if (isMockMode()) {
+      return structuredClone(mockMemories[agentId] || []);
+    }
+    return apiClient<AgentMemoryItem[]>(`/agents/${agentId}/memories`);
+  },
+
+  async addMemory(agentId: string, content: string, metadata?: Record<string, any>): Promise<AgentMemoryItem> {
+    if (isMockMode()) {
+      const item: AgentMemoryItem = {
+        id: `mem-${Date.now()}`,
+        agentId,
+        content,
+        metadata: metadata || { category: 'manual' },
+        createdAt: new Date().toISOString(),
+      };
+      if (!mockMemories[agentId]) mockMemories[agentId] = [];
+      mockMemories[agentId].unshift(item);
+      return structuredClone(item);
+    }
+    return apiClient<AgentMemoryItem>(`/agents/${agentId}/memories`, {
+      method: 'POST',
+      body: JSON.stringify({ content, metadata }),
+    });
+  },
+
+  async searchMemories(agentId: string, query: string, limit = 5): Promise<AgentMemoryItem[]> {
+    if (isMockMode()) {
+      const list = mockMemories[agentId] || [];
+      const q = query.toLowerCase();
+      return list
+        .filter((m) => m.content.toLowerCase().includes(q) || (m.metadata?.category || '').includes(q))
+        .map((m) => ({ ...m, similarity: 0.85 + Math.random() * 0.14 }))
+        .slice(0, limit);
+    }
+    return apiClient<AgentMemoryItem[]>(`/agents/${agentId}/memories/search?q=${encodeURIComponent(query)}&limit=${limit}`);
+  },
+
+  async deleteMemory(agentId: string, memoryId: string): Promise<{ success: boolean }> {
+    if (isMockMode()) {
+      if (mockMemories[agentId]) {
+        mockMemories[agentId] = mockMemories[agentId].filter((m) => m.id !== memoryId);
+      }
+      return { success: true };
+    }
+    return apiClient<{ success: boolean }>(`/agents/${agentId}/memories/${memoryId}`, {
       method: 'DELETE',
     });
   },

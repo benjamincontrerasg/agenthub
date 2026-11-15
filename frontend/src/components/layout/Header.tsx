@@ -14,9 +14,11 @@ import {
   Wrench,
   GitFork,
   ArrowRight,
+  LogOut,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useSettingsStore } from '@/stores/settings.store';
+import { useAuthStore } from '@/stores/auth.store';
 import { useAgents } from '@/features/agents/hooks';
 import { useMCPStore } from '@/stores/mcp.store';
 import { useWorkflows } from '@/features/workflows/hooks';
@@ -41,6 +43,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { settings } = useSettingsStore();
+  const { user, logout, setDemoUser } = useAuthStore();
   const { data: agents = [] } = useAgents();
   const { getAllTools } = useMCPStore();
   const { data: workflows = [] } = useWorkflows();
@@ -213,20 +216,44 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
             className="flex items-center space-x-2 rounded-lg border border-border-default bg-bg-card/60 p-1.5 hover:bg-slate-800 transition-colors cursor-pointer"
           >
             <div className="flex h-6 w-6 items-center justify-center rounded-md bg-gradient-to-tr from-violet-600 to-indigo-600 text-caption font-bold text-fg-primary">
-              {settings.profile.name.substring(0, 2).toUpperCase()}
+              {(user?.name || settings.profile.name).substring(0, 2).toUpperCase()}
             </div>
             <span className="hidden md:inline text-caption font-medium text-fg-primary max-w-[90px] truncate">
-              {settings.profile.name}
+              {user?.name || settings.profile.name}
             </span>
             <ChevronDown className="h-3.5 w-3.5 text-fg-secondary" />
           </button>
 
           {showUserMenu && (
-            <div className="absolute right-0 mt-2 w-56 rounded-xl border border-border-default bg-bg-card p-2 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150">
+            <div className="absolute right-0 mt-2 w-60 rounded-xl border border-border-default bg-bg-card p-2 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150">
               <div className="px-3 py-2 border-b border-border-default">
-                <p className="text-caption font-semibold text-fg-primary">{settings.profile.name}</p>
-                <p className="text-caption text-fg-secondary truncate">{settings.profile.email}</p>
-                <p className="mt-1 text-caption text-fg-brand font-mono">{settings.profile.role}</p>
+                <div className="flex items-center justify-between">
+                  <p className="text-caption font-semibold text-fg-primary">{user?.name || settings.profile.name}</p>
+                  <Badge variant="outline" className="text-[10px] font-mono uppercase text-fg-brand border-border-brand/50">
+                    {user?.role || 'admin'}
+                  </Badge>
+                </div>
+                <p className="text-caption text-fg-secondary truncate">{user?.email || settings.profile.email}</p>
+              </div>
+
+              {/* Demo Role Switcher */}
+              <div className="py-1.5 px-2 border-b border-border-default">
+                <span className="text-[11px] font-medium text-fg-secondary uppercase block mb-1">Cambiar Rol RBAC</span>
+                <div className="grid grid-cols-3 gap-1">
+                  {(['admin', 'developer', 'viewer'] as const).map((r) => (
+                    <button
+                      key={r}
+                      onClick={() => setDemoUser(r)}
+                      className={`px-1.5 py-0.5 rounded text-[11px] font-medium cursor-pointer transition-colors ${
+                        (user?.role || 'admin') === r
+                          ? 'bg-bg-brand text-fg-primary font-bold'
+                          : 'bg-bg-surface text-fg-secondary hover:text-fg-primary'
+                      }`}
+                    >
+                      {r}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               <div className="py-1">
@@ -249,6 +276,17 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
                 >
                   <Shield className="mr-2 h-3.5 w-3.5 text-fg-secondary" />
                   Políticas de Seguridad
+                </button>
+                <button
+                  onClick={() => {
+                    setShowUserMenu(false);
+                    logout();
+                    navigate('/login');
+                  }}
+                  className="flex w-full items-center px-3 py-1.5 text-caption text-fg-error hover:bg-bg-error-subtle rounded-md cursor-pointer mt-1"
+                >
+                  <LogOut className="mr-2 h-3.5 w-3.5 text-fg-error" />
+                  Cerrar Sesión
                 </button>
               </div>
             </div>

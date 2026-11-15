@@ -4,6 +4,86 @@ import { Conversation, Message, Approval, ToolExecution } from '@/types';
 import { initialConversations } from '@/services/mock-data';
 import { generateId } from '@/lib/utils';
 
+let wsClient: WebSocket | null = null;
+
+function ensureWebSocketConnected(set: any) {
+  if (typeof window === 'undefined') return;
+  if (wsClient && (wsClient.readyState === WebSocket.OPEN || wsClient.readyState === WebSocket.CONNECTING)) return;
+
+  const wsUrl = import.meta.env.VITE_WS_URL || 'ws://localhost:3001/ws';
+  try {
+    wsClient = new WebSocket(wsUrl);
+
+    wsClient.onmessage = (event) => {
+      try {
+        const payload = JSON.parse(event.data);
+        const { type, data } = payload;
+
+        if (type === 'chat.stream_start') {
+          set((state: any) => ({
+            activeAgentTypingId: data.agentId,
+            conversations: state.conversations.map((c: any) =>
+              c.id === data.conversationId
+                ? {
+                    ...c,
+                    activeAgentId: data.agentId,
+                    messages: [
+                      ...c.messages.filter((m: any) => m.id !== data.messageId),
+                      {
+                        id: data.messageId,
+                        conversationId: data.conversationId,
+                        senderType: 'agent',
+                        senderId: data.agentId,
+                        senderName: data.agentName,
+                        senderRole: data.senderRole,
+                        content: '',
+                        timestamp: new Date().toISOString(),
+                        status: 'streaming',
+                      },
+                    ],
+                  }
+                : c
+            ),
+          }));
+        } else if (type === 'chat.token') {
+          set((state: any) => ({
+            conversations: state.conversations.map((c: any) =>
+              c.id === data.conversationId
+                ? {
+                    ...c,
+                    messages: c.messages.map((m: any) =>
+                      m.id === data.messageId ? { ...m, content: m.content + data.chunk } : m
+                    ),
+                  }
+                : c
+            ),
+          }));
+        } else if (type === 'agent.message') {
+          set((state: any) => ({
+            conversations: state.conversations.map((c: any) =>
+              c.id === data.conversationId
+                ? {
+                    ...c,
+                    messages: [
+                      ...c.messages.filter((m: any) => m.id !== data.id),
+                      { ...data, status: data.status || 'done' },
+                    ],
+                  }
+                : c
+            ),
+          }));
+        } else if (type === 'agent.completed') {
+          set({ activeAgentTypingId: null, isSimulating: false });
+        }
+      } catch (e) {
+        console.warn('[WS Parse Error]', e);
+      }
+    };
+  } catch (err) {
+    console.warn('[WS Connection Error]', err);
+  }
+}
+
 // Helper to stream message tokens word by word with realistic pacing and pause/cancel awareness
 async function streamMessageTokens(
   set: any,
@@ -171,6 +251,21 @@ export const useChatStore = create<ChatState>()(
               : c
           ),
         }));
+
+        // Si estamos conectados al backend real, enviar mensaje al servidor y escuchar WebSocket
+        if (import.meta.env.VITE_USE_MOCK === 'false') {
+          ensureWebSocketConnected(set);
+          try {
+            await fetch(`http://localhost:3001/v1/chat/conversations/${activeConv.id}/messages`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ content }),
+            });
+            return;
+          } catch (err) {
+            console.warn('[Real Chat Error] Fallback a simulación local:', err);
+          }
+        }
 
         // STEP 1: Coordinator Agent starts thinking and streams response
         set({ activeAgentTypingId: 'agent-coordinator' });

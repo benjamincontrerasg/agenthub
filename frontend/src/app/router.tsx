@@ -10,8 +10,13 @@ import { ChatPage } from '@/features/chat/ChatPage';
 import { ExecutionsPage } from '@/features/executions/ExecutionsPage';
 import { AnalyticsPage } from '@/features/analytics/AnalyticsPage';
 import { SettingsPage } from '@/features/settings/SettingsPage';
+import { LoginPage } from '@/features/auth/LoginPage';
 
 export const router = createBrowserRouter([
+  {
+    path: '/login',
+    element: <LoginPage />,
+  },
   {
     path: '/',
     element: <AppLayout />,
