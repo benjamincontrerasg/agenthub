@@ -31,8 +31,12 @@ export const LoginPage: React.FC = () => {
       <div className="w-full max-w-md relative z-10">
         {/* Brand header */}
         <div className="text-center mb-8">
-          <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-tr from-violet-600 to-indigo-600 shadow-lg shadow-violet-500/20 mb-3">
-            <Bot className="h-6 w-6 text-fg-primary" />
+          <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-black border border-white/10 p-2 shadow-xl shadow-violet-500/20 mb-3">
+            <img
+              src="/agenthub-logo.png"
+              alt="AgentHub Logo"
+              className="h-full w-full object-contain filter drop-shadow select-none"
+            />
           </div>
           <h1 className="text-title font-bold text-fg-primary tracking-tight">AgentHub Platform</h1>
           <p className="text-caption text-fg-secondary mt-1">

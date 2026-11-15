@@ -118,8 +118,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
             onClick={onCloseMobile}
             className="flex items-center space-x-3 overflow-hidden group"
           >
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 shadow-md shadow-violet-500/20 group-hover:shadow-violet-500/40 transition-all">
-              <Sparkles className="h-5 w-5 text-fg-primary" />
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-black border border-white/10 p-1 shadow-md shadow-violet-500/20 group-hover:border-violet-500/50 group-hover:shadow-violet-500/40 transition-all">
+              <img
+                src="/agenthub-logo.png"
+                alt="AgentHub Logo"
+                className="h-full w-full object-contain filter drop-shadow select-none"
+              />
             </div>
             {!collapsed && (
               <div className="flex flex-col">
