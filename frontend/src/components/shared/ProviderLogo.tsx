@@ -40,13 +40,11 @@ export const ClaudeLogo: React.FC<{ className?: string; active?: boolean }> = ({
 );
 
 export const OpenAILogo: React.FC<{ className?: string }> = ({ className = 'h-full w-full' }) => (
-  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
-    <rect width="24" height="24" rx="5" fill="#10A37F" fillOpacity="0.2" />
-    <path
-      d="M20.5 10.3a5.2 5.2 0 0 0-.4-4.2 5.3 5.3 0 0 0-4.8-2.6 5.3 5.3 0 0 0-1.8.3 5.2 5.2 0 0 0-4-1.8 5.3 5.3 0 0 0-5 3.6 5.3 5.3 0 0 0-3 2.2 5.2 5.2 0 0 0-.6 4.6 5.3 5.3 0 0 0 .4 4.2 5.3 5.3 0 0 0 4.8 2.6c.6 0 1.2-.1 1.8-.3a5.2 5.2 0 0 0 4 1.8 5.3 5.3 0 0 0 5-3.6 5.3 5.3 0 0 0 3-2.2c.7-1.4.9-3 .6-4.6zm-7.6 10.2a3.8 3.8 0 0 1-2.4-.9l1.2-2a.7.7 0 0 1 .6-.4h3.6a3.8 3.8 0 0 1-3 3.3zm-5.7-2.1a3.8 3.8 0 0 1-1.3-2.2l2.3-.5a.7.7 0 0 1 .7.3l1.8 3.1a3.8 3.8 0 0 1-3.5-.7zm-2.8-5.7a3.8 3.8 0 0 1 1-2.4l1.1 2.1c.2.3.1.7-.1.9l-3.1 1.8c-.3-.8-.3-1.6 0-2.4zm3.7-4.4a3.8 3.8 0 0 1 2.4.9l-1.2 2a.7.7 0 0 1-.6.4H5.7a3.8 3.8 0 0 1 3-3.3zm5.7 2.1a3.8 3.8 0 0 1 1.3 2.2l-2.3.5a.7.7 0 0 1-.7-.3l-1.8-3.1a3.8 3.8 0 0 1 3.5.7zm2.8 5.7a3.8 3.8 0 0 1-1 2.4l-1.1-2.1a.7.7 0 0 1 .1-.9l3.1-1.8c.3.8.3 1.6-.1 2.4zm-3-1.7l-1.5-2.6 2.2-1.3 2.2 1.3v2.6l-2.9 0z"
-      fill="#10A37F"
-    />
-  </svg>
+  <img
+    src="/logos/openai-filled.png"
+    alt="OpenAI"
+    className={`object-contain select-none transition-transform duration-200 ${className}`}
+  />
 );
 
 export const GeminiLogo: React.FC<{ className?: string }> = ({ className = 'h-full w-full' }) => (

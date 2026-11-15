@@ -152,9 +152,66 @@ export const AgentNode = memo((props: any) => {
       : 'anthropic');
 
   const isClaude = providerId === 'anthropic';
+  const isOpenAI = providerId === 'openai';
 
   // Solo activo si se está manteniendo presionado el ratón o arrastrando
   const isCurrentlyDraggingOrPressed = Boolean(dragging || isPressed);
+
+  // Estado Compacto para OpenAI: logo con huecos blancos y fondo exterior transparente
+  if (isOpenAI && !isExpanded) {
+    return (
+      <div
+        className="relative group cursor-grab active:cursor-grabbing transition-transform duration-150 transform hover:scale-105 active:scale-95"
+        onDoubleClick={(e) => {
+          e.stopPropagation();
+          setInternalExpanded(true);
+        }}
+        onMouseDown={(e) => {
+          if (e.button === 0) {
+            setIsPressed(true);
+          }
+        }}
+        onMouseUp={() => setIsPressed(false)}
+      >
+        <Handle
+          type="target"
+          position={Position.Left}
+          className="!bg-emerald-500 !w-3 !h-3 !border-2 !border-slate-900"
+        />
+
+        <div
+          className={`p-3 rounded-2xl border-2 bg-bg-card/95 shadow-2xl backdrop-blur-md flex flex-col items-center justify-center gap-1.5 transition-all ${
+            isCurrentlyDraggingOrPressed
+              ? 'border-emerald-500 shadow-emerald-500/30 ring-2 ring-emerald-500/20'
+              : 'border-emerald-500/40 hover:border-emerald-500 hover:shadow-emerald-500/20'
+          }`}
+        >
+          {/* Logo OpenAI con huecos rellenos de blanco y exterior transparente */}
+          <div className="w-14 h-14 flex items-center justify-center p-1">
+            <img
+              src="/logos/openai-filled.png"
+              alt="OpenAI"
+              className="w-full h-full object-contain select-none pointer-events-none drop-shadow-md transition-transform duration-150"
+            />
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="text-[11px] font-bold text-emerald-300 font-mono tracking-tight px-1.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20">
+              {data?.label || 'OpenAI'}
+            </span>
+          </div>
+          <span className="text-[9px] text-slate-400 font-sans tracking-wide">
+            Doble clic para expandir
+          </span>
+        </div>
+
+        <Handle
+          type="source"
+          position={Position.Right}
+          className="!bg-emerald-500 !w-3 !h-3 !border-2 !border-slate-900"
+        />
+      </div>
+    );
+  }
 
   // Estado Compacto: se muestra inicialmente o hasta que se hace doble clic
   if (isClaude && !isExpanded) {
@@ -230,15 +287,25 @@ export const AgentNode = memo((props: any) => {
         isClaude={isClaude}
         badgeText={data?.agentId ? 'Autonomous' : 'Agent'}
         badgeVariant="default"
-        borderColor={isClaude ? 'border-orange-500 ring-2 ring-orange-500/40 shadow-orange-500/30' : 'border-border-brand/50'}
-        accentColor="text-fg-brand"
+        borderColor={
+          isClaude
+            ? 'border-orange-500 ring-2 ring-orange-500/40 shadow-orange-500/30'
+            : isOpenAI
+            ? 'border-emerald-500 ring-2 ring-emerald-500/40 shadow-emerald-500/30'
+            : 'border-border-brand/50'
+        }
+        accentColor={isOpenAI ? 'text-fg-success' : 'text-fg-brand'}
       >
-        <Handle type="target" position={Position.Left} className="!bg-violet-500 !w-2.5 !h-2.5" />
+        <Handle type="target" position={Position.Left} className={`!w-2.5 !h-2.5 ${isOpenAI ? '!bg-emerald-500' : '!bg-violet-500'}`} />
         <p className="text-caption text-fg-secondary line-clamp-2">{data?.description || 'Ejecuta inferencia con LLM'}</p>
         
         <div className="mt-2 pt-1.5 border-t border-border-default flex items-center justify-between text-caption">
           <div className={`flex items-center gap-1.5 px-2 py-1 rounded-lg border transition-colors ${
-            isClaude ? 'bg-orange-500/15 border-orange-500/40' : 'bg-bg-card/70 border-border-default'
+            isClaude
+              ? 'bg-orange-500/15 border-orange-500/40'
+              : isOpenAI
+              ? 'bg-emerald-500/15 border-emerald-500/40'
+              : 'bg-bg-card/70 border-border-default'
           }`}>
             <ProviderLogo
               providerId={providerId}
@@ -247,9 +314,13 @@ export const AgentNode = memo((props: any) => {
               active={isCurrentlyDraggingOrPressed}
             />
             <span className={`font-mono capitalize text-caption ${
-              isClaude ? 'text-orange-400 font-bold' : 'text-fg-secondary'
+              isClaude
+                ? 'text-orange-400 font-bold'
+                : isOpenAI
+                ? 'text-emerald-400 font-bold'
+                : 'text-fg-secondary'
             }`}>
-              {isClaude ? 'Claude' : providerId}
+              {isClaude ? 'Claude' : isOpenAI ? 'OpenAI' : providerId}
             </span>
           </div>
           {data?.agentId && (
@@ -258,7 +329,7 @@ export const AgentNode = memo((props: any) => {
             </span>
           )}
         </div>
-        <Handle type="source" position={Position.Right} className="!bg-violet-500 !w-2.5 !h-2.5" />
+        <Handle type="source" position={Position.Right} className={`!w-2.5 !h-2.5 ${isOpenAI ? '!bg-emerald-500' : '!bg-violet-500'}`} />
       </NodeWrapper>
     </div>
   );
