@@ -2,6 +2,9 @@ import { db } from '../db/connection.js';
 import * as schema from '../db/schema.js';
 import { eq } from 'drizzle-orm';
 import { NotFoundError } from '../lib/errors.js';
+import { decrypt } from '../lib/crypto.js';
+import OpenAI from 'openai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 export interface AgentMemory {
   id: string;
@@ -60,6 +63,55 @@ export function generateMockEmbedding(text: string, dimensions = 1536): number[]
   return vector.map((v) => v / sqrtNorm);
 }
 
+/**
+ * Genera embeddings vectoriales utilizando la API de OpenAI (text-embedding-3-small)
+ * o Google Gemini (text-embedding-004) si sus credenciales están disponibles.
+ * En ausencia de credenciales o en modo desconectado, recurre automáticamente
+ * al generador local determinista.
+ */
+export async function generateEmbedding(text: string): Promise<number[]> {
+  // 1. Probar proveedor OpenAI
+  try {
+    const openaiProvider = db.select().from(schema.providers).where(eq(schema.providers.id, 'openai')).get();
+    let openaiKey = openaiProvider?.encryptedApiKey ? decrypt(openaiProvider.encryptedApiKey) : undefined;
+    if (!openaiKey) openaiKey = process.env.OPENAI_API_KEY;
+
+    if (openaiKey) {
+      const client = new OpenAI({ apiKey: openaiKey });
+      const resp = await client.embeddings.create({
+        model: 'text-embedding-3-small',
+        input: text,
+      });
+      if (resp.data?.[0]?.embedding) {
+        return resp.data[0].embedding;
+      }
+    }
+  } catch (err) {
+    console.warn('[Memory Service] Advertencia con OpenAI embeddings, recurriendo a fallback:', err);
+  }
+
+  // 2. Probar proveedor Google Gemini
+  try {
+    const geminiProvider = db.select().from(schema.providers).where(eq(schema.providers.id, 'gemini')).get();
+    let geminiKey = geminiProvider?.encryptedApiKey ? decrypt(geminiProvider.encryptedApiKey) : undefined;
+    if (!geminiKey) geminiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
+
+    if (geminiKey) {
+      const genAI = new GoogleGenerativeAI(geminiKey);
+      const model = genAI.getGenerativeModel({ model: 'text-embedding-004' });
+      const result = await model.embedContent(text);
+      if (result.embedding?.values) {
+        return result.embedding.values;
+      }
+    }
+  } catch (err) {
+    console.warn('[Memory Service] Advertencia con Gemini embeddings, recurriendo a fallback:', err);
+  }
+
+  // 3. Fallback determinista local
+  return generateMockEmbedding(text);
+}
+
 export const memoryService = {
   async addMemory(data: {
     agentId: string;
@@ -74,7 +126,7 @@ export const memoryService = {
 
     const id = `mem-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
     const now = new Date().toISOString();
-    const embedding = data.embedding || generateMockEmbedding(data.content);
+    const embedding = data.embedding || (await generateEmbedding(data.content));
 
     db.insert(schema.agentMemories).values({
       id,
@@ -126,7 +178,7 @@ export const memoryService = {
     const memories = await this.getMemories(agentId);
     if (memories.length === 0) return [];
 
-    const targetVector = queryEmbedding || generateMockEmbedding(query);
+    const targetVector = queryEmbedding || (await generateEmbedding(query));
 
     const scored: MemorySearchResult[] = memories.map((mem) => {
       const similarity = cosineSimilarity(targetVector, mem.embedding);

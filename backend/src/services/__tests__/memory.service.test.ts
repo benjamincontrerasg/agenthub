@@ -3,6 +3,7 @@ import {
   memoryService,
   cosineSimilarity,
   generateMockEmbedding,
+  generateEmbedding,
 } from '../memory.service.js';
 import { agentService } from '../agent.service.js';
 import { seedDatabase } from '../../db/seed.js';
@@ -42,6 +43,12 @@ describe('Semantic Memory & RAG Service (pgvector vector search)', () => {
     let sumSq = 0;
     for (const v of emb) sumSq += v * v;
     expect(Math.sqrt(sumSq)).toBeCloseTo(1.0, 4);
+  });
+
+  it('generates real or fallback embeddings through generateEmbedding', async () => {
+    const vector = await generateEmbedding('Pipeline de RAG semántico y recuperación contextual');
+    expect(vector.length).toBeGreaterThanOrEqual(768);
+    expect(typeof vector[0]).toBe('number');
   });
 
   it('stores and retrieves agent semantic memories', async () => {
