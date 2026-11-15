@@ -154,9 +154,66 @@ export const AgentNode = memo((props: any) => {
   const isClaude = providerId === 'anthropic';
   const isOpenAI = providerId === 'openai';
   const isOllama = providerId === 'ollama';
+  const isGemini = providerId === 'gemini';
 
   // Solo activo si se está manteniendo presionado el ratón o arrastrando
   const isCurrentlyDraggingOrPressed = Boolean(dragging || isPressed);
+
+  // Estado Compacto para Gemini: estrella de 4 puntas degradada sobre fondo transparente
+  if (isGemini && !isExpanded) {
+    return (
+      <div
+        className="relative group cursor-grab active:cursor-grabbing transition-transform duration-150 transform hover:scale-105 active:scale-95"
+        onDoubleClick={(e) => {
+          e.stopPropagation();
+          setInternalExpanded(true);
+        }}
+        onMouseDown={(e) => {
+          if (e.button === 0) {
+            setIsPressed(true);
+          }
+        }}
+        onMouseUp={() => setIsPressed(false)}
+      >
+        <Handle
+          type="target"
+          position={Position.Left}
+          className="!bg-indigo-500 !w-3 !h-3 !border-2 !border-slate-900"
+        />
+
+        <div
+          className={`p-3 rounded-2xl border-2 bg-bg-card/95 shadow-2xl backdrop-blur-md flex flex-col items-center justify-center gap-1.5 transition-all ${
+            isCurrentlyDraggingOrPressed
+              ? 'border-indigo-500 shadow-indigo-500/30 ring-2 ring-indigo-500/20'
+              : 'border-indigo-500/40 hover:border-indigo-500 hover:shadow-indigo-500/20'
+          }`}
+        >
+          {/* Logo Gemini con fondo transparente */}
+          <div className="w-14 h-14 flex items-center justify-center p-0.5">
+            <img
+              src="/logos/gemini-filled.png"
+              alt="Gemini"
+              className="w-full h-full object-contain select-none pointer-events-none drop-shadow-md transition-transform duration-150"
+            />
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="text-[11px] font-bold text-indigo-300 font-mono tracking-tight px-1.5 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/20">
+              {data?.label || 'Gemini'}
+            </span>
+          </div>
+          <span className="text-[9px] text-slate-400 font-sans tracking-wide">
+            Doble clic para expandir
+          </span>
+        </div>
+
+        <Handle
+          type="source"
+          position={Position.Right}
+          className="!bg-indigo-500 !w-3 !h-3 !border-2 !border-slate-900"
+        />
+      </div>
+    );
+  }
 
   // Estado Compacto para Ollama: logo con cuerpo/interior blanco y exterior transparente
   if (isOllama && !isExpanded) {
@@ -351,14 +408,16 @@ export const AgentNode = memo((props: any) => {
             ? 'border-emerald-500 ring-2 ring-emerald-500/40 shadow-emerald-500/30'
             : isOllama
             ? 'border-blue-500 ring-2 ring-blue-500/40 shadow-blue-500/30'
+            : isGemini
+            ? 'border-indigo-500 ring-2 ring-indigo-500/40 shadow-indigo-500/30'
             : 'border-border-brand/50'
         }
-        accentColor={isOpenAI ? 'text-fg-success' : isOllama ? 'text-blue-400' : 'text-fg-brand'}
+        accentColor={isOpenAI ? 'text-fg-success' : isOllama ? 'text-blue-400' : isGemini ? 'text-indigo-400' : 'text-fg-brand'}
       >
         <Handle
           type="target"
           position={Position.Left}
-          className={`!w-2.5 !h-2.5 ${isOpenAI ? '!bg-emerald-500' : isOllama ? '!bg-blue-500' : '!bg-violet-500'}`}
+          className={`!w-2.5 !h-2.5 ${isOpenAI ? '!bg-emerald-500' : isOllama ? '!bg-blue-500' : isGemini ? '!bg-indigo-500' : '!bg-violet-500'}`}
         />
         <p className="text-caption text-fg-secondary line-clamp-2">{data?.description || 'Ejecuta inferencia con LLM'}</p>
         
@@ -370,6 +429,8 @@ export const AgentNode = memo((props: any) => {
               ? 'bg-emerald-500/15 border-emerald-500/40'
               : isOllama
               ? 'bg-blue-500/15 border-blue-500/40'
+              : isGemini
+              ? 'bg-indigo-500/15 border-indigo-500/40'
               : 'bg-bg-card/70 border-border-default'
           }`}>
             <ProviderLogo
@@ -385,9 +446,11 @@ export const AgentNode = memo((props: any) => {
                 ? 'text-emerald-400 font-bold'
                 : isOllama
                 ? 'text-blue-400 font-bold'
+                : isGemini
+                ? 'text-indigo-400 font-bold'
                 : 'text-fg-secondary'
             }`}>
-              {isClaude ? 'Claude' : isOpenAI ? 'OpenAI' : isOllama ? 'Ollama' : providerId}
+              {isClaude ? 'Claude' : isOpenAI ? 'OpenAI' : isOllama ? 'Ollama' : isGemini ? 'Gemini' : providerId}
             </span>
           </div>
           {data?.agentId && (
@@ -399,7 +462,7 @@ export const AgentNode = memo((props: any) => {
         <Handle
           type="source"
           position={Position.Right}
-          className={`!w-2.5 !h-2.5 ${isOpenAI ? '!bg-emerald-500' : isOllama ? '!bg-blue-500' : '!bg-violet-500'}`}
+          className={`!w-2.5 !h-2.5 ${isOpenAI ? '!bg-emerald-500' : isOllama ? '!bg-blue-500' : isGemini ? '!bg-indigo-500' : '!bg-violet-500'}`}
         />
       </NodeWrapper>
     </div>

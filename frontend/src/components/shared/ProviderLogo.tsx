@@ -48,20 +48,11 @@ export const OpenAILogo: React.FC<{ className?: string }> = ({ className = 'h-fu
 );
 
 export const GeminiLogo: React.FC<{ className?: string }> = ({ className = 'h-full w-full' }) => (
-  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
-    <defs>
-      <linearGradient id="gemini-react-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#1BA1E3" />
-        <stop offset="50%" stopColor="#7976FB" />
-        <stop offset="100%" stopColor="#C665F6" />
-      </linearGradient>
-    </defs>
-    <rect width="24" height="24" rx="5" fill="url(#gemini-react-grad)" fillOpacity="0.2" />
-    <path
-      d="M12 2C12 7.52 7.52 12 2 12C7.52 12 12 16.48 12 22C12 16.48 16.48 12 22 12C16.48 12 12 7.52 12 2Z"
-      fill="url(#gemini-react-grad)"
-    />
-  </svg>
+  <img
+    src="/logos/gemini-filled.png"
+    alt="Gemini"
+    className={`object-contain select-none transition-transform duration-200 ${className}`}
+  />
 );
 
 export const OllamaLogo: React.FC<{ className?: string }> = ({ className = 'h-full w-full' }) => (
