@@ -248,12 +248,12 @@ export const WorkflowBuilderPage: React.FC = () => {
   };
 
   return (
-    <div className="relative h-[calc(100vh-8.5rem)] w-full rounded-2xl border border-border-default bg-bg-card overflow-hidden shadow-2xl flex flex-col">
+    <div className="relative h-[calc(100vh-8.5rem)] w-full rounded-[12px] border border-border-default bg-bg-card overflow-hidden shadow-2xl flex flex-col">
       {/* Top Toolbar */}
       <div className="z-10 flex flex-wrap items-center justify-between gap-3 border-b border-border-default/90 bg-bg-card/90 px-4 py-2.5 backdrop-blur-md">
         {/* Workflow Switcher & Info */}
         <div className="flex items-center space-x-3">
-          <div className="flex items-center gap-1.5 font-bold text-body text-fg-primary">
+          <div className="flex items-center gap-1.5 font-[510] text-body text-fg-primary">
             <Layers className="h-4 w-4 text-fg-brand" />
             <span className="hidden sm:inline">Pipeline:</span>
           </div>
@@ -280,7 +280,7 @@ export const WorkflowBuilderPage: React.FC = () => {
         {/* Action Controls */}
         <div className="flex items-center space-x-2">
           {saveFeedback && (
-            <span className="text-caption font-mono text-fg-success font-semibold animate-in fade-in">
+            <span className="text-caption font-mono text-fg-success font-[510] animate-in fade-in">
               {saveFeedback}
             </span>
           )}
@@ -409,14 +409,14 @@ export const WorkflowBuilderPage: React.FC = () => {
       </div>
 
       {/* Floating Node Palette */}
-      <div className="absolute left-4 top-16 z-20 hidden md:flex flex-col gap-1.5 p-2 rounded-xl border border-border-default bg-bg-card/90 shadow-xl backdrop-blur-md">
-        <span className="text-caption font-semibold uppercase tracking-wider text-fg-secondary px-2 py-0.5">
+      <div className="absolute left-4 top-16 z-20 hidden md:flex flex-col gap-1.5 p-2 rounded-[12px] border border-border-default bg-bg-card/90 shadow-xl backdrop-blur-md">
+        <span className="text-caption font-[510] uppercase tracking-wider text-fg-secondary px-2 py-0.5">
           Agregar Nodos
         </span>
 
         <button
           onClick={() => handleAddNode('agent', 'AI Agent')}
-          className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-caption font-medium text-fg-secondary hover:bg-slate-800 hover:text-white transition-colors cursor-pointer"
+          className="flex items-center gap-2 px-2.5 py-1.5 rounded-[6px] text-caption font-medium text-fg-secondary hover:bg-[#161718] hover:text-[#ffffff] transition-colors cursor-pointer"
         >
           <Bot className="h-3.5 w-3.5 text-fg-brand" />
           <span>AI Agent</span>
@@ -424,7 +424,7 @@ export const WorkflowBuilderPage: React.FC = () => {
 
         <button
           onClick={() => handleAddNode('mcp_tool', 'MCP Tool')}
-          className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-caption font-medium text-fg-secondary hover:bg-slate-800 hover:text-white transition-colors cursor-pointer"
+          className="flex items-center gap-2 px-2.5 py-1.5 rounded-[6px] text-caption font-medium text-fg-secondary hover:bg-[#161718] hover:text-[#ffffff] transition-colors cursor-pointer"
         >
           <Wrench className="h-3.5 w-3.5 text-fg-warning" />
           <span>MCP Tool</span>
@@ -432,7 +432,7 @@ export const WorkflowBuilderPage: React.FC = () => {
 
         <button
           onClick={() => handleAddNode('condition', 'Condición')}
-          className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-caption font-medium text-fg-secondary hover:bg-slate-800 hover:text-white transition-colors cursor-pointer"
+          className="flex items-center gap-2 px-2.5 py-1.5 rounded-[6px] text-caption font-medium text-fg-secondary hover:bg-[#161718] hover:text-[#ffffff] transition-colors cursor-pointer"
         >
           <GitBranch className="h-3.5 w-3.5 text-fg-brand" />
           <span>Condition</span>
@@ -440,7 +440,7 @@ export const WorkflowBuilderPage: React.FC = () => {
 
         <button
           onClick={() => handleAddNode('parallel', 'Paralelo')}
-          className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-caption font-medium text-fg-secondary hover:bg-slate-800 hover:text-white transition-colors cursor-pointer"
+          className="flex items-center gap-2 px-2.5 py-1.5 rounded-[6px] text-caption font-medium text-fg-secondary hover:bg-[#161718] hover:text-[#ffffff] transition-colors cursor-pointer"
         >
           <Split className="h-3.5 w-3.5 text-purple-400" />
           <span>Parallel</span>
@@ -448,7 +448,7 @@ export const WorkflowBuilderPage: React.FC = () => {
 
         <button
           onClick={() => handleAddNode('human_approval', 'Human Approval')}
-          className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-caption font-medium text-fg-secondary hover:bg-slate-800 hover:text-white transition-colors cursor-pointer"
+          className="flex items-center gap-2 px-2.5 py-1.5 rounded-[6px] text-caption font-medium text-fg-secondary hover:bg-[#161718] hover:text-[#ffffff] transition-colors cursor-pointer"
         >
           <ShieldCheck className="h-3.5 w-3.5 text-fg-warning" />
           <span>Human Approval</span>
@@ -456,7 +456,7 @@ export const WorkflowBuilderPage: React.FC = () => {
 
         <button
           onClick={() => handleAddNode('output', 'Output')}
-          className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-caption font-medium text-fg-secondary hover:bg-slate-800 hover:text-white transition-colors cursor-pointer"
+          className="flex items-center gap-2 px-2.5 py-1.5 rounded-[6px] text-caption font-medium text-fg-secondary hover:bg-[#161718] hover:text-[#ffffff] transition-colors cursor-pointer"
         >
           <Package className="h-3.5 w-3.5 text-fg-brand" />
           <span>Output</span>
@@ -464,7 +464,7 @@ export const WorkflowBuilderPage: React.FC = () => {
 
         <button
           onClick={() => handleAddNode('end', 'End Pipeline')}
-          className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-caption font-medium text-fg-secondary hover:bg-slate-800 hover:text-white transition-colors cursor-pointer"
+          className="flex items-center gap-2 px-2.5 py-1.5 rounded-[6px] text-caption font-medium text-fg-secondary hover:bg-[#161718] hover:text-[#ffffff] transition-colors cursor-pointer"
         >
           <Flag className="h-3.5 w-3.5 text-fg-error" />
           <span>End</span>
@@ -487,11 +487,11 @@ export const WorkflowBuilderPage: React.FC = () => {
           maxZoom={1.5}
         >
           <Background color="#1e293b" gap={20} size={1} variant={BackgroundVariant.Dots} />
-          <Controls className="!bg-slate-900 !border-slate-800 !text-white fill-white" />
+          <Controls className="!bg-[#0f1011] !border-slate-800 !text-white fill-white" />
           <MiniMap
             nodeStrokeColor="#64748b"
             nodeColor="#334155"
-            className="!bg-slate-950/80 !border-slate-800 rounded-lg overflow-hidden"
+            className="!bg-slate-950/80 !border-slate-800 rounded-[6px] overflow-hidden"
           />
         </ReactFlow>
       </div>
@@ -509,13 +509,13 @@ export const WorkflowBuilderPage: React.FC = () => {
       {/* Templates Modal */}
       {showTemplatesModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setShowTemplatesModal(false)}>
-          <div className="w-full max-w-2xl mx-4 max-h-[80vh] overflow-y-auto rounded-2xl border border-border-default bg-bg-card shadow-2xl p-6" onClick={(e) => e.stopPropagation()}>
+          <div className="w-full max-w-2xl mx-4 max-h-[80vh] overflow-y-auto rounded-[12px] border border-border-default bg-bg-card shadow-2xl p-6" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-2">
                 <Sparkles className="h-5 w-5 text-fg-brand" />
-                <h2 className="text-lg font-bold text-fg-primary">Plantillas de Workflow</h2>
+                <h2 className="text-lg font-[510] text-fg-primary">Plantillas de Workflow</h2>
               </div>
-              <button onClick={() => setShowTemplatesModal(false)} className="p-1.5 rounded-lg text-fg-secondary hover:text-fg-primary hover:bg-slate-800 transition-colors cursor-pointer">
+              <button onClick={() => setShowTemplatesModal(false)} className="p-1.5 rounded-[6px] text-fg-secondary hover:text-fg-primary hover:bg-[#161718] transition-colors cursor-pointer">
                 <Square className="h-4 w-4" />
               </button>
             </div>
@@ -524,11 +524,11 @@ export const WorkflowBuilderPage: React.FC = () => {
             </p>
             <div className="space-y-3">
               {WORKFLOW_TEMPLATES.map((tpl) => (
-                <div key={tpl.id} className="p-4 rounded-xl border border-border-default bg-bg-card/60 hover:border-border-brand/60 transition-colors">
+                <div key={tpl.id} className="p-4 rounded-[12px] border border-border-default bg-bg-card/60 hover:border-border-brand/60 transition-colors">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <h3 className="text-body font-semibold text-fg-primary">{tpl.name}</h3>
+                        <h3 className="text-body font-[510] text-fg-primary">{tpl.name}</h3>
                         <Badge variant="secondary" className="text-[10px]">{tpl.badge}</Badge>
                         <Badge variant="outline" className="text-[10px]">{tpl.category}</Badge>
                       </div>
@@ -565,13 +565,13 @@ export const WorkflowBuilderPage: React.FC = () => {
       {/* Webhook Info Modal */}
       {showWebhookModal && currentWorkflow && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setShowWebhookModal(false)}>
-          <div className="w-full max-w-lg mx-4 rounded-2xl border border-border-default bg-bg-card shadow-2xl p-6" onClick={(e) => e.stopPropagation()}>
+          <div className="w-full max-w-lg mx-4 rounded-[12px] border border-border-default bg-bg-card shadow-2xl p-6" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-2">
                 <Globe className="h-5 w-5 text-fg-success" />
-                <h2 className="text-lg font-bold text-fg-primary">Webhook de Trigger</h2>
+                <h2 className="text-lg font-[510] text-fg-primary">Webhook de Trigger</h2>
               </div>
-              <button onClick={() => { setShowWebhookModal(false); setCopiedWebhook(false); }} className="p-1.5 rounded-lg text-fg-secondary hover:text-fg-primary hover:bg-slate-800 transition-colors cursor-pointer">
+              <button onClick={() => { setShowWebhookModal(false); setCopiedWebhook(false); }} className="p-1.5 rounded-[6px] text-fg-secondary hover:text-fg-primary hover:bg-[#161718] transition-colors cursor-pointer">
                 <Square className="h-4 w-4" />
               </button>
             </div>
@@ -581,9 +581,9 @@ export const WorkflowBuilderPage: React.FC = () => {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-caption font-semibold text-fg-secondary mb-1.5 uppercase tracking-wider">URL del Webhook</label>
+                <label className="block text-caption font-[510] text-fg-secondary mb-1.5 uppercase tracking-wider">URL del Webhook</label>
                 <div className="flex items-center gap-2">
-                  <code className="flex-1 p-2.5 rounded-lg bg-black/60 border border-border-default text-caption font-mono text-fg-brand break-all">
+                  <code className="flex-1 p-2.5 rounded-[6px] bg-black/60 border border-border-default text-caption font-mono text-fg-brand break-all">
                     POST http://localhost:3001/v1/workflows/{currentWorkflow.id}/trigger
                   </code>
                   <Button
@@ -602,8 +602,8 @@ export const WorkflowBuilderPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-caption font-semibold text-fg-secondary mb-1.5 uppercase tracking-wider">Ejemplo cURL</label>
-                <pre className="p-3 rounded-lg bg-black/60 border border-border-default text-caption font-mono text-fg-secondary leading-relaxed whitespace-pre-wrap">
+                <label className="block text-caption font-[510] text-fg-secondary mb-1.5 uppercase tracking-wider">Ejemplo cURL</label>
+                <pre className="p-3 rounded-[6px] bg-black/60 border border-border-default text-caption font-mono text-fg-secondary leading-relaxed whitespace-pre-wrap">
 {`curl -X POST \\
   http://localhost:3001/v1/workflows/${currentWorkflow.id}/trigger \\
   -H "Content-Type: application/json" \\
@@ -612,8 +612,8 @@ export const WorkflowBuilderPage: React.FC = () => {
                 </pre>
               </div>
 
-              <div className="p-3 rounded-lg bg-bg-brand-subtle/20 border border-border-brand/30 text-caption text-fg-secondary">
-                <span className="font-semibold text-fg-brand">💡 Nota:</span> El webhook requiere autenticación JWT. Configura los headers de autorización apropiadamente.
+              <div className="p-3 rounded-[6px] bg-bg-brand-subtle/20 border border-border-brand/30 text-caption text-fg-secondary">
+                <span className="font-[510] text-fg-brand">💡 Nota:</span> El webhook requiere autenticación JWT. Configura los headers de autorización apropiadamente.
               </div>
             </div>
           </div>

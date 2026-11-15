@@ -10,7 +10,7 @@ describe('Zero-Trust Audit Log Service', () => {
   it('records audit events accurately with timestamp and details', async () => {
     const entry = await auditService.log({
       userId: 'user-sec-01',
-      userEmail: 'sec@agenthub.dev',
+      userEmail: 'sec@NEXORA.dev',
       action: 'security_gate.approved',
       resource: 'mcp:tool:docker_build',
       status: 'success',

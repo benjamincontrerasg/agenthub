@@ -78,7 +78,7 @@ describe('End-to-End System Integration Tests', () => {
       const user: AuthUser = {
         id: 'usr-admin-1',
         name: 'Administrador de Seguridad',
-        email: 'security-admin@agenthub.internal',
+        email: 'security-admin@NEXORA.internal',
         role: 'admin',
       };
 
@@ -90,7 +90,7 @@ describe('End-to-End System Integration Tests', () => {
       const decoded = verifyJWT(token);
       expect(decoded).not.toBeNull();
       expect(decoded?.role).toBe('admin');
-      expect(decoded?.email).toBe('security-admin@agenthub.internal');
+      expect(decoded?.email).toBe('security-admin@NEXORA.internal');
 
       // 3. Cifrado y descifrado de credenciales de proveedor (AES-256-GCM)
       const rawApiKey = 'sk-live-test-credential-xyz9876543210';

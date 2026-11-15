@@ -23,18 +23,18 @@ const registerSchema = z.object({
 
 // Demo accounts in memory / seed
 const DEMO_USERS: Record<string, AuthUser & { password: string }> = {
-  'admin@agenthub.dev': {
+  'admin@NEXORA.dev': {
     id: 'user-admin-01',
-    email: 'admin@agenthub.dev',
-    name: 'Administrador AgentHub',
+    email: 'admin@NEXORA.dev',
+    name: 'Administrador NEXORA',
     role: 'admin',
     password: 'admin123',
     organizationId: 'org-default',
   },
-  'dev@agenthub.dev': {
+  'dev@NEXORA.dev': {
     id: 'user-dev-01',
-    email: 'dev@agenthub.dev',
-    name: 'Developer AgentHub',
+    email: 'dev@NEXORA.dev',
+    name: 'Developer NEXORA',
     role: 'developer',
     password: 'dev123',
     organizationId: 'org-default',
@@ -58,7 +58,7 @@ export async function authRoutes(fastify: FastifyInstance) {
 
       return reply.status(401).send({
         code: 'INVALID_CREDENTIALS',
-        message: 'Credenciales inválidas. Usa admin@agenthub.dev / admin123 para desarrollo.',
+        message: 'Credenciales inválidas. Usa admin@NEXORA.dev / admin123 para desarrollo.',
       });
     }
 

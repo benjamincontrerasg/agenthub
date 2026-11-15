@@ -118,22 +118,22 @@ export const Sidebar: React.FC<SidebarProps> = ({
             onClick={onCloseMobile}
             className="flex items-center space-x-3 overflow-hidden group"
           >
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-black border border-white/10 p-1 shadow-md shadow-violet-500/20 group-hover:border-violet-500/50 group-hover:shadow-violet-500/40 transition-all">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[12px] bg-[#08090a] border border-[rgba(255,255,255,0.08)] p-1 shadow-sm group-hover:border-[rgba(228,242,34,0.35)] group-hover:shadow-[0_0_12px_rgba(228,242,34,0.15)] transition-all">
               <img
-                src="/agenthub-logo.png"
-                alt="AgentHub Logo"
+                src="/NEXORA-logo.png"
+                alt="NEXORA Logo"
                 className="h-full w-full object-contain filter drop-shadow select-none"
               />
             </div>
             {!collapsed && (
               <div className="flex flex-col">
-                <span className="text-subtitle font-bold tracking-tight text-fg-primary flex items-center gap-1.5">
-                  AgentHub
-                  <span className="text-caption font-mono px-1.5 py-0.2 rounded bg-bg-brand-subtle text-fg-brand border border-border-brand/60">
+                <span className="text-subtitle font-[510] tracking-tight text-[#ffffff] flex items-center gap-1.5">
+                  NEXORA
+                  <span className="text-caption font-mono px-1.5 py-0.2 rounded-[4px] bg-bg-brand-subtle text-[#e4f222] border border-[rgba(228,242,34,0.35)]">
                     SaaS
                   </span>
                 </span>
-                <span className="text-caption text-fg-secondary">Multi-Agent System</span>
+                <span className="text-caption text-[#8a8f98]">Multi-Agent System</span>
               </div>
             )}
           </NavLink>
@@ -153,7 +153,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {navGroups.map((group) => (
             <div key={group.groupTitle} className="space-y-1">
               {!collapsed && (
-                <div className="px-3 pb-1 text-caption font-semibold uppercase tracking-wider text-fg-muted">
+                <div className="px-3 pb-1 text-caption font-[510] uppercase tracking-wider text-[#62666d]">
                   {group.groupTitle}
                 </div>
               )}
@@ -172,16 +172,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     onClick={onCloseMobile}
                     title={collapsed ? item.label : undefined}
                     className={cn(
-                      'flex items-center rounded-lg px-3 py-2 text-body font-medium transition-all group relative',
+                      'flex items-center rounded-[6px] px-3 py-2 text-body font-medium transition-all group relative',
                       isActive
-                        ? 'bg-bg-brand-subtle text-fg-brand font-semibold border border-border-brand/40 shadow-xs'
-                        : 'text-fg-secondary hover:bg-bg-surface hover:text-fg-primary'
+                        ? 'bg-[rgba(228,242,34,0.08)] text-[#e4f222] font-[510] border border-[rgba(228,242,34,0.25)] shadow-xs'
+                        : 'text-[#8a8f98] hover:bg-[#161718] hover:text-[#d0d6e0]'
                     )}
                   >
                     <Icon
                       className={cn(
                         'h-4 w-4 shrink-0 transition-colors',
-                        isActive ? 'text-fg-brand' : 'text-fg-secondary group-hover:text-fg-primary',
+                        isActive ? 'text-[#e4f222]' : 'text-[#62666d] group-hover:text-[#d0d6e0]',
                         collapsed ? 'mx-auto' : 'mr-3'
                       )}
                     />
@@ -192,7 +192,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
                     {/* Pending Approvals Counter Badge */}
                     {!collapsed && item.showBadge && (
-                      <span className="ml-auto rounded-full bg-fg-warning/20 px-2 py-0.5 text-caption font-mono font-semibold text-fg-warning border border-fg-warning/40 animate-pulse">
+                      <span className="ml-auto rounded-full bg-fg-warning/20 px-2 py-0.5 text-caption font-mono font-[510] text-fg-warning border border-fg-warning/40 animate-pulse">
                         {pendingApprovalsCount} pend.
                       </span>
                     )}
@@ -202,7 +202,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     )}
 
                     {isActive && (
-                      <div className="absolute left-0 top-1.5 bottom-1.5 w-1 rounded-r bg-fg-brand" />
+                      <div className="absolute left-0 top-1.5 bottom-1.5 w-1 rounded-r bg-[#e4f222]" />
                     )}
                   </NavLink>
                 );
@@ -214,7 +214,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {/* Bottom System Status Widget */}
         <div className="p-3 border-t border-border-default/80 shrink-0">
           {!collapsed ? (
-            <div className="rounded-lg border border-border-default/90 bg-bg-card/60 p-2.5">
+            <div className="rounded-[6px] border border-border-default/90 bg-bg-card/60 p-2.5">
               <div className="flex items-center justify-between mb-1">
                 <span className="flex items-center gap-1.5 text-caption font-medium text-fg-secondary">
                   <span className="h-2 w-2 rounded-full bg-fg-success" />

@@ -27,7 +27,7 @@ export const useAuthStore = create<AuthState>()(
     (set, get) => ({
       user: {
         id: 'usr-admin-default',
-        email: 'admin@agenthub.dev',
+        email: 'admin@NEXORA.dev',
         name: 'Administrador SecOps',
         role: 'admin',
         organizationId: 'org-default',
@@ -54,7 +54,7 @@ export const useAuthStore = create<AuthState>()(
 
           const data = await res.json();
           if (typeof window !== 'undefined') {
-            localStorage.setItem('agenthub-token', data.token);
+            localStorage.setItem('NEXORA-token', data.token);
           }
 
           set({
@@ -67,16 +67,16 @@ export const useAuthStore = create<AuthState>()(
           return true;
         } catch (err: any) {
           // Fallback offline / desarrollo
-          if (email === 'admin@agenthub.dev' && password === 'admin123') {
+          if (email === 'admin@NEXORA.dev' && password === 'admin123') {
             const mockUser: AuthUser = {
               id: 'usr-admin-default',
-              email: 'admin@agenthub.dev',
+              email: 'admin@NEXORA.dev',
               name: 'Administrador SecOps',
               role: 'admin',
             };
             const mockToken = 'jwt-dev-token-default-admin';
             if (typeof window !== 'undefined') {
-              localStorage.setItem('agenthub-token', mockToken);
+              localStorage.setItem('NEXORA-token', mockToken);
             }
             set({
               user: mockUser,
@@ -95,7 +95,7 @@ export const useAuthStore = create<AuthState>()(
 
       logout: () => {
         if (typeof window !== 'undefined') {
-          localStorage.removeItem('agenthub-token');
+          localStorage.removeItem('NEXORA-token');
         }
         set({
           user: null,
@@ -109,19 +109,19 @@ export const useAuthStore = create<AuthState>()(
         const rolesMap: Record<string, AuthUser> = {
           admin: {
             id: 'usr-admin-default',
-            email: 'admin@agenthub.dev',
+            email: 'admin@NEXORA.dev',
             name: 'Administrador SecOps',
             role: 'admin',
           },
           developer: {
             id: 'usr-dev-01',
-            email: 'dev@agenthub.dev',
+            email: 'dev@NEXORA.dev',
             name: 'Ingeniero de Agentes',
             role: 'developer',
           },
           viewer: {
             id: 'usr-viewer-01',
-            email: 'auditor@agenthub.dev',
+            email: 'auditor@NEXORA.dev',
             name: 'Auditor Externo',
             role: 'viewer',
           },
@@ -134,14 +134,14 @@ export const useAuthStore = create<AuthState>()(
           isAuthenticated: true,
         });
         if (typeof window !== 'undefined') {
-          localStorage.setItem('agenthub-token', `jwt-dev-token-${role}`);
+          localStorage.setItem('NEXORA-token', `jwt-dev-token-${role}`);
         }
       },
 
       clearError: () => set({ error: null }),
     }),
     {
-      name: 'agenthub-auth-storage',
+      name: 'NEXORA-auth-storage',
     }
   )
 );

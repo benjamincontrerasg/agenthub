@@ -51,7 +51,7 @@ async function main() {
   // Register WebSocket
   await fastify.register(websocket);
 
-  // WebSocket Endpoint for real-time AgentHub events
+  // WebSocket Endpoint for real-time NEXORA events
   fastify.register(async function (app) {
     app.get('/ws', { websocket: true }, (socket, req) => {
       wsManager.registerClient(socket);
@@ -86,7 +86,7 @@ async function main() {
   fastify.get('/health', async () => {
     return {
       status: 'healthy',
-      platform: 'AgentHub Backend API',
+      platform: 'NEXORA Backend API',
       version: '0.1.0',
       timestamp: new Date().toISOString(),
     };
@@ -116,7 +116,7 @@ async function main() {
 
   try {
     await fastify.listen({ port: config.port, host: config.host });
-    console.log(`🚀 AgentHub Backend operativo en http://${config.host}:${config.port}`);
+    console.log(`🚀 NEXORA Backend operativo en http://${config.host}:${config.port}`);
     console.log(`🔌 WebSocket Stream en ws://${config.host}:${config.port}/ws`);
   } catch (err) {
     fastify.log.error(err);

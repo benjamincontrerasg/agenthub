@@ -53,7 +53,7 @@ export function DialogContent({
   return (
     <div
       className={cn(
-        'relative rounded-xl border border-border-default bg-bg-card p-6 shadow-2xl text-fg-primary max-h-[90vh] overflow-y-auto',
+        'relative rounded-[12px] border border-border-default bg-bg-card p-6 shadow-2xl text-fg-primary max-h-[90vh] overflow-y-auto',
         className
       )}
       {...props}
@@ -61,7 +61,7 @@ export function DialogContent({
       {onClose && (
         <button
           onClick={onClose}
-          className="absolute right-4 top-4 rounded-md p-1 text-fg-secondary hover:bg-slate-800 hover:text-white transition-colors cursor-pointer"
+          className="absolute right-4 top-4 rounded-[6px] p-1 text-fg-secondary hover:bg-[#161718] hover:text-[#ffffff] transition-colors cursor-pointer"
         >
           <X className="h-4 w-4" />
           <span className="sr-only">Cerrar</span>
@@ -77,7 +77,7 @@ export function DialogHeader({ className, ...props }: React.HTMLAttributes<HTMLD
 }
 
 export function DialogTitle({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
-  return <h2 className={cn('text-lg font-semibold tracking-tight text-fg-primary', className)} {...props} />;
+  return <h2 className={cn('text-lg font-[510] tracking-tight text-fg-primary', className)} {...props} />;
 }
 
 export function DialogDescription({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) {

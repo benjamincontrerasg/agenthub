@@ -75,7 +75,7 @@ export const useSettingsStore = create<SettingsState>()(
 
         return {
           success: true,
-          message: 'Conexión verificada con la API de AgentHub (HTTP 200 OK, WebSocket Handshake OK)',
+          message: 'Conexión verificada con la API de NEXORA (HTTP 200 OK, WebSocket Handshake OK)',
           latencyMs: 38,
         };
       },
@@ -83,7 +83,7 @@ export const useSettingsStore = create<SettingsState>()(
       resetToDefaults: () => set({ settings: initialSettings }),
     }),
     {
-      name: 'agenthub-settings-storage',
+      name: 'NEXORA-settings-storage',
     }
   )
 );

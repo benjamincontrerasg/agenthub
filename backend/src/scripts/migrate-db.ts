@@ -8,7 +8,7 @@ import { config } from '../config.js';
 export async function runMigrationCheck() {
   const isPostgres = config.databaseUrl.startsWith('postgres://') || config.databaseUrl.startsWith('postgresql://');
 
-  console.log('--- AgentHub Database Migration Utility ---');
+  console.log('--- NEXORA Database Migration Utility ---');
   console.log(`Modo detectado: ${isPostgres ? 'PostgreSQL (SaaS Production + pgvector)' : 'SQLite (Local Embedded / Development)'}`);
   console.log(`Cadena de conexión: ${config.databaseUrl}`);
 

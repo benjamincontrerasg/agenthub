@@ -46,8 +46,8 @@ const NodeWrapper = ({
 
   return (
     <div
-      className={`min-w-[220px] max-w-[260px] rounded-xl border bg-bg-card/95 p-3.5 shadow-xl backdrop-blur-md transition-all ${borderColor} ${
-        selected ? 'ring-2 ring-violet-500 shadow-violet-500/20' : ''
+      className={`min-w-[220px] max-w-[260px] rounded-[12px] border bg-bg-card/95 p-3.5 shadow-xl backdrop-blur-md transition-all ${borderColor} ${
+        selected ? 'ring-2 ring-[#e4f222] shadow-[rgba(228,242,34,0.1)]' : ''
       } ${isRunning ? 'ring-2 ring-amber-400 shadow-amber-500/30 animate-pulse' : ''} ${
         isCompleted ? 'border-fg-success/80' : ''
       }`}
@@ -67,7 +67,7 @@ const NodeWrapper = ({
               <Icon className="h-4 w-4" />
             </div>
           )}
-          <span className="text-caption font-semibold text-fg-primary tracking-tight truncate max-w-[120px]">
+          <span className="text-caption font-[510] text-fg-primary tracking-tight truncate max-w-[120px]">
             {title}
           </span>
         </div>
@@ -178,11 +178,11 @@ export const AgentNode = memo((props: any) => {
         <Handle
           type="target"
           position={Position.Left}
-          className="!bg-indigo-500 !w-3 !h-3 !border-2 !border-slate-900"
+          className="!bg-[#e4f222] !w-3 !h-3 !border-2 !border-slate-900"
         />
 
         <div
-          className={`p-3 rounded-2xl border-2 bg-bg-card/95 shadow-2xl backdrop-blur-md flex flex-col items-center justify-center gap-1.5 transition-all ${
+          className={`p-3 rounded-[12px] border-2 bg-bg-card/95 shadow-2xl backdrop-blur-md flex flex-col items-center justify-center gap-1.5 transition-all ${
             isCurrentlyDraggingOrPressed
               ? 'border-indigo-500 shadow-indigo-500/30 ring-2 ring-indigo-500/20'
               : 'border-indigo-500/40 hover:border-indigo-500 hover:shadow-indigo-500/20'
@@ -197,11 +197,11 @@ export const AgentNode = memo((props: any) => {
             />
           </div>
           <div className="flex items-center gap-1">
-            <span className="text-[11px] font-bold text-indigo-300 font-mono tracking-tight px-1.5 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/20">
+            <span className="text-[11px] font-[510] text-indigo-300 font-mono tracking-tight px-1.5 py-0.5 rounded bg-[#e4f222]/10 border border-indigo-500/20">
               {data?.label || 'Gemini'}
             </span>
           </div>
-          <span className="text-[9px] text-slate-400 font-sans tracking-wide">
+          <span className="text-[9px] text-[#8a8f98] font-sans tracking-wide">
             Doble clic para expandir
           </span>
         </div>
@@ -209,7 +209,7 @@ export const AgentNode = memo((props: any) => {
         <Handle
           type="source"
           position={Position.Right}
-          className="!bg-indigo-500 !w-3 !h-3 !border-2 !border-slate-900"
+          className="!bg-[#e4f222] !w-3 !h-3 !border-2 !border-slate-900"
         />
       </div>
     );
@@ -238,7 +238,7 @@ export const AgentNode = memo((props: any) => {
         />
 
         <div
-          className={`p-3 rounded-2xl border-2 bg-bg-card/95 shadow-2xl backdrop-blur-md flex flex-col items-center justify-center gap-1.5 transition-all ${
+          className={`p-3 rounded-[12px] border-2 bg-bg-card/95 shadow-2xl backdrop-blur-md flex flex-col items-center justify-center gap-1.5 transition-all ${
             isCurrentlyDraggingOrPressed
               ? 'border-blue-500 shadow-blue-500/30 ring-2 ring-blue-500/20'
               : 'border-blue-500/40 hover:border-blue-500 hover:shadow-blue-500/20'
@@ -253,11 +253,11 @@ export const AgentNode = memo((props: any) => {
             />
           </div>
           <div className="flex items-center gap-1">
-            <span className="text-[11px] font-bold text-blue-300 font-mono tracking-tight px-1.5 py-0.5 rounded bg-blue-500/10 border border-blue-500/20">
+            <span className="text-[11px] font-[510] text-blue-300 font-mono tracking-tight px-1.5 py-0.5 rounded bg-blue-500/10 border border-blue-500/20">
               {data?.label || 'Ollama'}
             </span>
           </div>
-          <span className="text-[9px] text-slate-400 font-sans tracking-wide">
+          <span className="text-[9px] text-[#8a8f98] font-sans tracking-wide">
             Doble clic para expandir
           </span>
         </div>
@@ -294,7 +294,7 @@ export const AgentNode = memo((props: any) => {
         />
 
         <div
-          className={`p-3 rounded-2xl border-2 bg-bg-card/95 shadow-2xl backdrop-blur-md flex flex-col items-center justify-center gap-1.5 transition-all ${
+          className={`p-3 rounded-[12px] border-2 bg-bg-card/95 shadow-2xl backdrop-blur-md flex flex-col items-center justify-center gap-1.5 transition-all ${
             isCurrentlyDraggingOrPressed
               ? 'border-emerald-500 shadow-emerald-500/30 ring-2 ring-emerald-500/20'
               : 'border-emerald-500/40 hover:border-emerald-500 hover:shadow-emerald-500/20'
@@ -309,11 +309,11 @@ export const AgentNode = memo((props: any) => {
             />
           </div>
           <div className="flex items-center gap-1">
-            <span className="text-[11px] font-bold text-emerald-300 font-mono tracking-tight px-1.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20">
+            <span className="text-[11px] font-[510] text-emerald-300 font-mono tracking-tight px-1.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20">
               {data?.label || 'OpenAI'}
             </span>
           </div>
-          <span className="text-[9px] text-slate-400 font-sans tracking-wide">
+          <span className="text-[9px] text-[#8a8f98] font-sans tracking-wide">
             Doble clic para expandir
           </span>
         </div>
@@ -350,7 +350,7 @@ export const AgentNode = memo((props: any) => {
         />
 
         <div
-          className={`p-3 rounded-2xl border-2 bg-bg-card/95 shadow-2xl backdrop-blur-md flex flex-col items-center justify-center gap-1.5 transition-all ${
+          className={`p-3 rounded-[12px] border-2 bg-bg-card/95 shadow-2xl backdrop-blur-md flex flex-col items-center justify-center gap-1.5 transition-all ${
             isCurrentlyDraggingOrPressed
               ? 'border-orange-500 shadow-orange-500/30 ring-2 ring-orange-500/20'
               : 'border-orange-500/40 hover:border-orange-500 hover:shadow-orange-500/20'
@@ -363,11 +363,11 @@ export const AgentNode = memo((props: any) => {
             className="w-14 h-14 object-contain drop-shadow-md select-none pointer-events-none transition-transform duration-150"
           />
           <div className="flex items-center gap-1">
-            <span className="text-[11px] font-bold text-orange-300 font-mono tracking-tight px-1.5 py-0.5 rounded bg-orange-500/10 border border-orange-500/20">
+            <span className="text-[11px] font-[510] text-orange-300 font-mono tracking-tight px-1.5 py-0.5 rounded bg-orange-500/10 border border-orange-500/20">
               {data?.label || 'Claude'}
             </span>
           </div>
-          <span className="text-[9px] text-slate-400 font-sans tracking-wide">
+          <span className="text-[9px] text-[#8a8f98] font-sans tracking-wide">
             Doble clic para expandir
           </span>
         </div>
@@ -412,17 +412,17 @@ export const AgentNode = memo((props: any) => {
             ? 'border-indigo-500 ring-2 ring-indigo-500/40 shadow-indigo-500/30'
             : 'border-border-brand/50'
         }
-        accentColor={isOpenAI ? 'text-fg-success' : isOllama ? 'text-blue-400' : isGemini ? 'text-indigo-400' : 'text-fg-brand'}
+        accentColor={isOpenAI ? 'text-fg-success' : isOllama ? 'text-blue-400' : isGemini ? 'text-[#e4f222]' : 'text-fg-brand'}
       >
         <Handle
           type="target"
           position={Position.Left}
-          className={`!w-2.5 !h-2.5 ${isOpenAI ? '!bg-emerald-500' : isOllama ? '!bg-blue-500' : isGemini ? '!bg-indigo-500' : '!bg-violet-500'}`}
+          className={`!w-2.5 !h-2.5 ${isOpenAI ? '!bg-emerald-500' : isOllama ? '!bg-blue-500' : isGemini ? '!bg-[#e4f222]' : '!bg-[#e4f222]'}`}
         />
         <p className="text-caption text-fg-secondary line-clamp-2">{data?.description || 'Ejecuta inferencia con LLM'}</p>
         
         <div className="mt-2 pt-1.5 border-t border-border-default flex items-center justify-between text-caption">
-          <div className={`flex items-center gap-1.5 px-2 py-1 rounded-lg border transition-colors ${
+          <div className={`flex items-center gap-1.5 px-2 py-1 rounded-[6px] border transition-colors ${
             isClaude
               ? 'bg-orange-500/15 border-orange-500/40'
               : isOpenAI
@@ -430,7 +430,7 @@ export const AgentNode = memo((props: any) => {
               : isOllama
               ? 'bg-blue-500/15 border-blue-500/40'
               : isGemini
-              ? 'bg-indigo-500/15 border-indigo-500/40'
+              ? 'bg-[#e4f222]/15 border-indigo-500/40'
               : 'bg-bg-card/70 border-border-default'
           }`}>
             <ProviderLogo
@@ -441,13 +441,13 @@ export const AgentNode = memo((props: any) => {
             />
             <span className={`font-mono capitalize text-caption ${
               isClaude
-                ? 'text-orange-400 font-bold'
+                ? 'text-orange-400 font-[510]'
                 : isOpenAI
-                ? 'text-emerald-400 font-bold'
+                ? 'text-emerald-400 font-[510]'
                 : isOllama
-                ? 'text-blue-400 font-bold'
+                ? 'text-blue-400 font-[510]'
                 : isGemini
-                ? 'text-indigo-400 font-bold'
+                ? 'text-[#e4f222] font-[510]'
                 : 'text-fg-secondary'
             }`}>
               {isClaude ? 'Claude' : isOpenAI ? 'OpenAI' : isOllama ? 'Ollama' : isGemini ? 'Gemini' : providerId}
@@ -462,7 +462,7 @@ export const AgentNode = memo((props: any) => {
         <Handle
           type="source"
           position={Position.Right}
-          className={`!w-2.5 !h-2.5 ${isOpenAI ? '!bg-emerald-500' : isOllama ? '!bg-blue-500' : isGemini ? '!bg-indigo-500' : '!bg-violet-500'}`}
+          className={`!w-2.5 !h-2.5 ${isOpenAI ? '!bg-emerald-500' : isOllama ? '!bg-blue-500' : isGemini ? '!bg-[#e4f222]' : '!bg-[#e4f222]'}`}
         />
       </NodeWrapper>
     </div>
@@ -507,8 +507,8 @@ export const ConditionNode = memo((props: any) => {
         {data?.conditionExpr || 'condicion == true'}
       </p>
       <div className="relative mt-2 flex justify-between text-caption text-fg-secondary">
-        <span className="text-fg-success font-semibold">True (Aprobado) →</span>
-        <span className="text-fg-error font-semibold">False (Rechazado) →</span>
+        <span className="text-fg-success font-[510]">True (Aprobado) →</span>
+        <span className="text-fg-error font-[510]">False (Rechazado) →</span>
       </div>
       <Handle id="true" type="source" position={Position.Right} style={{ top: '35%' }} className="!bg-emerald-500 !w-2.5 !h-2.5" />
       <Handle id="false" type="source" position={Position.Right} style={{ top: '75%' }} className="!bg-rose-500 !w-2.5 !h-2.5" />

@@ -57,8 +57,8 @@ export async function notificationsRoutes(app: FastifyInstance) {
   app.post('/notifications/test', async (_req, reply) => {
     const result = await notificationsService.sendNotification({
       event: 'test',
-      title: '🧪 Notificación de Prueba - AgentHub',
-      message: 'Esta es una notificación de prueba desde AgentHub. Si recibes este mensaje, el canal está configurado correctamente.',
+      title: '🧪 Notificación de Prueba - NEXORA',
+      message: 'Esta es una notificación de prueba desde NEXORA. Si recibes este mensaje, el canal está configurado correctamente.',
       severity: 'info',
       timestamp: new Date().toISOString(),
     });

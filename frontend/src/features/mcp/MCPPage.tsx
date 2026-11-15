@@ -76,7 +76,7 @@ export const MCPPage: React.FC = () => {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-title sm:text-2xl font-bold tracking-tight text-fg-primary flex items-center gap-2">
+          <h2 className="text-title sm:text-2xl font-[510] tracking-tight text-fg-primary flex items-center gap-2">
             MCP Hub (Model Context Protocol)
             <Badge variant="secondary" className="font-mono text-caption">
               {servers.length} Servidores
@@ -104,7 +104,7 @@ export const MCPPage: React.FC = () => {
           onClick={() => setActiveTab('details')}
           className={`flex items-center gap-2 px-4 py-2 text-caption font-medium border-b-2 transition-colors cursor-pointer ${
             activeTab === 'details'
-              ? 'border-border-brand text-fg-brand font-semibold'
+              ? 'border-border-brand text-fg-brand font-[510]'
               : 'border-transparent text-fg-secondary hover:text-fg-primary'
           }`}
         >
@@ -116,7 +116,7 @@ export const MCPPage: React.FC = () => {
           onClick={() => setActiveTab('playground')}
           className={`flex items-center gap-2 px-4 py-2 text-caption font-medium border-b-2 transition-colors cursor-pointer ${
             activeTab === 'playground'
-              ? 'border-border-brand text-fg-brand font-semibold'
+              ? 'border-border-brand text-fg-brand font-[510]'
               : 'border-transparent text-fg-secondary hover:text-fg-primary'
           }`}
         >
@@ -149,7 +149,7 @@ export const MCPPage: React.FC = () => {
                     setPlaygroundToolName('');
                     setPlaygroundResult(null);
                   }}
-                  className="w-full rounded-lg border border-border-default bg-bg-surface px-3 py-2 text-caption text-fg-primary focus:border-border-brand focus:outline-none"
+                  className="w-full rounded-[6px] border border-border-default bg-bg-surface px-3 py-2 text-caption text-fg-primary focus:border-border-brand focus:outline-none"
                 >
                   <option value="">Seleccionar servidor...</option>
                   {servers.filter((s) => s.isActivated).map((s) => (
@@ -178,7 +178,7 @@ export const MCPPage: React.FC = () => {
                         setPlaygroundInput('{}');
                       }
                     }}
-                    className="w-full rounded-lg border border-border-default bg-bg-surface px-3 py-2 text-caption text-fg-primary focus:border-border-brand focus:outline-none"
+                    className="w-full rounded-[6px] border border-border-default bg-bg-surface px-3 py-2 text-caption text-fg-primary focus:border-border-brand focus:outline-none"
                   >
                     <option value="">Seleccionar herramienta...</option>
                     {servers.find((s) => s.id === playgroundServerId)?.tools.map((t) => (
@@ -194,7 +194,7 @@ export const MCPPage: React.FC = () => {
                 const srv = servers.find((s) => s.id === playgroundServerId);
                 const tool = srv?.tools.find((t) => t.name === playgroundToolName);
                 return tool ? (
-                  <div className="p-3 rounded-lg bg-bg-card/60 border border-border-default">
+                  <div className="p-3 rounded-[6px] bg-bg-card/60 border border-border-default">
                     <p className="text-caption text-fg-secondary mb-1">{tool.description}</p>
                     <div className="flex items-center gap-2">
                       {tool.isWriteOperation ? (
@@ -222,7 +222,7 @@ export const MCPPage: React.FC = () => {
                   value={playgroundInput}
                   onChange={(e) => setPlaygroundInput(e.target.value)}
                   rows={8}
-                  className="w-full rounded-lg border border-border-default bg-black/60 p-3 text-caption font-mono text-fg-primary focus:border-border-brand focus:outline-none placeholder:text-slate-500"
+                  className="w-full rounded-[6px] border border-border-default bg-black/60 p-3 text-caption font-mono text-fg-primary focus:border-border-brand focus:outline-none placeholder:text-[#62666d]"
                   placeholder='{"key": "value"}'
                 />
               </div>
@@ -282,18 +282,18 @@ export const MCPPage: React.FC = () => {
                       <Badge variant="warning" className="text-[10px]">Requiere Aprobación</Badge>
                     )}
                   </div>
-                  <pre className="p-4 rounded-lg bg-black/60 border border-border-default text-caption font-mono text-fg-primary leading-relaxed whitespace-pre-wrap overflow-x-auto max-h-[400px] overflow-y-auto">
+                  <pre className="p-4 rounded-[6px] bg-black/60 border border-border-default text-caption font-mono text-fg-primary leading-relaxed whitespace-pre-wrap overflow-x-auto max-h-[400px] overflow-y-auto">
                     {JSON.stringify(playgroundResult.output, null, 2)}
                   </pre>
                 </div>
               ) : executeMutation.isError ? (
-                <div className="text-center py-8 border border-dashed border-fg-error/30 rounded-xl">
+                <div className="text-center py-8 border border-dashed border-fg-error/30 rounded-[12px]">
                   <XCircle className="h-8 w-8 text-fg-error mx-auto mb-2" />
                   <p className="text-caption text-fg-error">Error en la ejecución</p>
                   <p className="text-caption text-fg-secondary mt-1">{(executeMutation.error as Error)?.message}</p>
                 </div>
               ) : (
-                <div className="text-center py-12 border border-dashed border-border-default rounded-xl">
+                <div className="text-center py-12 border border-dashed border-border-default rounded-[12px]">
                   <Zap className="h-8 w-8 text-fg-secondary mx-auto mb-2 opacity-50" />
                   <p className="text-body font-medium text-fg-secondary">Sin resultado aún</p>
                   <p className="text-caption text-fg-secondary mt-1">Selecciona una herramienta y ejecuta para ver la salida aquí.</p>
@@ -308,7 +308,7 @@ export const MCPPage: React.FC = () => {
       {activeTab === 'details' && <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left: Servers List (4 columns) */}
         <div className="lg:col-span-4 space-y-3">
-          <div className="flex items-center justify-between text-caption font-semibold text-fg-secondary uppercase tracking-wider px-1">
+          <div className="flex items-center justify-between text-caption font-[510] text-fg-secondary uppercase tracking-wider px-1">
             <span>Servidores Registrados</span>
             <span>Activo</span>
           </div>
@@ -323,16 +323,16 @@ export const MCPPage: React.FC = () => {
                 <div
                   key={server.id}
                   onClick={() => setSelectedServerId(server.id)}
-                  className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
+                  className={`p-3.5 rounded-[12px] border text-left transition-all cursor-pointer ${
                     isSelected
                       ? 'border-border-brand/80 bg-bg-card/90 shadow-md shadow-violet-950/30'
-                      : 'border-border-default/80 bg-bg-card/40 hover:bg-slate-900/70 hover:border-slate-700'
+                      : 'border-border-default/80 bg-bg-card/40 hover:bg-[#0f1011]/70 hover:border-[#23252a]'
                   }`}
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex items-center space-x-2.5">
                       <div
-                        className={`p-2 rounded-lg border ${
+                        className={`p-2 rounded-[6px] border ${
                           server.transport === 'stdio'
                             ? 'bg-bg-brand-subtle/40 border-border-brand/50 text-fg-brand'
                             : 'bg-bg-success/40 border-fg-success/50 text-fg-success'
@@ -345,7 +345,7 @@ export const MCPPage: React.FC = () => {
                         )}
                       </div>
                       <div>
-                        <p className="text-body font-semibold text-fg-primary truncate max-w-[170px]">
+                        <p className="text-body font-[510] text-fg-primary truncate max-w-[170px]">
                           {server.name}
                         </p>
                         <div className="flex items-center gap-1.5 mt-0.5">
@@ -400,7 +400,7 @@ export const MCPPage: React.FC = () => {
               <CardHeader className="pb-3">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-bg-brand-subtle/50 border border-border-brand/50 text-fg-brand">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-[12px] bg-bg-brand-subtle/50 border border-border-brand/50 text-fg-brand">
                       <Server className="h-5 w-5" />
                     </div>
                     <div>
@@ -455,12 +455,12 @@ export const MCPPage: React.FC = () => {
               </CardHeader>
 
               <CardContent className="space-y-3 pt-0">
-                <div className="p-3 rounded-lg bg-bg-card/70 border border-border-default text-caption font-mono text-fg-secondary space-y-1.5">
+                <div className="p-3 rounded-[6px] bg-bg-card/70 border border-border-default text-caption font-mono text-fg-secondary space-y-1.5">
                   <div className="flex items-center justify-between text-caption text-fg-secondary font-sans mb-1">
                     <span>Comando / Endpoint</span>
                     <Badge variant="outline">{activeServer.transport}</Badge>
                   </div>
-                  <div className="truncate text-fg-brand font-semibold">{activeServer.commandOrEndpoint}</div>
+                  <div className="truncate text-fg-brand font-[510]">{activeServer.commandOrEndpoint}</div>
 
                   {activeServer.allowedDirectories && (
                     <div className="pt-2 border-t border-border-default/70 text-caption font-sans">
@@ -497,11 +497,11 @@ export const MCPPage: React.FC = () => {
                 {activeServer.tools.map((tool) => (
                   <div
                     key={tool.id}
-                    className="p-3.5 rounded-xl border border-border-default/80 bg-bg-card/60 space-y-2.5"
+                    className="p-3.5 rounded-[12px] border border-border-default/80 bg-bg-card/60 space-y-2.5"
                   >
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                       <div className="flex items-center gap-2">
-                        <span className="text-body font-semibold text-fg-primary font-mono">{tool.name}</span>
+                        <span className="text-body font-[510] text-fg-primary font-mono">{tool.name}</span>
                         {tool.isWriteOperation ? (
                           <Badge variant="warning" className="text-caption gap-1">
                             <ShieldAlert className="h-3 w-3" /> Operación de Escritura (Humano)
@@ -528,14 +528,14 @@ export const MCPPage: React.FC = () => {
 
                     {/* Input Schema Parameters */}
                     {tool.inputSchema.properties && (
-                      <div className="rounded-lg bg-bg-card/60 p-2 border border-border-default/70 text-caption">
-                        <span className="text-caption font-semibold text-fg-secondary uppercase tracking-wider block mb-1">
+                      <div className="rounded-[6px] bg-bg-card/60 p-2 border border-border-default/70 text-caption">
+                        <span className="text-caption font-[510] text-fg-secondary uppercase tracking-wider block mb-1">
                           Parámetros del Input Schema
                         </span>
                         <div className="space-y-1">
                           {Object.entries(tool.inputSchema.properties).map(([pName, pDef]) => (
                             <div key={pName} className="flex items-baseline gap-2 font-mono">
-                              <span className="text-fg-brand font-semibold">{pName}:</span>
+                              <span className="text-fg-brand font-[510]">{pName}:</span>
                               <span className="text-fg-secondary text-caption">{pDef.type}</span>
                               <span className="text-fg-secondary font-sans text-caption truncate">
                                 — {pDef.description}
@@ -559,7 +559,7 @@ export const MCPPage: React.FC = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="h-36 overflow-y-auto p-3 rounded-lg bg-black/80 border border-border-default font-mono text-caption space-y-1">
+                <div className="h-36 overflow-y-auto p-3 rounded-[6px] bg-black/80 border border-border-default font-mono text-caption space-y-1">
                   {activeServer.logs.map((log) => (
                     <div key={log.id} className="flex items-start gap-2">
                       <span className="text-fg-secondary shrink-0">{formatDate(log.timestamp)}</span>
@@ -582,7 +582,7 @@ export const MCPPage: React.FC = () => {
             </Card>
           </div>
         ) : (
-          <div className="lg:col-span-8 flex flex-col items-center justify-center p-12 text-center rounded-xl border border-dashed border-border-default">
+          <div className="lg:col-span-8 flex flex-col items-center justify-center p-12 text-center rounded-[12px] border border-dashed border-border-default">
             <Server className="h-10 w-10 text-fg-muted mb-2" />
             <p className="text-body font-medium text-fg-secondary">No hay servidor MCP seleccionado</p>
           </div>

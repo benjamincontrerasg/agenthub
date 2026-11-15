@@ -62,7 +62,7 @@ export const AuditPage: React.FC = () => {
     const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(logs, null, 2));
     const downloadAnchor = document.createElement('a');
     downloadAnchor.setAttribute('href', dataStr);
-    downloadAnchor.setAttribute('download', `agenthub-audit-logs-${Date.now()}.json`);
+    downloadAnchor.setAttribute('download', `NEXORA-audit-logs-${Date.now()}.json`);
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
@@ -83,7 +83,7 @@ export const AuditPage: React.FC = () => {
     const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map((e) => e.join(','))].join('\n');
     const downloadAnchor = document.createElement('a');
     downloadAnchor.setAttribute('href', encodeURI(csvContent));
-    downloadAnchor.setAttribute('download', `agenthub-audit-logs-${Date.now()}.csv`);
+    downloadAnchor.setAttribute('download', `NEXORA-audit-logs-${Date.now()}.csv`);
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
@@ -99,7 +99,7 @@ export const AuditPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-title font-bold text-fg-primary tracking-tight">Registro de Auditoría Zero-Trust</h1>
+            <h1 className="text-title font-[510] text-fg-primary tracking-tight">Registro de Auditoría Zero-Trust</h1>
             <Badge variant="outline" className="border-border-brand text-fg-brand font-mono text-caption">
               SOC 2 / Zero-Trust
             </Badge>
@@ -130,7 +130,7 @@ export const AuditPage: React.FC = () => {
         <Card>
           <CardContent className="p-4">
             <span className="text-caption text-fg-secondary">Total de Eventos</span>
-            <p className="text-title font-bold text-fg-primary mt-1">{logs.length}</p>
+            <p className="text-title font-[510] text-fg-primary mt-1">{logs.length}</p>
             <span className="text-caption text-fg-brand">Ventana activa</span>
           </CardContent>
         </Card>
@@ -138,7 +138,7 @@ export const AuditPage: React.FC = () => {
         <Card>
           <CardContent className="p-4">
             <span className="text-caption text-fg-secondary">Operaciones Autorizadas</span>
-            <p className="text-title font-bold text-fg-success mt-1">{totalSuccess}</p>
+            <p className="text-title font-[510] text-fg-success mt-1">{totalSuccess}</p>
             <span className="text-caption text-fg-success">Aprobadas / Exitosas</span>
           </CardContent>
         </Card>
@@ -146,7 +146,7 @@ export const AuditPage: React.FC = () => {
         <Card>
           <CardContent className="p-4">
             <span className="text-caption text-fg-secondary">Alertas / Bloqueos</span>
-            <p className="text-title font-bold text-fg-error mt-1">{totalFailures}</p>
+            <p className="text-title font-[510] text-fg-error mt-1">{totalFailures}</p>
             <span className="text-caption text-fg-error">Rechazos o Rate-Limit</span>
           </CardContent>
         </Card>
@@ -154,7 +154,7 @@ export const AuditPage: React.FC = () => {
         <Card>
           <CardContent className="p-4">
             <span className="text-caption text-fg-secondary">Integridad del Gate</span>
-            <p className="text-title font-bold text-fg-primary mt-1">100%</p>
+            <p className="text-title font-[510] text-fg-primary mt-1">100%</p>
             <span className="text-caption text-fg-success">Zero-Trust Compliance</span>
           </CardContent>
         </Card>
@@ -171,7 +171,7 @@ export const AuditPage: React.FC = () => {
                 placeholder="Buscar por usuario, IP, recurso o acción..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full rounded-lg border border-border-default bg-bg-surface pl-9 pr-3 py-1.5 text-caption text-fg-primary focus:border-border-brand focus:outline-none placeholder:text-slate-500"
+                className="w-full rounded-[6px] border border-border-default bg-bg-surface pl-9 pr-3 py-1.5 text-caption text-fg-primary focus:border-border-brand focus:outline-none placeholder:text-[#62666d]"
               />
             </div>
 
@@ -180,7 +180,7 @@ export const AuditPage: React.FC = () => {
               <select
                 value={filterAction}
                 onChange={(e) => setFilterAction(e.target.value)}
-                className="rounded-lg border border-border-default bg-bg-surface px-3 py-1.5 text-caption text-fg-primary focus:border-border-brand focus:outline-none"
+                className="rounded-[6px] border border-border-default bg-bg-surface px-3 py-1.5 text-caption text-fg-primary focus:border-border-brand focus:outline-none"
               >
                 <option value="all">Todas las Acciones</option>
                 <option value="auth.login">auth.login</option>
@@ -193,7 +193,7 @@ export const AuditPage: React.FC = () => {
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
-                className="rounded-lg border border-border-default bg-bg-surface px-3 py-1.5 text-caption text-fg-primary focus:border-border-brand focus:outline-none"
+                className="rounded-[6px] border border-border-default bg-bg-surface px-3 py-1.5 text-caption text-fg-primary focus:border-border-brand focus:outline-none"
               >
                 <option value="all">Todos los Estados</option>
                 <option value="success">Exitoso</option>
@@ -239,7 +239,7 @@ export const AuditPage: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-slate-800/60">
                   {filteredLogs.map((log) => (
-                    <tr key={log.id} className="hover:bg-slate-900/40 transition-colors">
+                    <tr key={log.id} className="hover:bg-[#0f1011]/40 transition-colors">
                       <td className="py-2.5 pl-2 font-mono text-fg-secondary whitespace-nowrap">
                         {formatDate(log.timestamp)}
                       </td>
@@ -262,7 +262,7 @@ export const AuditPage: React.FC = () => {
                           <span>{log.userEmail || 'Anónimo'}</span>
                         </div>
                         {log.ip && (
-                          <div className="flex items-center gap-1.5 text-[11px] text-slate-500 font-mono">
+                          <div className="flex items-center gap-1.5 text-[11px] text-[#62666d] font-mono">
                             <Globe className="h-2.5 w-2.5" />
                             <span>{log.ip}</span>
                           </div>
@@ -276,7 +276,7 @@ export const AuditPage: React.FC = () => {
                       <td className="py-2.5 text-right pr-2">
                         <button
                           onClick={() => setSelectedLog(log)}
-                          className="px-2 py-1 rounded border border-border-default hover:bg-slate-800 text-[11px] font-medium text-fg-primary cursor-pointer"
+                          className="px-2 py-1 rounded border border-border-default hover:bg-[#161718] text-[11px] font-medium text-fg-primary cursor-pointer"
                         >
                           Ver Payload
                         </button>
@@ -297,12 +297,12 @@ export const AuditPage: React.FC = () => {
           onClick={() => setSelectedLog(null)}
         >
           <div
-            className="w-full max-w-xl rounded-2xl border border-border-default bg-bg-card p-6 shadow-2xl"
+            className="w-full max-w-xl rounded-[12px] border border-border-default bg-bg-card p-6 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between pb-3 border-b border-border-default">
               <div>
-                <h3 className="text-subtitle font-bold text-fg-primary flex items-center gap-2">
+                <h3 className="text-subtitle font-[510] text-fg-primary flex items-center gap-2">
                   <Shield className="h-4 w-4 text-fg-brand" />
                   Inspección de Evento Zero-Trust
                 </h3>
@@ -315,19 +315,19 @@ export const AuditPage: React.FC = () => {
 
             <div className="mt-4 space-y-3">
               <div className="grid grid-cols-2 gap-3 text-caption">
-                <div className="p-2.5 rounded-lg bg-bg-surface border border-border-default">
+                <div className="p-2.5 rounded-[6px] bg-bg-surface border border-border-default">
                   <span className="text-fg-secondary block">Acción</span>
-                  <span className="font-semibold text-fg-primary font-mono">{selectedLog.action}</span>
+                  <span className="font-[510] text-fg-primary font-mono">{selectedLog.action}</span>
                 </div>
-                <div className="p-2.5 rounded-lg bg-bg-surface border border-border-default">
+                <div className="p-2.5 rounded-[6px] bg-bg-surface border border-border-default">
                   <span className="text-fg-secondary block">Estado</span>
-                  <span className="font-semibold text-fg-primary font-mono uppercase">{selectedLog.status}</span>
+                  <span className="font-[510] text-fg-primary font-mono uppercase">{selectedLog.status}</span>
                 </div>
               </div>
 
               <div>
                 <span className="text-caption font-medium text-fg-secondary block mb-1.5">Metadatos del Payload:</span>
-                <pre className="p-3.5 rounded-xl bg-bg-surface border border-border-default text-[12px] font-mono text-slate-300 leading-relaxed overflow-x-auto max-h-60">
+                <pre className="p-3.5 rounded-[12px] bg-bg-surface border border-border-default text-[12px] font-mono text-[#d0d6e0] leading-relaxed overflow-x-auto max-h-60">
                   {JSON.stringify(selectedLog.details || {}, null, 2)}
                 </pre>
               </div>

@@ -24,7 +24,7 @@ class WebSocketManager {
       payload: {
         id: `sys-${Date.now()}`,
         senderType: 'system',
-        senderName: 'AgentHub Gateway',
+        senderName: 'NEXORA Gateway',
         content: 'Conexión WebSocket en tiempo real establecida.',
         timestamp: new Date().toISOString(),
       },

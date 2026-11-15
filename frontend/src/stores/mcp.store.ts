@@ -186,7 +186,7 @@ export const useMCPStore = create<MCPState>()(
       },
     }),
     {
-      name: 'agenthub-mcp-storage',
+      name: 'NEXORA-mcp-storage',
       partialize: (state) => ({ servers: state.servers }),
     }
   )

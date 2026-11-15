@@ -12,17 +12,16 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         <input
           type={type}
           className={cn(
-            'flex h-9 w-full rounded-lg border border-border-hover/80 bg-bg-card/90 px-3 py-1.5 text-body text-fg-primary placeholder:text-slate-500 shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-violet-500 focus-visible:border-violet-500 disabled:cursor-not-allowed disabled:opacity-50',
-            error && 'border-fg-error focus-visible:ring-red-500',
+            'flex h-8 w-full rounded-[6px] border border-[#23252a] bg-[rgba(255,255,255,0.02)] px-3 py-1.5 text-[14px] text-[#ffffff] placeholder:text-[#8a8f98] transition-colors focus-visible:outline-none focus-visible:border-[#d0d6e0] focus-visible:ring-1 focus-visible:ring-[#d0d6e0] disabled:cursor-not-allowed disabled:opacity-40',
+            error && 'border-[#eb5757] focus-visible:ring-[#eb5757]',
             className
           )}
           ref={ref}
           {...props}
         />
-        {error && <p className="mt-1 text-caption text-fg-error">{error}</p>}
+        {error && <p className="mt-1 text-[12px] text-[#eb5757]">{error}</p>}
       </div>
     );
   }
 );
 Input.displayName = 'Input';
-

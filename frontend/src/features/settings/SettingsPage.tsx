@@ -164,7 +164,7 @@ export const SettingsPage: React.FC = () => {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-title sm:text-2xl font-bold tracking-tight text-fg-primary flex items-center gap-2">
+          <h2 className="text-title sm:text-2xl font-[510] tracking-tight text-fg-primary flex items-center gap-2">
             Ajustes de la Plataforma
             <Badge variant="outline" className="font-mono text-caption">v1.0-preview</Badge>
           </h2>
@@ -175,7 +175,7 @@ export const SettingsPage: React.FC = () => {
 
         <div className="flex items-center gap-2">
           {saveFeedback && (
-            <span className="text-caption font-mono text-fg-success font-semibold animate-in fade-in">
+            <span className="text-caption font-mono text-fg-success font-[510] animate-in fade-in">
               {saveFeedback}
             </span>
           )}
@@ -197,10 +197,10 @@ export const SettingsPage: React.FC = () => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-caption font-medium transition-all text-left cursor-pointer ${
+                className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-[12px] text-caption font-medium transition-all text-left cursor-pointer ${
                   isActive
-                    ? 'bg-bg-brand/20 text-fg-brand font-semibold border border-border-brand/40 shadow-sm'
-                    : 'text-fg-secondary hover:bg-slate-900 hover:text-slate-200 border border-transparent'
+                    ? 'bg-bg-brand/20 text-fg-brand font-[510] border border-border-brand/40 shadow-sm'
+                    : 'text-fg-secondary hover:bg-[#0f1011] hover:text-[#d0d6e0] border border-transparent'
                 }`}
               >
                 <Icon className={`h-4 w-4 ${isActive ? 'text-fg-brand' : 'text-fg-muted'}`} />
@@ -216,7 +216,7 @@ export const SettingsPage: React.FC = () => {
                   resetToDefaults();
                 }
               }}
-              className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-caption text-fg-muted hover:text-red-400 hover:bg-red-950/20 transition-colors"
+              className="w-full flex items-center gap-2 px-3 py-2 rounded-[6px] text-caption text-fg-muted hover:text-red-400 hover:bg-red-950/20 transition-colors"
             >
               <RotateCcw className="h-3.5 w-3.5" />
               Restablecer valores iniciales
@@ -240,19 +240,19 @@ export const SettingsPage: React.FC = () => {
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Critical Security Rules Box */}
-                <div className="p-4 rounded-xl border border-border-brand/60 bg-bg-brand-subtle/30 text-caption text-fg-secondary space-y-2">
-                  <span className="font-semibold text-fg-brand flex items-center gap-1.5">
+                <div className="p-4 rounded-[12px] border border-border-brand/60 bg-bg-brand-subtle/30 text-caption text-fg-secondary space-y-2">
+                  <span className="font-[510] text-fg-brand flex items-center gap-1.5">
                     <Lock className="h-3.5 w-3.5" /> Directiva de Almacenamiento Seguro (Frontend Safe):
                   </span>
                   <p className="text-caption text-fg-secondary leading-relaxed">
-                    AgentHub no almacena API Keys ni tokens privados en el <code>localStorage</code> del navegador ni en variables públicas empaquetadas. Toda credencial es transferida directamente al backend mediante canales cifrados TLS.
+                    NEXORA no almacena API Keys ni tokens privados en el <code>localStorage</code> del navegador ni en variables públicas empaquetadas. Toda credencial es transferida directamente al backend mediante canales cifrados TLS.
                   </p>
                 </div>
 
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between p-3 rounded-lg border border-border-default bg-bg-card/60">
+                  <div className="flex items-center justify-between p-3 rounded-[6px] border border-border-default bg-bg-card/60">
                     <div>
-                      <span className="text-caption font-semibold text-fg-primary block">
+                      <span className="text-caption font-[510] text-fg-primary block">
                         Aprobación Humana Obligatoria para Herramientas de Escritura
                       </span>
                       <span className="text-caption text-fg-secondary block mt-0.5">
@@ -267,9 +267,9 @@ export const SettingsPage: React.FC = () => {
                     />
                   </div>
 
-                  <div className="flex items-center justify-between p-3 rounded-lg border border-border-default bg-bg-card/60">
+                  <div className="flex items-center justify-between p-3 rounded-[6px] border border-border-default bg-bg-card/60">
                     <div>
-                      <span className="text-caption font-semibold text-fg-primary block">
+                      <span className="text-caption font-[510] text-fg-primary block">
                         Validación Estricta de Servidores MCP
                       </span>
                       <span className="text-caption text-fg-secondary block mt-0.5">
@@ -282,9 +282,9 @@ export const SettingsPage: React.FC = () => {
                     />
                   </div>
 
-                  <div className="flex items-center justify-between p-3 rounded-lg border border-border-default bg-bg-card/60">
+                  <div className="flex items-center justify-between p-3 rounded-[6px] border border-border-default bg-bg-card/60">
                     <div>
-                      <span className="text-caption font-semibold text-fg-primary block">
+                      <span className="text-caption font-[510] text-fg-primary block">
                         Telemetría y Diagnóstico Anónimo
                       </span>
                       <span className="text-caption text-fg-secondary block mt-0.5">
@@ -342,9 +342,9 @@ export const SettingsPage: React.FC = () => {
                   </p>
                 </div>
 
-                <div className="flex items-center justify-between p-3 rounded-lg border border-border-default bg-bg-card/60">
+                <div className="flex items-center justify-between p-3 rounded-[6px] border border-border-default bg-bg-card/60">
                   <div>
-                    <span className="text-caption font-semibold text-fg-primary block">
+                    <span className="text-caption font-[510] text-fg-primary block">
                       Utilizar Adaptador Simulado (Mock API Mode)
                     </span>
                     <span className="text-caption text-fg-secondary block mt-0.5">
@@ -393,7 +393,7 @@ export const SettingsPage: React.FC = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="p-3.5 rounded-lg border border-fg-warning/60 bg-bg-warning/25 text-caption text-fg-warning flex items-start gap-2.5">
+                <div className="p-3.5 rounded-[6px] border border-fg-warning/60 bg-bg-warning/25 text-caption text-fg-warning flex items-start gap-2.5">
                   <AlertTriangle className="h-4 w-4 text-fg-warning shrink-0 mt-0.5" />
                   <p className="text-caption leading-relaxed">
                     El Local Agent corre como un proceso de fondo desacoplado en el host del desarrollador. El frontend web solo envía especificaciones de tareas y nunca ejecuta scripts directos de shell.
@@ -414,9 +414,9 @@ export const SettingsPage: React.FC = () => {
                     />
                   </div>
 
-                  <div className="flex items-center justify-between p-3 rounded-lg border border-border-default bg-bg-card/60">
+                  <div className="flex items-center justify-between p-3 rounded-[6px] border border-border-default bg-bg-card/60">
                     <div>
-                      <span className="text-caption font-semibold text-fg-primary block">
+                      <span className="text-caption font-[510] text-fg-primary block">
                         Habilitar Local Bridge
                       </span>
                       <span className="text-caption text-fg-secondary block mt-0.5">
@@ -531,19 +531,19 @@ export const SettingsPage: React.FC = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-center justify-between p-3 rounded-lg border border-border-default bg-bg-card/60">
+                <div className="flex items-center justify-between p-3 rounded-[6px] border border-border-default bg-bg-card/60">
                   <div>
-                    <span className="text-caption font-semibold text-fg-primary block">Tema Visual</span>
+                    <span className="text-caption font-[510] text-fg-primary block">Tema Visual</span>
                     <span className="text-caption text-fg-secondary block mt-0.5">
-                      Tema oscuro de alta fidelidad predeterminado para AgentHub SaaS.
+                      Tema oscuro de alta fidelidad predeterminado para NEXORA SaaS.
                     </span>
                   </div>
                   <Badge variant="default">Oscuro (Fondo #090d16)</Badge>
                 </div>
 
-                <div className="flex items-center justify-between p-3 rounded-lg border border-border-default bg-bg-card/60">
+                <div className="flex items-center justify-between p-3 rounded-[6px] border border-border-default bg-bg-card/60">
                   <div>
-                    <span className="text-caption font-semibold text-fg-primary block">
+                    <span className="text-caption font-[510] text-fg-primary block">
                       Reducción de Animaciones
                     </span>
                     <span className="text-caption text-fg-secondary block mt-0.5">
@@ -570,9 +570,9 @@ export const SettingsPage: React.FC = () => {
                 <CardDescription>Comportamiento general de workflows y respuestas</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-center justify-between p-3 rounded-lg border border-border-default bg-bg-card/60">
+                <div className="flex items-center justify-between p-3 rounded-[6px] border border-border-default bg-bg-card/60">
                   <div>
-                    <span className="text-caption font-semibold text-fg-primary block">
+                    <span className="text-caption font-[510] text-fg-primary block">
                       Auto-guardado de Workflows
                     </span>
                     <span className="text-caption text-fg-secondary block mt-0.5">
@@ -585,9 +585,9 @@ export const SettingsPage: React.FC = () => {
                   />
                 </div>
 
-                <div className="flex items-center justify-between p-3 rounded-lg border border-border-default bg-bg-card/60">
+                <div className="flex items-center justify-between p-3 rounded-[6px] border border-border-default bg-bg-card/60">
                   <div>
-                    <span className="text-caption font-semibold text-fg-primary block">
+                    <span className="text-caption font-[510] text-fg-primary block">
                       Streaming de Respuestas en Chat
                     </span>
                     <span className="text-caption text-fg-secondary block mt-0.5">
@@ -614,9 +614,9 @@ export const SettingsPage: React.FC = () => {
                 <CardDescription>Alertas en tiempo real y eventos críticos</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-center justify-between p-3 rounded-lg border border-border-default bg-bg-card/60">
+                <div className="flex items-center justify-between p-3 rounded-[6px] border border-border-default bg-bg-card/60">
                   <div>
-                    <span className="text-caption font-semibold text-fg-primary block">
+                    <span className="text-caption font-[510] text-fg-primary block">
                       Aprobación Humana Requerida
                     </span>
                     <span className="text-caption text-fg-secondary block mt-0.5">
@@ -631,9 +631,9 @@ export const SettingsPage: React.FC = () => {
                   />
                 </div>
 
-                <div className="flex items-center justify-between p-3 rounded-lg border border-border-default bg-bg-card/60">
+                <div className="flex items-center justify-between p-3 rounded-[6px] border border-border-default bg-bg-card/60">
                   <div>
-                    <span className="text-caption font-semibold text-fg-primary block">
+                    <span className="text-caption font-[510] text-fg-primary block">
                       Ejecución de Workflow Completada
                     </span>
                     <span className="text-caption text-fg-secondary block mt-0.5">
@@ -648,9 +648,9 @@ export const SettingsPage: React.FC = () => {
                   />
                 </div>
 
-                <div className="flex items-center justify-between p-3 rounded-lg border border-border-default bg-bg-card/60">
+                <div className="flex items-center justify-between p-3 rounded-[6px] border border-border-default bg-bg-card/60">
                   <div>
-                    <span className="text-caption font-semibold text-fg-primary block">
+                    <span className="text-caption font-[510] text-fg-primary block">
                       Fallo o Excepción en Pipeline
                     </span>
                     <span className="text-caption text-fg-secondary block mt-0.5">
@@ -669,7 +669,7 @@ export const SettingsPage: React.FC = () => {
                 <div className="pt-6 border-t border-border-default space-y-4">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                     <div>
-                      <h4 className="text-body font-semibold text-fg-primary flex items-center gap-2">
+                      <h4 className="text-body font-[510] text-fg-primary flex items-center gap-2">
                         <Globe className="h-4 w-4 text-fg-brand" />
                         Webhooks Externos (Slack / Discord / Custom)
                       </h4>
@@ -690,7 +690,7 @@ export const SettingsPage: React.FC = () => {
                   </div>
 
                   {/* Add Channel Form */}
-                  <form onSubmit={handleAddChannel} className="grid grid-cols-1 sm:grid-cols-12 gap-2 p-3 rounded-xl border border-border-default bg-bg-card/40">
+                  <form onSubmit={handleAddChannel} className="grid grid-cols-1 sm:grid-cols-12 gap-2 p-3 rounded-[12px] border border-border-default bg-bg-card/40">
                     <div className="sm:col-span-4">
                       <Input
                         placeholder="Nombre (ej: #ops-alerts)"
@@ -733,14 +733,14 @@ export const SettingsPage: React.FC = () => {
                       channels.map((ch) => (
                         <div
                           key={ch.id}
-                          className="flex items-center justify-between p-3 rounded-lg border border-border-default bg-bg-card/60 gap-3"
+                          className="flex items-center justify-between p-3 rounded-[6px] border border-border-default bg-bg-card/60 gap-3"
                         >
                           <div className="flex items-center gap-3 min-w-0">
                             <Badge variant={ch.type === 'slack' ? 'default' : ch.type === 'discord' ? 'secondary' : 'outline'} className="capitalize font-mono text-[10px]">
                               {ch.type}
                             </Badge>
                             <div className="min-w-0">
-                              <span className="text-caption font-semibold text-fg-primary block truncate">
+                              <span className="text-caption font-[510] text-fg-primary block truncate">
                                 {ch.name}
                               </span>
                               <span className="text-[11px] text-fg-secondary font-mono truncate block max-w-xs sm:max-w-md">

@@ -72,7 +72,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
   }, [searchOpen]);
 
   const currentSection = sectionTitles[location.pathname] || {
-    title: 'AgentHub Platform',
+    title: 'NEXORA Platform',
     subtitle: 'Enterprise Multi-Agent Orchestration',
   };
 
@@ -116,14 +116,14 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
         <button
           onClick={onOpenMobile}
           aria-label="Abrir menú de navegación"
-          className="flex h-9 w-9 items-center justify-center rounded-lg border border-border-default text-fg-secondary hover:bg-slate-900 hover:text-white lg:hidden cursor-pointer"
+          className="flex h-9 w-9 items-center justify-center rounded-[6px] border border-[#23252a] text-[#8a8f98] hover:bg-[#161718] hover:text-[#ffffff] lg:hidden cursor-pointer"
         >
           <Menu className="h-5 w-5" />
         </button>
 
         <div className="flex flex-col">
           <div className="flex items-center gap-2">
-            <h1 className="text-subtitle sm:text-lg font-bold tracking-tight text-fg-primary">
+            <h1 className="text-subtitle sm:text-lg font-[510] tracking-tight text-[#ffffff]">
               {currentSection.title}
             </h1>
             <Badge variant="secondary" className="hidden sm:inline-flex text-caption py-0">
@@ -141,7 +141,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
         {/* Global Search Button */}
         <button
           onClick={() => setSearchOpen(true)}
-          className="flex items-center space-x-2 rounded-lg border border-border-default bg-bg-card/80 px-3 py-1.5 text-caption text-fg-secondary hover:border-slate-700 hover:text-slate-200 transition-colors cursor-pointer"
+          className="flex items-center space-x-2 rounded-[6px] border border-[#23252a] bg-[#0f1011]/80 px-3 py-1.5 text-caption text-[#8a8f98] hover:border-[#383b3f] hover:text-[#d0d6e0] transition-colors cursor-pointer"
         >
           <Search className="h-3.5 w-3.5 text-fg-secondary" />
           <span className="hidden sm:inline">Buscar agente, MCP o workflow...</span>
@@ -151,7 +151,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
         </button>
 
         {/* Simulation Mode Compact Badge */}
-        <div className="hidden sm:flex items-center space-x-1.5 rounded-lg border border-border-brand/40 bg-bg-brand-subtle px-2.5 py-1 text-caption">
+        <div className="hidden sm:flex items-center space-x-1.5 rounded-[6px] border border-border-brand/40 bg-bg-brand-subtle px-2.5 py-1 text-caption">
           <span className="relative flex h-2 w-2">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-fg-brand opacity-75"></span>
             <span className="relative inline-flex h-2 w-2 rounded-full bg-fg-brand"></span>
@@ -164,7 +164,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
           <button
             onClick={() => setShowNotifications(!showNotifications)}
             aria-label="Notificaciones del sistema"
-            className="relative flex h-9 w-9 items-center justify-center rounded-lg border border-border-default bg-bg-card/60 text-fg-secondary hover:bg-slate-800 hover:text-white transition-colors cursor-pointer"
+            className="relative flex h-9 w-9 items-center justify-center rounded-[6px] border border-[#23252a] bg-[#0f1011]/60 text-[#8a8f98] hover:bg-[#161718] hover:text-[#ffffff] transition-colors cursor-pointer"
           >
             <Bell className="h-4 w-4" />
             <span className="absolute top-1.5 right-1.5 flex h-2 w-2">
@@ -174,9 +174,9 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
           </button>
 
           {showNotifications && (
-            <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-xl border border-border-default bg-bg-card p-4 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150">
-              <div className="flex items-center justify-between pb-3 border-b border-border-default">
-                <span className="text-body font-semibold text-fg-primary">Notificaciones</span>
+            <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-[12px] border border-[#23252a] bg-[#0f1011] p-4 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150">
+              <div className="flex items-center justify-between pb-3 border-b border-[#23252a]">
+                <span className="text-body font-[510] text-[#ffffff]">Notificaciones</span>
                 <span className="rounded-full bg-bg-brand-subtle px-2 py-0.5 text-caption text-fg-brand font-mono">
                   3 nuevas
                 </span>
@@ -189,10 +189,10 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
                       setShowNotifications(false);
                       navigate(n.actionUrl);
                     }}
-                    className="p-2.5 rounded-lg border border-border-default/80 bg-bg-card/60 hover:bg-slate-800/50 transition-colors cursor-pointer"
+                    className="p-2.5 rounded-[6px] border border-[#23252a]/80 bg-[#0f1011]/60 hover:bg-[#161718]/50 transition-colors cursor-pointer"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-caption font-semibold text-fg-primary flex items-center gap-1.5">
+                      <span className="text-caption font-[510] text-[#ffffff] flex items-center gap-1.5">
                         {n.type === 'warning' ? (
                           <AlertTriangle className="h-3 w-3 text-fg-warning" />
                         ) : (
@@ -214,9 +214,9 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
         <div className="relative">
           <button
             onClick={() => setShowUserMenu(!showUserMenu)}
-            className="flex items-center space-x-2 rounded-lg border border-border-default bg-bg-card/60 p-1.5 hover:bg-slate-800 transition-colors cursor-pointer"
+            className="flex items-center space-x-2 rounded-[6px] border border-[#23252a] bg-[#0f1011]/60 p-1.5 hover:bg-[#161718] transition-colors cursor-pointer"
           >
-            <div className="flex h-6 w-6 items-center justify-center rounded-md bg-gradient-to-tr from-violet-600 to-indigo-600 text-caption font-bold text-fg-primary">
+            <div className="flex h-6 w-6 items-center justify-center rounded-[4px] bg-[#e4f222] text-caption font-[510] text-[#08090a]">
               {(user?.name || settings.profile.name).substring(0, 2).toUpperCase()}
             </div>
             <span className="hidden md:inline text-caption font-medium text-fg-primary max-w-[90px] truncate">
@@ -226,10 +226,10 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
           </button>
 
           {showUserMenu && (
-            <div className="absolute right-0 mt-2 w-60 rounded-xl border border-border-default bg-bg-card p-2 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150">
-              <div className="px-3 py-2 border-b border-border-default">
+            <div className="absolute right-0 mt-2 w-60 rounded-[12px] border border-[#23252a] bg-[#0f1011] p-2 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150">
+              <div className="px-3 py-2 border-b border-[#23252a]">
                 <div className="flex items-center justify-between">
-                  <p className="text-caption font-semibold text-fg-primary">{user?.name || settings.profile.name}</p>
+                  <p className="text-caption font-[510] text-[#ffffff]">{user?.name || settings.profile.name}</p>
                   <Badge variant="outline" className="text-[10px] font-mono uppercase text-fg-brand border-border-brand/50">
                     {user?.role || 'admin'}
                   </Badge>
@@ -245,11 +245,10 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
                     <button
                       key={r}
                       onClick={() => setDemoUser(r)}
-                      className={`px-1.5 py-0.5 rounded text-[11px] font-medium cursor-pointer transition-colors ${
-                        (user?.role || 'admin') === r
-                          ? 'bg-bg-brand text-fg-primary font-bold'
+                      className={`px-1.5 py-0.5 rounded text-[11px] font-medium cursor-pointer transition-colors ${(user?.role || 'admin') === r
+                          ? 'bg-bg-brand text-fg-primary font-[510]'
                           : 'bg-bg-surface text-fg-secondary hover:text-fg-primary'
-                      }`}
+                        }`}
                     >
                       {r}
                     </button>
@@ -263,9 +262,9 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
                     setShowUserMenu(false);
                     navigate('/settings');
                   }}
-                  className="flex w-full items-center px-3 py-1.5 text-caption text-fg-secondary hover:bg-slate-800 hover:text-white rounded-md cursor-pointer"
+                  className="flex w-full items-center px-3 py-1.5 text-caption text-[#8a8f98] hover:bg-[#161718] hover:text-[#ffffff] rounded-[6px] cursor-pointer"
                 >
-                  <User className="mr-2 h-3.5 w-3.5 text-fg-secondary" />
+                  <User className="mr-2 h-3.5 w-3.5 text-[#8a8f98]" />
                   Perfil y Ajustes
                 </button>
                 <button
@@ -273,7 +272,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
                     setShowUserMenu(false);
                     navigate('/settings');
                   }}
-                  className="flex w-full items-center px-3 py-1.5 text-caption text-fg-secondary hover:bg-slate-800 hover:text-white rounded-md cursor-pointer"
+                  className="flex w-full items-center px-3 py-1.5 text-caption text-[#8a8f98] hover:bg-[#161718] hover:text-[#ffffff] rounded-[6px] cursor-pointer"
                 >
                   <Shield className="mr-2 h-3.5 w-3.5 text-fg-secondary" />
                   Políticas de Seguridad
@@ -302,7 +301,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
           onClick={() => setSearchOpen(false)}
         >
           <div
-            className="w-full max-w-xl rounded-2xl border border-border-default bg-bg-card p-4 shadow-2xl"
+            className="w-full max-w-xl rounded-[12px] border border-border-default bg-bg-card p-4 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between pb-3 border-b border-border-default">
@@ -314,12 +313,12 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
                   placeholder="Escribe para buscar agentes, MCPs, workflows o atajos..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-transparent text-body text-fg-primary focus:outline-none placeholder:text-slate-500"
+                  className="w-full bg-transparent text-body text-fg-primary focus:outline-none placeholder:text-[#62666d]"
                 />
               </div>
               <button
                 onClick={() => setSearchOpen(false)}
-                className="text-fg-secondary hover:text-white p-1 rounded-md"
+                className="text-fg-secondary hover:text-[#ffffff] p-1 rounded-md"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -331,7 +330,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
                 <>
                   {matchedAgents.length > 0 && (
                     <div>
-                      <span className="text-caption font-semibold uppercase text-fg-brand px-2 py-0.5 block">
+                      <span className="text-caption font-[510] uppercase text-fg-brand px-2 py-0.5 block">
                         Agentes
                       </span>
                       {matchedAgents.map((ag) => (
@@ -341,7 +340,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
                             setSearchOpen(false);
                             navigate(`/agents/${ag.id}`);
                           }}
-                          className="p-2 rounded-lg hover:bg-slate-800 cursor-pointer flex items-center justify-between text-fg-primary"
+                          className="p-2 rounded-[6px] hover:bg-[#161718] cursor-pointer flex items-center justify-between text-fg-primary"
                         >
                           <span className="flex items-center gap-2">
                             <Bot className="h-3.5 w-3.5 text-fg-brand" />
@@ -357,7 +356,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
 
                   {matchedTools.length > 0 && (
                     <div>
-                      <span className="text-caption font-semibold uppercase text-fg-warning px-2 py-0.5 block">
+                      <span className="text-caption font-[510] uppercase text-fg-warning px-2 py-0.5 block">
                         Herramientas MCP
                       </span>
                       {matchedTools.map((tl) => (
@@ -367,7 +366,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
                             setSearchOpen(false);
                             navigate('/mcp');
                           }}
-                          className="p-2 rounded-lg hover:bg-slate-800 cursor-pointer flex items-center justify-between text-fg-primary"
+                          className="p-2 rounded-[6px] hover:bg-[#161718] cursor-pointer flex items-center justify-between text-fg-primary"
                         >
                           <span className="flex items-center gap-2">
                             <Wrench className="h-3.5 w-3.5 text-fg-warning" />
@@ -381,7 +380,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
 
                   {matchedWorkflows.length > 0 && (
                     <div>
-                      <span className="text-caption font-semibold uppercase text-fg-brand px-2 py-0.5 block">
+                      <span className="text-caption font-[510] uppercase text-fg-brand px-2 py-0.5 block">
                         Workflows
                       </span>
                       {matchedWorkflows.map((wf) => (
@@ -391,7 +390,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
                             setSearchOpen(false);
                             navigate('/workflows');
                           }}
-                          className="p-2 rounded-lg hover:bg-slate-800 cursor-pointer flex items-center justify-between text-fg-primary"
+                          className="p-2 rounded-[6px] hover:bg-[#161718] cursor-pointer flex items-center justify-between text-fg-primary"
                         >
                           <span className="flex items-center gap-2">
                             <GitFork className="h-3.5 w-3.5 text-fg-brand" />
@@ -410,13 +409,13 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
               ) : (
                 /* Default Shortcuts */
                 <div>
-                  <div className="text-caption font-semibold text-fg-secondary px-2 py-1">Accesos Directos Rápidos</div>
+                  <div className="text-caption font-[510] text-fg-secondary px-2 py-1">Accesos Directos Rápidos</div>
                   <button
                     onClick={() => {
                       setSearchOpen(false);
                       navigate('/chat');
                     }}
-                    className="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 text-fg-primary flex items-center justify-between cursor-pointer"
+                    className="w-full text-left px-3 py-2 rounded-[6px] hover:bg-[#161718] text-fg-primary flex items-center justify-between cursor-pointer"
                   >
                     <span>💬 Abrir Multi-Agent Chat Room</span>
                     <span className="text-caption text-fg-brand font-mono">/chat</span>
@@ -426,7 +425,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
                       setSearchOpen(false);
                       navigate('/workflows');
                     }}
-                    className="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 text-fg-primary flex items-center justify-between cursor-pointer"
+                    className="w-full text-left px-3 py-2 rounded-[6px] hover:bg-[#161718] text-fg-primary flex items-center justify-between cursor-pointer"
                   >
                     <span>⚡ Editor Visual de Workflows</span>
                     <span className="text-caption text-fg-brand font-mono">/workflows</span>
@@ -436,7 +435,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
                       setSearchOpen(false);
                       navigate('/mcp');
                     }}
-                    className="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 text-fg-primary flex items-center justify-between cursor-pointer"
+                    className="w-full text-left px-3 py-2 rounded-[6px] hover:bg-[#161718] text-fg-primary flex items-center justify-between cursor-pointer"
                   >
                     <span>🔌 Administrar Servidores MCP</span>
                     <span className="text-caption text-fg-brand font-mono">/mcp</span>
@@ -446,7 +445,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
                       setSearchOpen(false);
                       navigate('/executions');
                     }}
-                    className="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 text-fg-primary flex items-center justify-between cursor-pointer"
+                    className="w-full text-left px-3 py-2 rounded-[6px] hover:bg-[#161718] text-fg-primary flex items-center justify-between cursor-pointer"
                   >
                     <span>📊 Centro de Ejecución & Event Timeline</span>
                     <span className="text-caption text-fg-brand font-mono">/executions</span>

@@ -13,7 +13,7 @@ class WebSocketService {
     this.mockMode = import.meta.env.VITE_USE_MOCK !== 'false';
   }
 
-  public connect(url: string = import.meta.env.VITE_WS_URL || 'wss://api.agenthub.dev/ws') {
+  public connect(url: string = import.meta.env.VITE_WS_URL || 'wss://api.NEXORA.dev/ws') {
     if (this.mockMode) {
       // In mock mode, we do not attempt raw TCP connection
       return;
@@ -30,7 +30,7 @@ class WebSocketService {
 
       this.ws.onopen = () => {
         this.isConnecting = false;
-        console.info('[AgentHub WS] Conectado al stream de eventos en tiempo real.');
+        console.info('[NEXORA WS] Conectado al stream de eventos en tiempo real.');
       };
 
       this.ws.onmessage = (event) => {
@@ -38,7 +38,7 @@ class WebSocketService {
           const parsed: WSEvent = JSON.parse(event.data);
           this.emit(parsed.type, parsed.payload);
         } catch (err) {
-          console.warn('[AgentHub WS] Mensaje no parseable:', event.data);
+          console.warn('[NEXORA WS] Mensaje no parseable:', event.data);
         }
       };
 
@@ -49,12 +49,12 @@ class WebSocketService {
       };
 
       this.ws.onerror = (err) => {
-        console.error('[AgentHub WS Error]', err);
+        console.error('[NEXORA WS Error]', err);
         this.ws?.close();
       };
     } catch (e) {
       this.isConnecting = false;
-      console.warn('[AgentHub WS] No se pudo inicializar WebSocket:', e);
+      console.warn('[NEXORA WS] No se pudo inicializar WebSocket:', e);
     }
   }
 
@@ -86,7 +86,7 @@ class WebSocketService {
     if (this.ws?.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify(event));
     } else if (this.mockMode) {
-      console.info('[AgentHub WS Mock Send]', event);
+      console.info('[NEXORA WS Mock Send]', event);
     }
   }
 

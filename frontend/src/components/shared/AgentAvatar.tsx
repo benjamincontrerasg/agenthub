@@ -81,11 +81,11 @@ export const AgentAvatar: React.FC<AgentAvatarProps> = ({
         <img
           src={avatarUrl}
           alt={agentName}
-          className={`${avatarSizes[size]} rounded-xl object-cover border ${theme.border} shadow-md`}
+          className={`${avatarSizes[size]} rounded-[12px] object-cover border ${theme.border} shadow-md`}
         />
       ) : (
         <div
-          className={`${avatarSizes[size]} rounded-xl bg-gradient-to-br ${theme.bg} border ${theme.border} ${theme.text} font-bold flex items-center justify-center shadow-md relative overflow-hidden`}
+          className={`${avatarSizes[size]} rounded-[12px] bg-gradient-to-br ${theme.bg} border ${theme.border} ${theme.text} font-[510] flex items-center justify-center shadow-md relative overflow-hidden`}
         >
           {initials || <Bot className="h-4 w-4" />}
         </div>

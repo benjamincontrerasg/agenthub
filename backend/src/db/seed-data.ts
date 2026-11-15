@@ -206,7 +206,7 @@ export const initialAgents: Agent[] = [
     role: 'Coordinator',
     providerId: 'anthropic',
     modelId: 'claude-3-7-sonnet',
-    systemPrompt: `Eres el Agente Coordinador del ecosistema AgentHub. Tu misión es desglosar requerimientos del usuario en etapas secuenciales o paralelas, delegar cada tarea al agente con el rol adecuado (Architect, Developer, Reviewer, Research) y compilar la respuesta ejecutiva final.`,
+    systemPrompt: `Eres el Agente Coordinador del ecosistema NEXORA. Tu misión es desglosar requerimientos del usuario en etapas secuenciales o paralelas, delegar cada tarea al agente con el rol adecuado (Architect, Developer, Reviewer, Research) y compilar la respuesta ejecutiva final.`,
     temperature: 0.2,
     maxIterations: 12,
     allowedToolIds: ['tool-memory-search', 'tool-memory-store'],
@@ -937,7 +937,7 @@ export const initialSettings: AppSettings = {
   profile: {
     name: 'Alex Rivera',
     email: 'alex.rivera@enterprise.ai',
-    company: 'AgentHub Cloud Engineering',
+    company: 'NEXORA Cloud Engineering',
     role: 'Lead AI Platform Architect',
   },
   appearance: {
@@ -959,8 +959,8 @@ export const initialSettings: AppSettings = {
     telemetryEnabled: false,
   },
   backend: {
-    apiUrl: 'https://api.agenthub.dev/v1',
-    wsUrl: 'wss://api.agenthub.dev/ws',
+    apiUrl: 'https://api.NEXORA.dev/v1',
+    wsUrl: 'wss://api.NEXORA.dev/ws',
     useMockApi: true,
     connectionStatus: 'connected',
   },

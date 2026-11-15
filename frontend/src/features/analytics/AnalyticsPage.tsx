@@ -43,7 +43,7 @@ export const AnalyticsPage: React.FC = () => {
       {/* Top Header with Period Filter */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-title sm:text-2xl font-bold tracking-tight text-fg-primary flex items-center gap-2">
+          <h2 className="text-title sm:text-2xl font-[510] tracking-tight text-fg-primary flex items-center gap-2">
             Usage & Analytics
             <Badge variant="secondary" className="font-mono text-caption">Telemetría Global</Badge>
           </h2>
@@ -54,13 +54,13 @@ export const AnalyticsPage: React.FC = () => {
 
         <div className="flex items-center gap-2">
           {/* Period selector */}
-          <div className="flex items-center rounded-lg border border-border-default bg-bg-card/80 p-1">
+          <div className="flex items-center rounded-[6px] border border-border-default bg-bg-card/80 p-1">
             {(['7d', '30d', '90d'] as const).map((p) => (
               <button
                 key={p}
                 onClick={() => setPeriod(p)}
                 className={`px-3 py-1 rounded-md text-caption font-medium transition-colors ${
-                  period === p ? 'bg-bg-brand text-fg-primary shadow-sm' : 'text-fg-secondary hover:text-white'
+                  period === p ? 'bg-bg-brand text-fg-primary shadow-sm' : 'text-fg-secondary hover:text-[#ffffff]'
                 }`}
               >
                 {p === '7d' ? '7 Días' : p === '30d' ? '30 Días' : '3 Meses'}
@@ -76,7 +76,7 @@ export const AnalyticsPage: React.FC = () => {
       </div>
 
       {/* Demo Notice Banner */}
-      <div className="p-3 rounded-xl border border-border-brand/60 bg-bg-brand-subtle/20 text-caption text-fg-secondary flex items-center gap-2">
+      <div className="p-3 rounded-[12px] border border-border-brand/60 bg-bg-brand-subtle/20 text-caption text-fg-secondary flex items-center gap-2">
         <AlertCircle className="h-4 w-4 text-fg-brand shrink-0" />
         <span>
           <strong>Datos de demostración simulados:</strong> Todos los valores de tokens y costos corresponden a estimaciones analíticas basadas en tarifas de inferencia vigentes.
@@ -91,7 +91,7 @@ export const AnalyticsPage: React.FC = () => {
               <span>Tokens Totales</span>
               <Zap className="h-4 w-4 text-fg-brand" />
             </div>
-            <p className="text-title font-bold text-fg-primary mt-1">
+            <p className="text-title font-[510] text-fg-primary mt-1">
               {formatNumber(initialAnalytics.totalTokens)}
             </p>
             <span className="text-caption text-fg-success font-medium">↑ 14.8% vs semana anterior</span>
@@ -104,7 +104,7 @@ export const AnalyticsPage: React.FC = () => {
               <span>Costo Estimado</span>
               <DollarSign className="h-4 w-4 text-fg-success" />
             </div>
-            <p className="text-title font-bold text-fg-primary mt-1">
+            <p className="text-title font-[510] text-fg-primary mt-1">
               {formatCurrency(initialAnalytics.estimatedCostUsd)}
             </p>
             <span className="text-caption text-fg-secondary font-mono">Promedio $0.0049 / 1k tok</span>
@@ -117,7 +117,7 @@ export const AnalyticsPage: React.FC = () => {
               <span>Total Ejecuciones</span>
               <Activity className="h-4 w-4 text-fg-brand" />
             </div>
-            <p className="text-title font-bold text-fg-primary mt-1">
+            <p className="text-title font-[510] text-fg-primary mt-1">
               {initialAnalytics.totalExecutions.toLocaleString()}
             </p>
             <span className="text-caption text-fg-success font-medium">98.2% tasa de éxito</span>
@@ -130,7 +130,7 @@ export const AnalyticsPage: React.FC = () => {
               <span>Agentes & Proveedores</span>
               <Bot className="h-4 w-4 text-fg-warning" />
             </div>
-            <p className="text-title font-bold text-fg-primary mt-1">
+            <p className="text-title font-[510] text-fg-primary mt-1">
               5 Agentes / 4 LLMs
             </p>
             <span className="text-caption text-fg-secondary">100% disponibilidad</span>
@@ -252,7 +252,7 @@ export const AnalyticsPage: React.FC = () => {
                   </div>
                   <div className="flex items-center gap-3 font-mono text-caption">
                     <span className="text-fg-secondary">{formatNumber(p.tokens)} tok</span>
-                    <span className="text-fg-success font-semibold">${p.cost.toFixed(2)}</span>
+                    <span className="text-fg-success font-[510]">${p.cost.toFixed(2)}</span>
                   </div>
                 </div>
               ))}
@@ -312,7 +312,7 @@ export const AnalyticsPage: React.FC = () => {
                   </div>
                   <div className="flex items-center gap-3 font-mono text-caption">
                     <span className="text-fg-secondary">{formatNumber(a.tokens)} tok</span>
-                    <span className="text-fg-success font-semibold">${a.cost.toFixed(2)}</span>
+                    <span className="text-fg-success font-[510]">${a.cost.toFixed(2)}</span>
                   </div>
                 </div>
               ))}

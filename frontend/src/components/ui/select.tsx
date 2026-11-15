@@ -12,8 +12,8 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
       <div className="relative w-full">
         <select
           className={cn(
-            'flex h-9 w-full appearance-none rounded-lg border border-border-hover/80 bg-bg-card/90 px-3 py-1.5 pr-8 text-body text-fg-primary shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-violet-500 focus-visible:border-violet-500 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer',
-            error && 'border-fg-error',
+            'flex h-8 w-full appearance-none rounded-[6px] border border-[#23252a] bg-[#0f1011] px-3 py-1 pr-8 text-[13px] text-[#ffffff] transition-colors focus-visible:outline-none focus-visible:border-[#d0d6e0] focus-visible:ring-1 focus-visible:ring-[#d0d6e0] disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer',
+            error && 'border-[#eb5757]',
             className
           )}
           ref={ref}
@@ -21,11 +21,10 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
         >
           {children}
         </select>
-        <ChevronDown className="pointer-events-none absolute right-2.5 top-2.5 h-4 w-4 text-fg-secondary" />
-        {error && <p className="mt-1 text-caption text-fg-error">{error}</p>}
+        <ChevronDown className="pointer-events-none absolute right-2.5 top-2 h-4 w-4 text-[#8a8f98]" />
+        {error && <p className="mt-1 text-[12px] text-[#eb5757]">{error}</p>}
       </div>
     );
   }
 );
 Select.displayName = 'Select';
-

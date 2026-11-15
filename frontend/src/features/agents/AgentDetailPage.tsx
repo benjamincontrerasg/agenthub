@@ -67,7 +67,7 @@ export const AgentDetailPage: React.FC = () => {
     return (
       <div className="flex flex-col items-center justify-center p-12 text-center">
         <Bot className="h-12 w-12 text-fg-muted mb-4" />
-        <h3 className="text-lg font-semibold text-fg-primary">Agente no encontrado</h3>
+        <h3 className="text-lg font-[510] text-fg-primary">Agente no encontrado</h3>
         <p className="text-body text-fg-secondary mt-1">El agente solicitado no existe o fue eliminado.</p>
         <Button variant="default" size="sm" onClick={() => navigate('/agents')} className="mt-4">
           Volver a Agentes
@@ -94,7 +94,7 @@ export const AgentDetailPage: React.FC = () => {
     const exportData = {
       _exportVersion: '1.0',
       _exportedAt: new Date().toISOString(),
-      _platform: 'AgentHub',
+      _platform: 'NEXORA',
       name: agent.name,
       description: agent.description,
       role: agent.role,
@@ -184,7 +184,7 @@ export const AgentDetailPage: React.FC = () => {
 
           <div>
             <div className="flex items-center gap-2.5">
-              <h2 className="text-title sm:text-2xl font-bold tracking-tight text-fg-primary">
+              <h2 className="text-title sm:text-2xl font-[510] tracking-tight text-fg-primary">
                 {agent.name}
               </h2>
               <Badge variant={agent.status === 'active' ? 'success' : 'secondary'}>
@@ -264,7 +264,7 @@ export const AgentDetailPage: React.FC = () => {
         <Card>
           <CardContent className="p-4">
             <span className="text-caption text-fg-secondary">Total de Ejecuciones</span>
-            <p className="text-title font-bold text-fg-primary mt-1">{agent.stats.totalRuns}</p>
+            <p className="text-title font-[510] text-fg-primary mt-1">{agent.stats.totalRuns}</p>
             <span className="text-caption text-fg-success">Tasa de éxito: {agent.stats.successRate}%</span>
           </CardContent>
         </Card>
@@ -272,7 +272,7 @@ export const AgentDetailPage: React.FC = () => {
         <Card>
           <CardContent className="p-4">
             <span className="text-caption text-fg-secondary">Tokens Procesados</span>
-            <p className="text-title font-bold text-fg-brand mt-1">{formatNumber(agent.stats.totalTokens)}</p>
+            <p className="text-title font-[510] text-fg-brand mt-1">{formatNumber(agent.stats.totalTokens)}</p>
             <span className="text-caption text-fg-secondary">Prompt & Output</span>
           </CardContent>
         </Card>
@@ -280,7 +280,7 @@ export const AgentDetailPage: React.FC = () => {
         <Card>
           <CardContent className="p-4">
             <span className="text-caption text-fg-secondary">Tiempo Medio</span>
-            <p className="text-title font-bold text-fg-primary mt-1">{agent.stats.avgDurationSec}s</p>
+            <p className="text-title font-[510] text-fg-primary mt-1">{agent.stats.avgDurationSec}s</p>
             <span className="text-caption text-fg-secondary">Por ciclo de tarea</span>
           </CardContent>
         </Card>
@@ -288,7 +288,7 @@ export const AgentDetailPage: React.FC = () => {
         <Card>
           <CardContent className="p-4">
             <span className="text-caption text-fg-secondary">Modelo Asociado</span>
-            <p className="text-body font-bold text-fg-primary mt-1.5 truncate">{agent.modelId}</p>
+            <p className="text-body font-[510] text-fg-primary mt-1.5 truncate">{agent.modelId}</p>
             <span className="text-caption text-fg-brand font-mono">Temp: {agent.temperature}</span>
           </CardContent>
         </Card>
@@ -300,7 +300,7 @@ export const AgentDetailPage: React.FC = () => {
           onClick={() => setActiveTab('overview')}
           className={`flex items-center gap-2 px-4 py-2 text-caption font-medium border-b-2 transition-colors cursor-pointer ${
             activeTab === 'overview'
-              ? 'border-border-brand text-fg-brand font-semibold'
+              ? 'border-border-brand text-fg-brand font-[510]'
               : 'border-transparent text-fg-secondary hover:text-fg-primary'
           }`}
         >
@@ -312,7 +312,7 @@ export const AgentDetailPage: React.FC = () => {
           onClick={() => setActiveTab('memory')}
           className={`flex items-center gap-2 px-4 py-2 text-caption font-medium border-b-2 transition-colors cursor-pointer ${
             activeTab === 'memory'
-              ? 'border-border-brand text-fg-brand font-semibold'
+              ? 'border-border-brand text-fg-brand font-[510]'
               : 'border-transparent text-fg-secondary hover:text-fg-primary'
           }`}
         >
@@ -327,7 +327,7 @@ export const AgentDetailPage: React.FC = () => {
           onClick={() => setActiveTab('history')}
           className={`flex items-center gap-2 px-4 py-2 text-caption font-medium border-b-2 transition-colors cursor-pointer ${
             activeTab === 'history'
-              ? 'border-border-brand text-fg-brand font-semibold'
+              ? 'border-border-brand text-fg-brand font-[510]'
               : 'border-transparent text-fg-secondary hover:text-fg-primary'
           }`}
         >
@@ -354,23 +354,23 @@ export const AgentDetailPage: React.FC = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <pre className="p-4 rounded-lg bg-bg-card border border-border-default text-caption font-mono text-fg-secondary leading-relaxed whitespace-pre-wrap overflow-x-auto">
+              <pre className="p-4 rounded-[6px] bg-bg-card border border-border-default text-caption font-mono text-fg-secondary leading-relaxed whitespace-pre-wrap overflow-x-auto">
                 {agent.systemPrompt}
               </pre>
 
               <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-3 text-caption">
-                <div className="p-2.5 rounded-lg bg-bg-card/60 border border-border-default">
+                <div className="p-2.5 rounded-[6px] bg-bg-card/60 border border-border-default">
                   <span className="text-fg-secondary text-caption block">Temperatura</span>
-                  <span className="font-semibold text-fg-primary font-mono">{agent.temperature}</span>
+                  <span className="font-[510] text-fg-primary font-mono">{agent.temperature}</span>
                 </div>
-                <div className="p-2.5 rounded-lg bg-bg-card/60 border border-border-default">
+                <div className="p-2.5 rounded-[6px] bg-bg-card/60 border border-border-default">
                   <span className="text-fg-secondary text-caption block">Límite de Iteraciones</span>
-                  <span className="font-semibold text-fg-primary font-mono">{agent.maxIterations} pasos</span>
+                  <span className="font-[510] text-fg-primary font-mono">{agent.maxIterations} pasos</span>
                 </div>
-                <div className="p-2.5 rounded-lg bg-bg-card/60 border border-border-default flex items-center justify-between">
+                <div className="p-2.5 rounded-[6px] bg-bg-card/60 border border-border-default flex items-center justify-between">
                   <div>
                     <span className="text-fg-secondary text-caption block">Proveedor</span>
-                    <span className="font-semibold text-fg-primary font-mono capitalize">{agent.providerId}</span>
+                    <span className="font-[510] text-fg-primary font-mono capitalize">{agent.providerId}</span>
                   </div>
                   <ProviderLogo providerId={agent.providerId} size="sm" />
                 </div>
@@ -393,7 +393,7 @@ export const AgentDetailPage: React.FC = () => {
                   assignedTools.map((tool) => (
                     <div
                       key={tool.id}
-                      className="p-2 rounded-lg bg-bg-card/60 border border-border-default text-caption flex items-center justify-between"
+                      className="p-2 rounded-[6px] bg-bg-card/60 border border-border-default text-caption flex items-center justify-between"
                     >
                       <div>
                         <p className="font-medium text-fg-primary">{tool.name}</p>
@@ -443,7 +443,7 @@ export const AgentDetailPage: React.FC = () => {
               <div>
                 <div className="flex items-center gap-2">
                   <Database className="h-5 w-5 text-fg-brand" />
-                  <h3 className="text-subtitle font-bold text-fg-primary">Memoria Semántica & Contexto Vectorial</h3>
+                  <h3 className="text-subtitle font-[510] text-fg-primary">Memoria Semántica & Contexto Vectorial</h3>
                 </div>
                 <p className="text-caption text-fg-secondary mt-1">
                   Embeddings de 1536 dimensiones recuperados mediante ranking de similitud coseno (RAG en tiempo real).
@@ -490,7 +490,7 @@ export const AgentDetailPage: React.FC = () => {
                     <select
                       value={newMemoryCategory}
                       onChange={(e) => setNewMemoryCategory(e.target.value)}
-                      className="w-full rounded-lg border border-border-default bg-bg-surface px-3 py-1.5 text-caption text-fg-primary focus:border-border-brand focus:outline-none"
+                      className="w-full rounded-[6px] border border-border-default bg-bg-surface px-3 py-1.5 text-caption text-fg-primary focus:border-border-brand focus:outline-none"
                     >
                       <option value="general">General</option>
                       <option value="architecture">Arquitectura & DB</option>
@@ -508,7 +508,7 @@ export const AgentDetailPage: React.FC = () => {
                       onChange={(e) => setNewMemoryContent(e.target.value)}
                       rows={4}
                       placeholder="Ej: Toda consulta a producción debe pasar por el Security Gate humano..."
-                      className="w-full rounded-lg border border-border-default bg-bg-surface p-3 text-caption text-fg-primary focus:border-border-brand focus:outline-none placeholder:text-slate-500"
+                      className="w-full rounded-[6px] border border-border-default bg-bg-surface p-3 text-caption text-fg-primary focus:border-border-brand focus:outline-none placeholder:text-[#62666d]"
                     />
                   </div>
 
@@ -545,7 +545,7 @@ export const AgentDetailPage: React.FC = () => {
                       placeholder="Filtrar o buscar recuerdos..."
                       value={searchMemoryQuery}
                       onChange={(e) => setSearchMemoryQuery(e.target.value)}
-                      className="w-full rounded-lg border border-border-default bg-bg-surface pl-8 pr-3 py-1 text-caption text-fg-primary focus:border-border-brand focus:outline-none placeholder:text-slate-500"
+                      className="w-full rounded-[6px] border border-border-default bg-bg-surface pl-8 pr-3 py-1 text-caption text-fg-primary focus:border-border-brand focus:outline-none placeholder:text-[#62666d]"
                     />
                   </div>
                 </div>
@@ -554,7 +554,7 @@ export const AgentDetailPage: React.FC = () => {
                 {memoriesLoading ? (
                   <p className="text-caption text-fg-secondary py-6 text-center">Cargando memoria semántica...</p>
                 ) : memories.length === 0 ? (
-                  <div className="text-center py-8 border border-dashed border-border-default rounded-xl">
+                  <div className="text-center py-8 border border-dashed border-border-default rounded-[12px]">
                     <Database className="h-8 w-8 text-fg-secondary mx-auto mb-2 opacity-50" />
                     <p className="text-caption text-fg-secondary">Este agente no tiene recuerdos en su memoria vectorial.</p>
                   </div>
@@ -570,7 +570,7 @@ export const AgentDetailPage: React.FC = () => {
                       .map((mem) => (
                         <div
                           key={mem.id}
-                          className="p-3.5 rounded-xl border border-border-default bg-bg-card/80 hover:border-slate-700 transition-colors flex items-start justify-between gap-3"
+                          className="p-3.5 rounded-[12px] border border-border-default bg-bg-card/80 hover:border-[#23252a] transition-colors flex items-start justify-between gap-3"
                         >
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1.5">
@@ -589,7 +589,7 @@ export const AgentDetailPage: React.FC = () => {
                           <button
                             onClick={() => deleteMemoryMutation.mutate(mem.id)}
                             disabled={deleteMemoryMutation.isPending}
-                            className="p-1.5 rounded-lg text-fg-secondary hover:text-fg-error hover:bg-bg-error-subtle transition-colors cursor-pointer"
+                            className="p-1.5 rounded-[6px] text-fg-secondary hover:text-fg-error hover:bg-bg-error-subtle transition-colors cursor-pointer"
                             title="Eliminar Recuerdo"
                           >
                             <Trash2 className="h-3.5 w-3.5" />
@@ -631,7 +631,7 @@ export const AgentDetailPage: React.FC = () => {
                   </thead>
                   <tbody className="divide-y divide-slate-800/60">
                     {agentExecutions.map((ex) => (
-                      <tr key={ex.id} className="hover:bg-slate-900/40">
+                      <tr key={ex.id} className="hover:bg-[#0f1011]/40">
                         <td className="py-2.5 pl-2 font-mono text-fg-brand">{ex.id}</td>
                         <td className="py-2.5 text-fg-primary">{ex.workflowName}</td>
                         <td className="py-2.5">

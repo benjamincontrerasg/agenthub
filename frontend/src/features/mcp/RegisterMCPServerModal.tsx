@@ -57,7 +57,7 @@ export const RegisterMCPServerModal: React.FC<RegisterMCPServerModalProps> = ({ 
 
     registerMutation.mutate({
       name,
-      description: description || 'Servidor MCP registrado en AgentHub.',
+      description: description || 'Servidor MCP registrado en NEXORA.',
       transport,
       commandOrEndpoint,
       args: args.length ? args : undefined,
@@ -82,7 +82,7 @@ export const RegisterMCPServerModal: React.FC<RegisterMCPServerModalProps> = ({ 
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <div className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-bg-success/60 border border-fg-success/60 text-fg-success">
+              <div className="flex h-9 w-9 items-center justify-center rounded-[6px] bg-bg-success/60 border border-fg-success/60 text-fg-success">
                 <Server className="h-4 w-4" />
               </div>
               <div>
@@ -95,10 +95,10 @@ export const RegisterMCPServerModal: React.FC<RegisterMCPServerModalProps> = ({ 
           </DialogHeader>
 
           {/* Security Architecture Notice */}
-          <div className="mb-4 rounded-lg border border-fg-warning/60 bg-bg-warning/25 p-3 text-caption text-fg-warning flex items-start gap-2.5">
+          <div className="mb-4 rounded-[6px] border border-fg-warning/60 bg-bg-warning/25 p-3 text-caption text-fg-warning flex items-start gap-2.5">
             <ShieldAlert className="h-4 w-4 shrink-0 text-fg-warning mt-0.5" />
             <div className="space-y-1">
-              <span className="font-semibold block">Seguridad del Sistema (Zero Local Execution):</span>
+              <span className="font-[510] block">Seguridad del Sistema (Zero Local Execution):</span>
               <p className="text-caption text-fg-warning/80 leading-relaxed">
                 El frontend <strong>no ejecuta</strong> directamente comandos de PowerShell ni procesos en el host. El servidor se registrará inicialmente en estado <Badge variant="warning" className="text-caption py-0 px-1 inline-flex">Pendiente de validación</Badge> y requerirá confirmación antes de ser activado por el Local Agent.
               </p>

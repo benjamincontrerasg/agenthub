@@ -3,24 +3,24 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 const badgeVariants = cva(
-  'inline-flex items-center rounded-md px-2 py-0.5 text-caption font-medium transition-colors select-none',
+  'inline-flex items-center rounded-[4px] px-1.5 py-0 text-[12px] font-normal tracking-[-0.010em] transition-colors select-none',
   {
     variants: {
       variant: {
         default:
-          'bg-bg-brand-subtle/70 text-fg-brand border border-border-brand/50',
+          'bg-[rgba(255,255,255,0.05)] text-[#d0d6e0] border border-[#23252a]',
         secondary:
-          'bg-bg-surface text-fg-secondary border border-border-hover/60',
+          'bg-[rgba(255,255,255,0.03)] text-[#8a8f98] border border-[#23252a]',
         success:
-          'bg-bg-success/70 text-fg-success border border-fg-success/50',
+          'bg-[rgba(39,166,68,0.12)] text-[#27a644] border border-[#27a644]/40',
         warning:
-          'bg-bg-warning/70 text-fg-warning border border-fg-warning/50',
+          'bg-[rgba(251,191,36,0.12)] text-[#fbbf24] border border-[#fbbf24]/40',
         destructive:
-          'bg-bg-error/70 text-fg-error border border-fg-error/50',
+          'bg-[rgba(235,87,87,0.12)] text-[#eb5757] border border-[#eb5757]/40',
         info:
-          'bg-bg-brand-subtle/70 text-fg-brand border border-border-brand/50',
+          'bg-[rgba(2,184,204,0.12)] text-[#02b8cc] border border-[#02b8cc]/40',
         outline:
-          'text-fg-secondary border border-border-hover',
+          'bg-transparent text-[#8a8f98] border border-[#23252a]',
       },
     },
     defaultVariants: {
@@ -36,4 +36,3 @@ export interface BadgeProps
 export function Badge({ className, variant, ...props }: BadgeProps) {
   return <div className={cn(badgeVariants({ variant }), className)} {...props} />;
 }
-

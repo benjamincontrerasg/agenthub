@@ -4,7 +4,7 @@ import { AIProvider } from '@/types';
 // Limpieza única de la clave heredada de localStorage para que no interfiera con el backend real
 if (typeof window !== 'undefined' && window.localStorage) {
   try {
-    window.localStorage.removeItem('agenthub-providers-storage');
+    window.localStorage.removeItem('NEXORA-providers-storage');
   } catch {
     // Entornos donde localStorage está restringido o no disponible
   }

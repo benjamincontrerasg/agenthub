@@ -98,7 +98,7 @@ export const ChatPage: React.FC = () => {
         <Card className="flex-1 flex flex-col overflow-hidden">
           <CardHeader className="py-3 px-4 flex flex-row items-center justify-between border-b border-border-default">
             <div>
-              <CardTitle className="text-body font-semibold text-fg-primary">Sesiones de Chat</CardTitle>
+              <CardTitle className="text-body font-[510] text-fg-primary">Sesiones de Chat</CardTitle>
               <CardDescription className="text-caption">Salas multiagente</CardDescription>
             </div>
             <Button
@@ -116,14 +116,14 @@ export const ChatPage: React.FC = () => {
               <div
                 key={c.id}
                 onClick={() => setActiveConversationId(c.id)}
-                className={`p-2.5 rounded-lg text-caption cursor-pointer transition-colors ${
+                className={`p-2.5 rounded-[6px] text-caption cursor-pointer transition-colors ${
                   activeConversationId === c.id
                     ? 'bg-bg-brand-subtle/40 border border-border-brand/60 text-fg-primary'
-                    : 'text-fg-secondary hover:bg-slate-900/60 hover:text-slate-200 border border-transparent'
+                    : 'text-fg-secondary hover:bg-[#0f1011]/60 hover:text-[#d0d6e0] border border-transparent'
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-semibold truncate max-w-[170px]">{c.title}</span>
+                  <span className="font-[510] truncate max-w-[170px]">{c.title}</span>
                   <span className="text-caption text-fg-secondary font-mono">
                     {c.participantAgentIds.length} ags
                   </span>
@@ -140,7 +140,7 @@ export const ChatPage: React.FC = () => {
         {activeConv && (
           <Card className="h-64 shrink-0 flex flex-col overflow-hidden">
             <CardHeader className="py-2.5 px-4 border-b border-border-default">
-              <CardTitle className="text-caption font-semibold text-fg-secondary flex items-center gap-1.5">
+              <CardTitle className="text-caption font-[510] text-fg-secondary flex items-center gap-1.5">
                 <Users className="h-3.5 w-3.5 text-fg-brand" />
                 Agentes Participantes ({activeConv.participantAgentIds.length})
               </CardTitle>
@@ -154,7 +154,7 @@ export const ChatPage: React.FC = () => {
                 return (
                   <div
                     key={agId}
-                    className={`flex items-center justify-between p-2 rounded-lg border ${
+                    className={`flex items-center justify-between p-2 rounded-[6px] border ${
                       isTyping
                         ? 'bg-bg-warning/30 border-fg-warning/60 text-fg-warning animate-pulse'
                         : isCurrentActive
@@ -192,15 +192,15 @@ export const ChatPage: React.FC = () => {
       </div>
 
       {/* Right Column: Chat Room & Simulation Stream */}
-      <div className="flex-1 flex flex-col rounded-2xl border border-border-default bg-bg-card overflow-hidden shadow-2xl">
+      <div className="flex-1 flex flex-col rounded-[12px] border border-border-default bg-bg-card overflow-hidden shadow-2xl">
         {/* Chat Room Top Bar */}
         <div className="flex items-center justify-between px-5 py-3 border-b border-border-default bg-bg-card/80 backdrop-blur-md">
           <div className="flex items-center space-x-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-tr from-violet-600 to-indigo-600 text-fg-primary">
+            <div className="flex h-9 w-9 items-center justify-center rounded-[6px] bg-gradient-to-tr from-[#e4f222] to-[#e4f222] text-fg-primary">
               <MessageSquare className="h-4 w-4" />
             </div>
             <div>
-              <h3 className="text-body font-bold text-fg-primary flex items-center gap-2">
+              <h3 className="text-body font-[510] text-fg-primary flex items-center gap-2">
                 {activeConv?.title || 'Sala de Chat'}
                 <Badge variant="outline" className="text-caption">
                   {activeConv?.status || 'idle'}
@@ -252,13 +252,13 @@ export const ChatPage: React.FC = () => {
         {/* Delegation Breadcrumb Banner */}
         {activeConv?.currentDelegationPath && (
           <div className="px-5 py-2 bg-bg-card/40 border-b border-border-default/80 flex items-center gap-1.5 overflow-x-auto text-caption text-fg-secondary">
-            <span className="font-semibold text-fg-secondary shrink-0">Cadena de Delegación:</span>
+            <span className="font-[510] text-fg-secondary shrink-0">Cadena de Delegación:</span>
             {activeConv.currentDelegationPath.map((agentName, idx) => (
               <React.Fragment key={idx}>
                 <span
                   className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded font-mono text-caption shrink-0 ${
                     idx === activeConv.currentDelegationPath!.length - 1
-                      ? 'bg-bg-brand-subtle text-fg-brand font-semibold border border-border-brand'
+                      ? 'bg-bg-brand-subtle text-fg-brand font-[510] border border-border-brand'
                       : 'bg-bg-card text-fg-secondary border border-border-default'
                   }`}
                 >
@@ -275,21 +275,21 @@ export const ChatPage: React.FC = () => {
 
         {/* Zero-Trust Active Approval Spotlight Banner */}
         {activePendingApproval && (
-          <div className="mx-4 mt-3 p-3.5 rounded-xl border-2 border-fg-warning bg-bg-warning/20 shadow-md shadow-amber-950/20 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 animate-in slide-in-from-top-2">
+          <div className="mx-4 mt-3 p-3.5 rounded-[12px] border-2 border-fg-warning bg-bg-warning/20 shadow-md shadow-amber-950/20 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 animate-in slide-in-from-top-2">
             <div className="flex items-start gap-3">
-              <div className="p-2 rounded-lg bg-fg-warning/20 text-fg-warning shrink-0 mt-0.5">
+              <div className="p-2 rounded-[6px] bg-fg-warning/20 text-fg-warning shrink-0 mt-0.5">
                 <ShieldAlert className="h-5 w-5 animate-pulse" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-caption font-bold text-fg-warning uppercase tracking-wider">
+                  <span className="text-caption font-[510] text-fg-warning uppercase tracking-wider">
                     Acción en Espera de Autorización Humana
                   </span>
                   <Badge variant="warning" className="text-caption font-mono py-0">
                     {activePendingApproval.id}
                   </Badge>
                 </div>
-                <p className="text-body font-semibold text-fg-primary mt-0.5">
+                <p className="text-body font-[510] text-fg-primary mt-0.5">
                   {activePendingApproval.actionDescription}
                 </p>
                 <p className="text-caption text-fg-secondary font-mono mt-0.5">
@@ -301,7 +301,7 @@ export const ChatPage: React.FC = () => {
               <Button
                 variant="default"
                 size="sm"
-                className="bg-fg-success hover:bg-emerald-500 text-slate-950 font-bold px-3.5 h-8 shadow-sm"
+                className="bg-fg-success hover:bg-emerald-500 text-[#08090a] font-[510] px-3.5 h-8 shadow-sm"
                 onClick={() => respondToApproval(activePendingApproval.id, true)}
               >
                 <CheckCircle2 className="mr-1.5 h-3.5 w-3.5" />
@@ -329,7 +329,7 @@ export const ChatPage: React.FC = () => {
             if (isSystem) {
               return (
                 <div key={msg.id} className="flex justify-center my-2">
-                  <div className="rounded-lg bg-bg-card/80 px-3 py-1.5 border border-border-default text-caption text-fg-secondary flex items-center gap-1.5 max-w-lg text-center">
+                  <div className="rounded-[6px] bg-bg-card/80 px-3 py-1.5 border border-border-default text-caption text-fg-secondary flex items-center gap-1.5 max-w-lg text-center">
                     <Sparkles className="h-3.5 w-3.5 text-fg-brand shrink-0" />
                     <span>{msg.content}</span>
                   </div>
@@ -351,11 +351,11 @@ export const ChatPage: React.FC = () => {
                       size="xs"
                     />
                   ) : (
-                    <div className="flex h-5 w-5 items-center justify-center rounded-md bg-bg-brand text-caption font-bold text-fg-primary shadow">
+                    <div className="flex h-5 w-5 items-center justify-center rounded-md bg-bg-brand text-caption font-[510] text-fg-primary shadow">
                       TÚ
                     </div>
                   )}
-                  <span className="font-semibold text-fg-primary">{msg.senderName}</span>
+                  <span className="font-[510] text-fg-primary">{msg.senderName}</span>
                   {msg.senderRole && (
                     <Badge variant="outline" className="text-caption font-mono py-0">
                       {msg.senderRole}
@@ -366,7 +366,7 @@ export const ChatPage: React.FC = () => {
 
                 {/* Message Bubble */}
                 <div
-                  className={`rounded-2xl px-4 py-3 text-body leading-relaxed max-w-2xl shadow-md ${
+                  className={`rounded-[12px] px-4 py-3 text-body leading-relaxed max-w-2xl shadow-md ${
                     isUser
                       ? 'bg-bg-brand text-fg-primary rounded-tr-none'
                       : 'bg-bg-card/90 border border-border-default text-fg-primary rounded-tl-none'
@@ -374,8 +374,8 @@ export const ChatPage: React.FC = () => {
                 >
                   {/* Thought Trace Inspector */}
                   {msg.thoughtTrace && (
-                    <div className="mb-2.5 rounded-lg bg-bg-card/70 p-2.5 border border-border-default/90 text-caption text-fg-secondary space-y-1">
-                      <div className="flex items-center gap-1 text-caption font-semibold text-fg-brand uppercase tracking-wider">
+                    <div className="mb-2.5 rounded-[6px] bg-bg-card/70 p-2.5 border border-border-default/90 text-caption text-fg-secondary space-y-1">
+                      <div className="flex items-center gap-1 text-caption font-[510] text-fg-brand uppercase tracking-wider">
                         <Terminal className="h-3 w-3" />
                         Cadena de Razonamiento Interno (Thought Trace)
                       </div>
@@ -394,16 +394,16 @@ export const ChatPage: React.FC = () => {
                   {/* Tool Executions Badge Box */}
                   {msg.toolExecutions && msg.toolExecutions.length > 0 && (
                     <div className="mt-3 space-y-1.5 pt-2 border-t border-border-default">
-                      <span className="text-caption font-semibold uppercase tracking-wider text-fg-secondary block">
+                      <span className="text-caption font-[510] uppercase tracking-wider text-fg-secondary block">
                         Herramientas MCP Invocadas
                       </span>
                       {msg.toolExecutions.map((tool) => (
                         <div
                           key={tool.id}
-                          className="flex items-center justify-between p-2 rounded-lg bg-bg-card/60 border border-border-default text-caption font-mono"
+                          className="flex items-center justify-between p-2 rounded-[6px] bg-bg-card/60 border border-border-default text-caption font-mono"
                         >
                           <div className="flex items-center gap-2">
-                            <span className="text-fg-brand font-semibold">{tool.toolName}</span>
+                            <span className="text-fg-brand font-[510]">{tool.toolName}</span>
                             <span className="text-caption text-fg-secondary">({tool.serverName})</span>
                           </div>
                           <Badge
@@ -425,9 +425,9 @@ export const ChatPage: React.FC = () => {
 
                   {/* Interactive Human Approval Request Banner (Zero-Trust) */}
                   {msg.approvalRequest && msg.approvalRequest.status === 'pending' && (
-                    <div className="mt-4 rounded-xl border-2 border-fg-warning bg-bg-warning/25 p-4 space-y-3 shadow-lg shadow-amber-950/30 animate-in zoom-in-95 duration-150">
+                    <div className="mt-4 rounded-[12px] border-2 border-fg-warning bg-bg-warning/25 p-4 space-y-3 shadow-lg shadow-amber-950/30 animate-in zoom-in-95 duration-150">
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 text-body font-bold text-fg-warning">
+                        <div className="flex items-center gap-2 text-body font-[510] text-fg-warning">
                           <ShieldAlert className="h-5 w-5 animate-pulse" />
                           <span>Aprobación Humana Requerida (Zero-Trust)</span>
                         </div>
@@ -436,8 +436,8 @@ export const ChatPage: React.FC = () => {
                         </Badge>
                       </div>
 
-                      <div className="rounded-lg bg-bg-card/70 border border-border-default p-3">
-                        <p className="text-body font-semibold text-fg-primary leading-relaxed">
+                      <div className="rounded-[6px] bg-bg-card/70 border border-border-default p-3">
+                        <p className="text-body font-[510] text-fg-primary leading-relaxed">
                           {msg.approvalRequest.actionDescription}
                         </p>
                         <div className="mt-2 flex flex-wrap items-center gap-2 text-caption text-fg-secondary font-mono">
@@ -451,7 +451,7 @@ export const ChatPage: React.FC = () => {
                         <Button
                           variant="default"
                           size="sm"
-                          className="text-body h-9 px-4 bg-fg-success hover:bg-emerald-500 text-slate-950 font-bold shadow-md"
+                          className="text-body h-9 px-4 bg-fg-success hover:bg-emerald-500 text-[#08090a] font-[510] shadow-md"
                           onClick={() => respondToApproval(msg.approvalRequest!.id, true)}
                         >
                           <CheckCircle2 className="mr-2 h-4 w-4" />
@@ -460,7 +460,7 @@ export const ChatPage: React.FC = () => {
                         <Button
                           variant="destructive"
                           size="sm"
-                          className="text-body h-9 px-4 font-semibold"
+                          className="text-body h-9 px-4 font-[510]"
                           onClick={() => respondToApproval(msg.approvalRequest!.id, false)}
                         >
                           <XCircle className="mr-2 h-4 w-4" />
@@ -490,7 +490,7 @@ export const ChatPage: React.FC = () => {
               <div className="flex h-5 w-5 items-center justify-center rounded-md bg-bg-surface text-fg-brand">
                 <Bot className="h-3.5 w-3.5 animate-pulse" />
               </div>
-              <span className="font-semibold text-fg-secondary">{activeTypingAgent.name}</span>
+              <span className="font-[510] text-fg-secondary">{activeTypingAgent.name}</span>
               <span className="text-caption text-fg-warning animate-pulse">está pensando y generando respuesta...</span>
             </div>
           )}
@@ -522,8 +522,8 @@ export const ChatPage: React.FC = () => {
       {/* New Chat Modal */}
       {newChatModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-xl border border-border-default bg-bg-card p-5 shadow-2xl">
-            <h3 className="text-subtitle font-bold text-fg-primary mb-1">Nueva Sesión Multiagente</h3>
+          <div className="w-full max-w-md rounded-[12px] border border-border-default bg-bg-card p-5 shadow-2xl">
+            <h3 className="text-subtitle font-[510] text-fg-primary mb-1">Nueva Sesión Multiagente</h3>
             <p className="text-caption text-fg-secondary mb-4">
               Crea una sala de conversación y selecciona qué agentes colaborarán en la tarea.
             </p>
@@ -557,7 +557,7 @@ export const ChatPage: React.FC = () => {
                               : [...prev, ag.id]
                           )
                         }
-                        className={`p-2 rounded-lg border text-caption cursor-pointer flex items-center justify-between ${
+                        className={`p-2 rounded-[6px] border text-caption cursor-pointer flex items-center justify-between ${
                           isSelected
                             ? 'bg-bg-brand-subtle/40 border-border-brand text-fg-primary'
                             : 'bg-bg-card/40 border-border-default text-fg-secondary'

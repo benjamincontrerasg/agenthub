@@ -48,7 +48,7 @@ export const AssignToolModal: React.FC<AssignToolModalProps> = ({ tool, open, on
         </DialogHeader>
 
         {tool.isWriteOperation && (
-          <div className="mb-3 p-2.5 rounded-lg bg-bg-warning/40 border border-fg-warning text-caption text-fg-warning flex items-center gap-2">
+          <div className="mb-3 p-2.5 rounded-[6px] bg-bg-warning/40 border border-fg-warning text-caption text-fg-warning flex items-center gap-2">
             <ShieldAlert className="h-4 w-4 shrink-0 text-fg-warning" />
             <span>
               <strong>Herramienta de Escritura:</strong> Las llamadas generadas requerirán confirmación humana antes de ser ejecutadas.
@@ -63,16 +63,16 @@ export const AssignToolModal: React.FC<AssignToolModalProps> = ({ tool, open, on
               <div
                 key={agent.id}
                 onClick={() => handleToggle(agent.id)}
-                className={`flex items-center justify-between p-2.5 rounded-lg border text-caption cursor-pointer transition-colors ${
+                className={`flex items-center justify-between p-2.5 rounded-[6px] border text-caption cursor-pointer transition-colors ${
                   isAssigned
                     ? 'border-border-brand/70 bg-bg-brand-subtle/25'
-                    : 'border-border-default bg-bg-card/50 hover:border-slate-700'
+                    : 'border-border-default bg-bg-card/50 hover:border-[#23252a]'
                 }`}
               >
                 <div className="flex items-center gap-2.5">
                   <Bot className={`h-4 w-4 ${isAssigned ? 'text-fg-brand' : 'text-fg-muted'}`} />
                   <div>
-                    <span className="font-semibold text-fg-primary block">{agent.name}</span>
+                    <span className="font-[510] text-fg-primary block">{agent.name}</span>
                     <span className="text-caption text-fg-secondary font-mono">{agent.role}</span>
                   </div>
                 </div>

@@ -1,5 +1,5 @@
 /**
- * Central API Client for AgentHub
+ * Central API Client for NEXORA
  * Handles base configuration, token headers, error normalization,
  * and seamless fallback between Mock Data and real HTTP Backend.
  */
@@ -45,7 +45,7 @@ export async function apiClient<T>(endpoint: string, options: RequestOptions = {
     Accept: 'application/json',
   };
 
-  const token = typeof window !== 'undefined' ? localStorage.getItem('agenthub-token') : null;
+  const token = typeof window !== 'undefined' ? localStorage.getItem('NEXORA-token') : null;
   if (token) {
     defaultHeaders['Authorization'] = `Bearer ${token}`;
   }

@@ -98,10 +98,10 @@ export const ProviderModal: React.FC<ProviderModalProps> = ({ provider, open, on
           </DialogHeader>
 
           {/* Security Notice Box */}
-          <div className="mb-4 rounded-lg border border-fg-warning/60 bg-bg-warning/30 p-3 text-caption text-fg-warning flex items-start gap-2.5">
+          <div className="mb-4 rounded-[6px] border border-fg-warning/60 bg-bg-warning/30 p-3 text-caption text-fg-warning flex items-start gap-2.5">
             <ShieldAlert className="h-4 w-4 shrink-0 text-fg-warning mt-0.5" />
             <div className="space-y-1">
-              <span className="font-semibold block">Manejo de Credenciales Sensibles:</span>
+              <span className="font-[510] block">Manejo de Credenciales Sensibles:</span>
               <p className="text-caption text-fg-warning/80 leading-relaxed">
                 Las API Keys se transmiten cifradas mediante TLS hacia el backend con cifrado AES-256-GCM. Nunca se almacenan en texto plano en el cliente ni se persisten en caché ni localStorage.
               </p>

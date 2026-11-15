@@ -130,6 +130,6 @@ describe('Providers Service (Mock Mode & Security)', () => {
     }
 
     // Verify legacy storage key was wiped
-    expect(globalThis.localStorage.getItem('agenthub-providers-storage')).toBeNull();
+    expect(globalThis.localStorage.getItem('NEXORA-providers-storage')).toBeNull();
   });
 });

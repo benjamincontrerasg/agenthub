@@ -22,9 +22,9 @@ const sizeMap = {
 
 const roundedMap = {
   sm: 'rounded',
-  md: 'rounded-lg',
-  lg: 'rounded-xl',
-  xl: 'rounded-2xl',
+  md: 'rounded-[6px]',
+  lg: 'rounded-[12px]',
+  xl: 'rounded-[12px]',
   full: 'rounded-full',
 };
 
@@ -113,7 +113,7 @@ export const ProviderLogo: React.FC<ProviderLogoProps> = ({
   const initial = (name || providerId || 'AI').substring(0, 2).toUpperCase();
   return (
     <div
-      className={`shrink-0 flex items-center justify-center font-bold text-caption ${dimensionClass} ${roundedClass} ${
+      className={`shrink-0 flex items-center justify-center font-[510] text-caption ${dimensionClass} ${roundedClass} ${
         showBackground ? 'bg-bg-surface border border-border-hover text-fg-secondary' : ''
       } ${className}`}
     >

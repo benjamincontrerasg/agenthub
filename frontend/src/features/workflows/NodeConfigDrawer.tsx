@@ -38,19 +38,19 @@ export const NodeConfigDrawer: React.FC<NodeConfigDrawerProps> = ({
   };
 
   return (
-    <div className="absolute right-4 top-20 bottom-4 z-20 w-80 sm:w-96 rounded-2xl border border-border-default bg-bg-card/95 p-5 shadow-2xl backdrop-blur-md flex flex-col justify-between animate-in slide-in-from-right duration-200">
+    <div className="absolute right-4 top-20 bottom-4 z-20 w-80 sm:w-96 rounded-[12px] border border-border-default bg-bg-card/95 p-5 shadow-2xl backdrop-blur-md flex flex-col justify-between animate-in slide-in-from-right duration-200">
       <div className="space-y-4 overflow-y-auto pr-1">
         <div className="flex items-center justify-between pb-3 border-b border-border-default">
           <div className="flex items-center gap-2">
             <Settings className="h-4 w-4 text-fg-brand" />
-            <h3 className="text-body font-semibold text-fg-primary">Configurar Nodo</h3>
+            <h3 className="text-body font-[510] text-fg-primary">Configurar Nodo</h3>
             <Badge variant="outline" className="text-caption font-mono capitalize">
               {nodeType}
             </Badge>
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-md text-fg-secondary hover:bg-slate-800 hover:text-white"
+            className="p-1 rounded-md text-fg-secondary hover:bg-[#161718] hover:text-[#ffffff]"
           >
             <X className="h-4 w-4" />
           </button>
@@ -133,8 +133,8 @@ export const NodeConfigDrawer: React.FC<NodeConfigDrawerProps> = ({
         )}
 
         {nodeType === 'human_approval' && (
-          <div className="p-3 rounded-lg bg-bg-warning/40 border border-fg-warning text-caption text-fg-warning space-y-1">
-            <div className="flex items-center gap-1.5 font-semibold text-fg-warning">
+          <div className="p-3 rounded-[6px] bg-bg-warning/40 border border-fg-warning text-caption text-fg-warning space-y-1">
+            <div className="flex items-center gap-1.5 font-[510] text-fg-warning">
               <ShieldAlert className="h-4 w-4" />
               Punto de Control Zero-Trust
             </div>

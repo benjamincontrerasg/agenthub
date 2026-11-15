@@ -103,7 +103,7 @@ export const notificationsService = {
                 description: payload.message,
                 color: colorMap[payload.severity],
                 timestamp: payload.timestamp,
-                footer: { text: `AgentHub | ${payload.event}` },
+                footer: { text: `NEXORA | ${payload.event}` },
                 fields: payload.metadata
                   ? Object.entries(payload.metadata).map(([k, v]) => ({
                       name: k,

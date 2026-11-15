@@ -4,7 +4,7 @@ import { signJWT, verifyJWT, AuthUser } from '../jwt.js';
 describe('JWT Service (HS256)', () => {
   const sampleUser: AuthUser = {
     id: 'user-admin-1',
-    email: 'admin@agenthub.dev',
+    email: 'admin@NEXORA.dev',
     name: 'Admin User',
     role: 'admin',
     organizationId: 'org-main-1',

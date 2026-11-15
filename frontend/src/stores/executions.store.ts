@@ -119,7 +119,7 @@ export const useExecutionsStore = create<ExecutionsState>()(
       },
     }),
     {
-      name: 'agenthub-executions-storage',
+      name: 'NEXORA-executions-storage',
       partialize: (state) => ({ executions: state.executions }),
     }
   )

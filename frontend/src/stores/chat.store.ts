@@ -207,7 +207,7 @@ export const useChatStore = create<ChatState>()(
               id: generateId('msg'),
               conversationId: '',
               senderType: 'system',
-              senderName: 'AgentHub Orchestrator',
+              senderName: 'NEXORA Orchestrator',
               content: `Sesión de chat multiagente inicializada con ${participantAgentIds.length} agentes activos. Envía un requerimiento para comenzar la colaboración.`,
               timestamp: new Date().toISOString(),
             },
@@ -492,7 +492,7 @@ export const useChatStore = create<ChatState>()(
             id: generateId('msg'),
             conversationId: activeConv.id,
             senderType: 'system',
-            senderName: 'Seguridad / AgentHub',
+            senderName: 'Seguridad / NEXORA',
             content: 'Operación de escritura rechazada por el operador humano. La ejecución se canceló de forma segura sin modificar archivos.',
             timestamp: new Date().toISOString(),
           };
@@ -602,7 +602,7 @@ export const useChatStore = create<ChatState>()(
       },
     }),
     {
-      name: 'agenthub-chat-storage',
+      name: 'NEXORA-chat-storage',
       partialize: (state) => ({ conversations: state.conversations }),
     }
   )

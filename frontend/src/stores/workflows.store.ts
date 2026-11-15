@@ -142,7 +142,7 @@ export const useWorkflowsStore = create<WorkflowsState>()(
       },
     }),
     {
-      name: 'agenthub-workflows-storage',
+      name: 'NEXORA-workflows-storage',
       partialize: (state) => ({ workflows: state.workflows }),
     }
   )

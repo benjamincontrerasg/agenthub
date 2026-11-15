@@ -91,7 +91,7 @@ export const useAgentsStore = create<AgentsState>()(
       },
     }),
     {
-      name: 'agenthub-agents-storage',
+      name: 'NEXORA-agents-storage',
       partialize: (state) => ({ agents: state.agents }),
     }
   )

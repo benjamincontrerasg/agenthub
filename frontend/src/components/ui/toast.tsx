@@ -12,7 +12,7 @@ export const ToastContainer: React.FC = () => {
       {toasts.map((t) => (
         <div
           key={t.id}
-          className="pointer-events-auto flex items-start gap-3 p-3.5 rounded-xl border bg-bg-card/95 shadow-2xl backdrop-blur-md text-caption animate-in slide-in-from-bottom-2 duration-150 border-border-default"
+          className="pointer-events-auto flex items-start gap-3 p-3.5 rounded-[12px] border bg-bg-card/95 shadow-2xl backdrop-blur-md text-caption animate-in slide-in-from-bottom-2 duration-150 border-border-default"
         >
           {t.type === 'success' && <CheckCircle2 className="h-4 w-4 text-fg-success shrink-0 mt-0.5" />}
           {t.type === 'error' && <AlertCircle className="h-4 w-4 text-fg-error shrink-0 mt-0.5" />}
@@ -20,13 +20,13 @@ export const ToastContainer: React.FC = () => {
           {t.type === 'info' && <Info className="h-4 w-4 text-fg-brand shrink-0 mt-0.5" />}
 
           <div className="flex-1 space-y-0.5">
-            <p className="font-semibold text-fg-primary">{t.title}</p>
+            <p className="font-[510] text-fg-primary">{t.title}</p>
             {t.description && <p className="text-fg-secondary text-caption">{t.description}</p>}
           </div>
 
           <button
             onClick={() => removeToast(t.id)}
-            className="text-fg-secondary hover:text-white p-0.5 rounded cursor-pointer"
+            className="text-fg-secondary hover:text-[#ffffff] p-0.5 rounded cursor-pointer"
           >
             <X className="h-3.5 w-3.5" />
           </button>

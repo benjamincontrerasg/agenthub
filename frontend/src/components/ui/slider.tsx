@@ -22,7 +22,7 @@ export function Slider({ value, min, max, step = 1, onChange, className, disable
       disabled={disabled}
       onChange={(e) => onChange(parseFloat(e.target.value))}
       className={cn(
-        'w-full h-1.5 bg-bg-surface rounded-lg appearance-none cursor-pointer accent-violet-500 disabled:opacity-50 disabled:cursor-not-allowed',
+        'w-full h-1.5 bg-[#161718] rounded-[9999px] appearance-none cursor-pointer accent-[#e4f222] disabled:opacity-50 disabled:cursor-not-allowed',
         className
       )}
     />

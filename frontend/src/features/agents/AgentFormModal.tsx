@@ -263,11 +263,11 @@ export const AgentFormModal: React.FC<AgentFormModalProps> = ({ agent, open, onC
             </div>
 
             {/* Collapsible Hyperparameters (Avanzado) */}
-            <div className="rounded-lg border border-border-default bg-bg-card/40 overflow-hidden">
+            <div className="rounded-[6px] border border-border-default bg-bg-card/40 overflow-hidden">
               <button
                 type="button"
                 onClick={() => setShowAdvanced(!showAdvanced)}
-                className="w-full flex items-center justify-between p-3 text-caption font-semibold text-fg-secondary hover:text-fg-primary hover:bg-bg-surface/50 transition-colors"
+                className="w-full flex items-center justify-between p-3 text-caption font-[510] text-fg-secondary hover:text-fg-primary hover:bg-bg-surface/50 transition-colors"
               >
                 <span className="flex items-center gap-2">
                   <Sliders className="h-4 w-4 text-fg-brand" />
@@ -289,7 +289,7 @@ export const AgentFormModal: React.FC<AgentFormModalProps> = ({ agent, open, onC
                         <div>
                           <div className="flex justify-between items-center text-caption mb-2">
                             <span className="font-medium text-fg-secondary">Temperatura</span>
-                            <span className="font-mono text-fg-brand font-semibold">{field.value.toFixed(2)}</span>
+                            <span className="font-mono text-fg-brand font-[510]">{field.value.toFixed(2)}</span>
                           </div>
                           <Slider
                             min={0}
@@ -315,7 +315,7 @@ export const AgentFormModal: React.FC<AgentFormModalProps> = ({ agent, open, onC
                         <div>
                           <div className="flex justify-between items-center text-caption mb-2">
                             <span className="font-medium text-fg-secondary">Límite de Iteraciones (Loops)</span>
-                            <span className="font-mono text-fg-brand font-semibold">{field.value} pasos</span>
+                            <span className="font-mono text-fg-brand font-[510]">{field.value} pasos</span>
                           </div>
                           <Slider
                             min={3}
@@ -348,10 +348,10 @@ export const AgentFormModal: React.FC<AgentFormModalProps> = ({ agent, open, onC
                     <div
                       key={tool.id}
                       onClick={() => toggleTool(tool.id)}
-                      className={`flex items-start gap-2.5 p-2 rounded-lg border text-caption cursor-pointer transition-colors ${
+                      className={`flex items-start gap-2.5 p-2 rounded-[6px] border text-caption cursor-pointer transition-colors ${
                         isChecked
                           ? 'border-border-brand/70 bg-bg-brand-subtle/25 text-fg-primary'
-                          : 'border-border-default bg-bg-card/50 text-fg-secondary hover:border-slate-700'
+                          : 'border-border-default bg-bg-card/50 text-fg-secondary hover:border-[#23252a]'
                       }`}
                     >
                       <input

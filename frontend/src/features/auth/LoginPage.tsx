@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const { login, setDemoUser, isLoading, error, clearError } = useAuthStore();
-  const [email, setEmail] = useState('admin@agenthub.dev');
+  const [email, setEmail] = useState('admin@nexora.dev');
   const [password, setPassword] = useState('admin123');
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -31,24 +31,24 @@ export const LoginPage: React.FC = () => {
       <div className="w-full max-w-md relative z-10">
         {/* Brand header */}
         <div className="text-center mb-8">
-          <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-black border border-white/10 p-2 shadow-xl shadow-violet-500/20 mb-3">
+          <div className="inline-flex h-14 w-14 items-center justify-center rounded-[12px] bg-[#08090a] border border-[rgba(255,255,255,0.08)] p-2 shadow-xl shadow-[rgba(228,242,34,0.1)] mb-3">
             <img
-              src="/agenthub-logo.png"
-              alt="AgentHub Logo"
+              src="/NEXORA-logo.png"
+              alt="NEXORA Logo"
               className="h-full w-full object-contain filter drop-shadow select-none"
             />
           </div>
-          <h1 className="text-title font-bold text-fg-primary tracking-tight">AgentHub Platform</h1>
+          <h1 className="text-title font-[510] text-[#ffffff] tracking-tight">NEXORA Platform</h1>
           <p className="text-caption text-fg-secondary mt-1">
             Orquestación multi-agente Zero-Trust y seguridad RBAC
           </p>
         </div>
 
         {/* Card */}
-        <div className="rounded-2xl border border-border-default bg-bg-card p-6 shadow-2xl backdrop-blur-sm">
+        <div className="rounded-[12px] border border-[#23252a] bg-[#0f1011] p-6 shadow-2xl backdrop-blur-sm">
           <div className="flex items-center justify-between mb-6 pb-4 border-b border-border-default">
             <div>
-              <h2 className="text-subtitle font-semibold text-fg-primary">Iniciar Sesión</h2>
+              <h2 className="text-subtitle font-[510] text-[#ffffff]">Iniciar Sesión</h2>
               <p className="text-caption text-fg-secondary">Accede a la consola de control</p>
             </div>
             <Badge variant="outline" className="border-border-brand text-fg-brand text-caption">
@@ -57,7 +57,7 @@ export const LoginPage: React.FC = () => {
           </div>
 
           {error && (
-            <div className="mb-4 p-3 rounded-lg bg-bg-error-subtle border border-border-error/40 text-caption text-fg-error flex items-start justify-between">
+            <div className="mb-4 p-3 rounded-[6px] bg-bg-error-subtle border border-border-error/40 text-caption text-fg-error flex items-start justify-between">
               <span>{error}</span>
               <button onClick={clearError} className="text-fg-secondary hover:text-fg-primary cursor-pointer">
                 ×
@@ -77,8 +77,8 @@ export const LoginPage: React.FC = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  placeholder="admin@agenthub.dev"
-                  className="w-full rounded-lg border border-border-default bg-bg-surface pl-10 pr-3 py-2 text-body text-fg-primary focus:border-border-brand focus:outline-none placeholder:text-slate-500"
+                  placeholder="admin@nexora.dev"
+                  className="w-full rounded-[6px] border border-[#23252a] bg-[rgba(255,255,255,0.02)] pl-10 pr-3 py-2 text-body text-fg-primary focus:border-border-brand focus:outline-none placeholder:text-[#62666d]"
                 />
               </div>
             </div>
@@ -95,7 +95,7 @@ export const LoginPage: React.FC = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   placeholder="••••••••"
-                  className="w-full rounded-lg border border-border-default bg-bg-surface pl-10 pr-3 py-2 text-body text-fg-primary focus:border-border-brand focus:outline-none placeholder:text-slate-500"
+                  className="w-full rounded-[6px] border border-[#23252a] bg-[rgba(255,255,255,0.02)] pl-10 pr-3 py-2 text-body text-fg-primary focus:border-border-brand focus:outline-none placeholder:text-[#62666d]"
                 />
               </div>
             </div>
@@ -103,7 +103,7 @@ export const LoginPage: React.FC = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full flex items-center justify-center gap-2 rounded-lg bg-bg-brand py-2.5 px-4 text-body font-semibold text-fg-primary hover:bg-violet-500 transition-colors cursor-pointer shadow-md shadow-violet-600/30 disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-2 rounded-[6px] bg-bg-brand py-2.5 px-4 text-body font-[510] text-[#ffffff] hover:brightness-110 transition-colors cursor-pointer shadow-sm disabled:opacity-50"
             >
               {isLoading ? (
                 <span>Autenticando...</span>
@@ -125,27 +125,27 @@ export const LoginPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => handleQuickLogin('admin')}
-                className="p-2 rounded-lg border border-border-brand/40 bg-bg-brand-subtle hover:bg-bg-brand-subtle/80 text-center transition-colors cursor-pointer"
+                className="p-2 rounded-[6px] border border-border-brand/40 bg-bg-brand-subtle hover:bg-bg-brand-subtle/80 text-center transition-colors cursor-pointer"
               >
-                <div className="text-caption font-bold text-fg-brand">Admin</div>
+                <div className="text-caption font-[510] text-fg-brand">Admin</div>
                 <div className="text-[11px] text-fg-secondary">Control Total</div>
               </button>
 
               <button
                 type="button"
                 onClick={() => handleQuickLogin('developer')}
-                className="p-2 rounded-lg border border-border-default bg-bg-surface hover:bg-slate-800 text-center transition-colors cursor-pointer"
+                className="p-2 rounded-[6px] border border-border-default bg-bg-surface hover:bg-[#161718] text-center transition-colors cursor-pointer"
               >
-                <div className="text-caption font-bold text-fg-primary">Developer</div>
+                <div className="text-caption font-[510] text-[#ffffff]">Developer</div>
                 <div className="text-[11px] text-fg-secondary">Agentes & MCP</div>
               </button>
 
               <button
                 type="button"
                 onClick={() => handleQuickLogin('viewer')}
-                className="p-2 rounded-lg border border-border-default bg-bg-surface hover:bg-slate-800 text-center transition-colors cursor-pointer"
+                className="p-2 rounded-[6px] border border-border-default bg-bg-surface hover:bg-[#161718] text-center transition-colors cursor-pointer"
               >
-                <div className="text-caption font-bold text-slate-400">Viewer</div>
+                <div className="text-caption font-[510] text-[#8a8f98]">Viewer</div>
                 <div className="text-[11px] text-fg-secondary">Solo Auditoría</div>
               </button>
             </div>

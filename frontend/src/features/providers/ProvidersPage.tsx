@@ -55,7 +55,7 @@ export const ProvidersPage: React.FC = () => {
       {/* Header Info */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-title sm:text-2xl font-bold tracking-tight text-fg-primary flex items-center gap-2">
+          <h2 className="text-title sm:text-2xl font-[510] tracking-tight text-fg-primary flex items-center gap-2">
             Proveedores de Inteligencia Artificial
             {!isLoading && (
               <Badge variant="secondary" className="font-mono text-caption">
@@ -71,7 +71,7 @@ export const ProvidersPage: React.FC = () => {
 
       {/* Loading State */}
       {isLoading && (
-        <div className="flex flex-col items-center justify-center p-12 rounded-xl border border-border-default bg-bg-card/40 space-y-3">
+        <div className="flex flex-col items-center justify-center p-12 rounded-[12px] border border-border-default bg-bg-card/40 space-y-3">
           <Loader2 className="h-8 w-8 animate-spin text-fg-brand" />
           <p className="text-body text-fg-secondary font-medium">Cargando proveedores...</p>
         </div>
@@ -79,12 +79,12 @@ export const ProvidersPage: React.FC = () => {
 
       {/* Error State */}
       {isError && (
-        <div className="flex flex-col items-center justify-center p-8 rounded-xl border border-fg-error/30 bg-bg-card/60 text-center space-y-4">
+        <div className="flex flex-col items-center justify-center p-8 rounded-[12px] border border-fg-error/30 bg-bg-card/60 text-center space-y-4">
           <div className="p-3 rounded-full bg-fg-error/10 text-fg-error">
             <AlertTriangle className="h-8 w-8" />
           </div>
           <div className="space-y-1">
-            <h3 className="text-subtitle font-semibold text-fg-primary">Error de conexión con el backend</h3>
+            <h3 className="text-subtitle font-[510] text-fg-primary">Error de conexión con el backend</h3>
             <p className="text-caption text-fg-secondary max-w-md">
               {error?.message || 'No fue posible cargar el listado de proveedores. Comprueba que el backend esté ejecutándose en el puerto configurado.'}
             </p>
@@ -103,7 +103,7 @@ export const ProvidersPage: React.FC = () => {
 
       {/* Empty State */}
       {!isLoading && !isError && providers.length === 0 && (
-        <div className="flex flex-col items-center justify-center p-12 rounded-xl border border-border-default bg-bg-card/40 text-center space-y-2">
+        <div className="flex flex-col items-center justify-center p-12 rounded-[12px] border border-border-default bg-bg-card/40 text-center space-y-2">
           <p className="text-subtitle font-medium text-fg-primary">No hay proveedores registrados</p>
           <p className="text-caption text-fg-secondary">Ejecuta el seed del backend para inicializar los proveedores.</p>
         </div>
@@ -118,7 +118,7 @@ export const ProvidersPage: React.FC = () => {
             return (
               <Card
                 key={provider.id}
-                className="flex flex-col justify-between border-border-default bg-bg-card/60 hover:border-slate-700/80 transition-all"
+                className="flex flex-col justify-between border-border-default bg-bg-card/60 hover:border-[#23252a]/80 transition-all"
               >
                 <div>
                   <CardHeader className="flex flex-row items-start justify-between pb-3">
@@ -126,7 +126,7 @@ export const ProvidersPage: React.FC = () => {
                       <ProviderLogo providerId={provider.id} size="xl" className="shadow-lg ring-1 ring-slate-800" />
                       <div>
                         <div className="flex items-center gap-2">
-                          <CardTitle className="text-subtitle font-semibold">{provider.name}</CardTitle>
+                          <CardTitle className="text-subtitle font-[510]">{provider.name}</CardTitle>
                           <Badge variant="outline" className="text-caption font-mono">
                             {provider.badge}
                           </Badge>
@@ -161,7 +161,7 @@ export const ProvidersPage: React.FC = () => {
                     </p>
 
                     {/* Models list inside provider */}
-                    <div className="space-y-2 rounded-lg bg-bg-card/60 p-3 border border-border-default/80">
+                    <div className="space-y-2 rounded-[6px] bg-bg-card/60 p-3 border border-border-default/80">
                       <div className="flex items-center justify-between text-caption font-medium text-fg-secondary">
                         <span className="flex items-center gap-1.5">
                           <Layers className="h-3.5 w-3.5 text-fg-brand" />
@@ -174,7 +174,7 @@ export const ProvidersPage: React.FC = () => {
                         {provider.models.map((model) => (
                           <div
                             key={model.id}
-                            className="flex items-center justify-between text-caption py-1 px-2 rounded hover:bg-slate-900/60 transition-colors"
+                            className="flex items-center justify-between text-caption py-1 px-2 rounded hover:bg-[#0f1011]/60 transition-colors"
                           >
                             <div className="flex items-center gap-2">
                               <span className="font-medium text-fg-primary">{model.name}</span>

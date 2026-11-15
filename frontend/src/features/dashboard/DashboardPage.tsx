@@ -107,10 +107,10 @@ export const DashboardPage: React.FC = () => {
           <CardContent className="p-5 sm:p-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-4 border-b border-border-default">
               <div>
-                <span className="text-caption font-semibold uppercase tracking-wider text-fg-brand">
+                <span className="text-caption font-[510] uppercase tracking-wider text-fg-brand">
                   Guía de Primeros Pasos
                 </span>
-                <h3 className="text-subtitle sm:text-title font-bold text-fg-primary mt-0.5">
+                <h3 className="text-subtitle sm:text-title font-[510] text-fg-primary mt-0.5">
                   Comienza a orquestar en 3 pasos sencillos
                 </h3>
               </div>
@@ -129,11 +129,11 @@ export const DashboardPage: React.FC = () => {
                 <div
                   key={step.id}
                   onClick={() => navigate(step.actionPath)}
-                  className="rounded-lg border border-border-default hover:border-border-hover bg-bg-card/80 p-4 transition-all cursor-pointer group hover:bg-bg-surface/60 flex flex-col justify-between"
+                  className="rounded-[6px] border border-border-default hover:border-border-hover bg-bg-card/80 p-4 transition-all cursor-pointer group hover:bg-bg-surface/60 flex flex-col justify-between"
                 >
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-bg-surface text-caption font-bold text-fg-brand border border-border-brand/40">
+                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-bg-surface text-caption font-[510] text-fg-brand border border-border-brand/40">
                         {step.completed ? <Check className="h-3.5 w-3.5 text-fg-success" /> : step.id}
                       </span>
                       <Badge
@@ -143,7 +143,7 @@ export const DashboardPage: React.FC = () => {
                         {step.badgeText}
                       </Badge>
                     </div>
-                    <h4 className="text-body font-semibold text-fg-primary group-hover:text-fg-brand transition-colors">
+                    <h4 className="text-body font-[510] text-fg-primary group-hover:text-fg-brand transition-colors">
                       {step.title}
                     </h4>
                     <p className="mt-1 text-caption text-fg-secondary">
@@ -177,7 +177,7 @@ export const DashboardPage: React.FC = () => {
               <span className="text-caption font-medium text-fg-secondary">
                 Aprobaciones Pendientes
               </span>
-              <div className="p-2 rounded-lg bg-bg-surface border border-border-default">
+              <div className="p-2 rounded-[6px] bg-bg-surface border border-border-default">
                 <ShieldAlert
                   className={`h-4 w-4 ${
                     pendingApprovals.length > 0 ? 'text-fg-warning animate-pulse' : 'text-fg-muted'
@@ -187,7 +187,7 @@ export const DashboardPage: React.FC = () => {
             </div>
             <div className="mt-2 flex items-baseline justify-between">
               <span
-                className={`text-title font-bold tracking-tight ${
+                className={`text-title font-[510] tracking-tight ${
                   pendingApprovals.length > 0 ? 'text-fg-warning' : 'text-fg-primary'
                 }`}
               >
@@ -217,12 +217,12 @@ export const DashboardPage: React.FC = () => {
               <span className="text-caption font-medium text-fg-secondary">
                 Tasa de Éxito Global
               </span>
-              <div className="p-2 rounded-lg bg-bg-surface border border-border-default">
+              <div className="p-2 rounded-[6px] bg-bg-surface border border-border-default">
                 <Activity className="h-4 w-4 text-fg-success" />
               </div>
             </div>
             <div className="mt-2 flex items-baseline justify-between">
-              <span className="text-title font-bold tracking-tight text-fg-primary">
+              <span className="text-title font-[510] tracking-tight text-fg-primary">
                 {initialAnalytics.successRate}%
               </span>
               <Badge variant="success" className="text-caption">
@@ -245,12 +245,12 @@ export const DashboardPage: React.FC = () => {
               <span className="text-caption font-medium text-fg-secondary">
                 Agentes en Servicio
               </span>
-              <div className="p-2 rounded-lg bg-bg-surface border border-border-default">
+              <div className="p-2 rounded-[6px] bg-bg-surface border border-border-default">
                 <Bot className="h-4 w-4 text-fg-brand" />
               </div>
             </div>
             <div className="mt-2 flex items-baseline justify-between">
-              <span className="text-title font-bold tracking-tight text-fg-primary">
+              <span className="text-title font-[510] tracking-tight text-fg-primary">
                 {activeAgentsCount} / {agents.length}
               </span>
               <div className="flex items-center gap-1">
@@ -275,15 +275,15 @@ export const DashboardPage: React.FC = () => {
               <span className="text-caption font-medium text-fg-secondary">
                 Consumo y Costo
               </span>
-              <div className="p-2 rounded-lg bg-bg-surface border border-border-default">
+              <div className="p-2 rounded-[6px] bg-bg-surface border border-border-default">
                 <Zap className="h-4 w-4 text-fg-brand" />
               </div>
             </div>
             <div className="mt-2 flex items-baseline justify-between">
-              <span className="text-title font-bold tracking-tight text-fg-primary">
+              <span className="text-title font-[510] tracking-tight text-fg-primary">
                 {formatNumber(initialAnalytics.totalTokens)}
               </span>
-              <span className="font-mono text-body font-semibold text-fg-success">
+              <span className="font-mono text-body font-[510] text-fg-success">
                 {formatCurrency(initialAnalytics.estimatedCostUsd)}
               </span>
             </div>
@@ -326,24 +326,24 @@ export const DashboardPage: React.FC = () => {
                 >
                   <defs>
                     <linearGradient id="tokenGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#7c3aed" stopOpacity={0.4} />
-                      <stop offset="95%" stopColor="#7c3aed" stopOpacity={0.0} />
+                      <stop offset="5%" stopColor="#e4f222" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#e4f222" stopOpacity={0.0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-                  <XAxis dataKey="date" stroke="#64748b" fontSize={11} tickLine={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#23252a" />
+                  <XAxis dataKey="date" stroke="#62666d" fontSize={11} tickLine={false} />
                   <YAxis
-                    stroke="#64748b"
+                    stroke="#62666d"
                     fontSize={11}
                     tickLine={false}
                     tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
                   />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: '#0f1629',
-                      borderColor: '#1e293b',
-                      borderRadius: '8px',
-                      color: '#f1f5f9',
+                      backgroundColor: '#0f1011',
+                      borderColor: '#23252a',
+                      borderRadius: '6px',
+                      color: '#d0d6e0',
                       fontSize: '12px',
                     }}
                     formatter={(value: any, name: any) => [
@@ -354,7 +354,7 @@ export const DashboardPage: React.FC = () => {
                   <Area
                     type="monotone"
                     dataKey="tokens"
-                    stroke="#a78bfa"
+                    stroke="#e4f222"
                     strokeWidth={2}
                     fillOpacity={1}
                     fill="url(#tokenGradient)"
@@ -388,12 +388,12 @@ export const DashboardPage: React.FC = () => {
             {pendingApprovals.map((appr) => (
               <div
                 key={appr.id}
-                className="p-3 rounded-lg border border-fg-warning/40 bg-bg-warning/20 space-y-2"
+                className="p-3 rounded-[6px] border border-fg-warning/40 bg-bg-warning/20 space-y-2"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <span className="h-2 w-2 rounded-full bg-fg-warning animate-ping" />
-                    <span className="text-caption font-bold text-fg-warning uppercase tracking-wider">
+                    <span className="text-caption font-[510] text-fg-warning uppercase tracking-wider">
                       Aprobación Requerida
                     </span>
                   </div>
@@ -401,7 +401,7 @@ export const DashboardPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <p className="text-body font-semibold text-fg-primary">
+                  <p className="text-body font-[510] text-fg-primary">
                     {appr.agentName}
                   </p>
                   <p className="text-caption text-fg-secondary mt-0.5 line-clamp-2">
@@ -417,7 +417,7 @@ export const DashboardPage: React.FC = () => {
                     size="sm"
                     variant="default"
                     onClick={() => navigate('/chat')}
-                    className="h-7 text-caption bg-fg-warning text-slate-950 font-bold hover:bg-amber-300"
+                    className="h-7 text-caption bg-[#fbbf24] text-[#08090a] font-[510] hover:bg-[#fcd34d]"
                   >
                     Revisar en Chat →
                   </Button>
@@ -429,12 +429,12 @@ export const DashboardPage: React.FC = () => {
             {failedExecutions.map((failed) => (
               <div
                 key={failed.id}
-                className="p-3 rounded-lg border border-fg-error/40 bg-bg-error/20 space-y-2"
+                className="p-3 rounded-[6px] border border-fg-error/40 bg-bg-error/20 space-y-2"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <XCircle className="h-3.5 w-3.5 text-fg-error" />
-                    <span className="text-caption font-bold text-fg-error uppercase tracking-wider">
+                    <span className="text-caption font-[510] text-fg-error uppercase tracking-wider">
                       Ejecución Fallida
                     </span>
                   </div>
@@ -442,7 +442,7 @@ export const DashboardPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <p className="text-body font-semibold text-fg-primary">
+                  <p className="text-body font-[510] text-fg-primary">
                     {failed.workflowName}
                   </p>
                   <p className="text-caption text-fg-secondary mt-0.5">
@@ -468,9 +468,9 @@ export const DashboardPage: React.FC = () => {
 
             {/* Estado Limpio: Sin alertas */}
             {pendingApprovals.length === 0 && failedExecutions.length === 0 && (
-              <div className="text-center py-8 px-4 rounded-lg border border-dashed border-border-default bg-bg-card/40">
+              <div className="text-center py-8 px-4 rounded-[6px] border border-dashed border-border-default bg-bg-card/40">
                 <CheckCircle2 className="h-8 w-8 text-fg-success mx-auto mb-2" />
-                <p className="text-body font-semibold text-fg-primary">
+                <p className="text-body font-[510] text-fg-primary">
                   Todo en orden
                 </p>
                 <p className="text-caption text-fg-secondary mt-1 max-w-xs mx-auto">
@@ -497,7 +497,7 @@ export const DashboardPage: React.FC = () => {
           <Button
             variant="ghost"
             size="sm"
-            className="text-caption text-fg-brand hover:text-violet-300"
+            className="text-caption text-[#e4f222] hover:text-[#d0d6e0]"
             onClick={() => navigate('/executions')}
           >
             Ver todas ({executions.length}) →

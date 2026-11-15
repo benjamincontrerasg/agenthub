@@ -76,7 +76,7 @@ export const AgentsPage: React.FC = () => {
       {/* Top Header & New Agent Button */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-title sm:text-2xl font-bold tracking-tight text-fg-primary flex items-center gap-2">
+          <h2 className="text-title sm:text-2xl font-[510] tracking-tight text-fg-primary flex items-center gap-2">
             Agentes Autónomos
             <Badge variant="secondary" className="font-mono text-caption">{agents.length} Totales</Badge>
           </h2>
@@ -109,9 +109,9 @@ export const AgentsPage: React.FC = () => {
             <button
               key={role}
               onClick={() => setRoleFilter(role)}
-              className={`px-2.5 py-1 rounded-lg text-caption font-medium transition-colors cursor-pointer ${roleFilter === role
+              className={`px-2.5 py-1 rounded-[6px] text-caption font-medium transition-colors cursor-pointer ${roleFilter === role
                   ? 'bg-bg-brand text-fg-primary shadow-sm'
-                  : 'bg-bg-card/80 text-fg-secondary hover:bg-slate-800 hover:text-slate-200 border border-border-default'
+                  : 'bg-bg-card/80 text-fg-secondary hover:bg-[#161718] hover:text-[#d0d6e0] border border-border-default'
                 }`}
             >
               {role === 'ALL' ? 'Todos' : role}
@@ -130,7 +130,7 @@ export const AgentsPage: React.FC = () => {
             <Card
               key={agent.id}
               onClick={() => navigate(`/agents/${agent.id}`)}
-              className="flex flex-col justify-between border-border-default bg-bg-card/50 hover:border-slate-700/80 hover:bg-slate-900/80 transition-all cursor-pointer group"
+              className="flex flex-col justify-between border-border-default bg-bg-card/50 hover:border-[#23252a]/80 hover:bg-[#0f1011]/80 transition-all cursor-pointer group"
             >
               <div>
                 <CardHeader className="pb-3">
@@ -144,7 +144,7 @@ export const AgentsPage: React.FC = () => {
                         status={isActive ? 'active' : 'paused'}
                       />
                       <div>
-                        <CardTitle className="text-subtitle font-semibold group-hover:text-violet-300 transition-colors">
+                        <CardTitle className="text-subtitle font-[510] group-hover:text-[#d0d6e0] transition-colors">
                           {agent.name}
                         </CardTitle>
                         <div className="flex items-center gap-2 mt-0.5">
@@ -174,7 +174,7 @@ export const AgentsPage: React.FC = () => {
                   </p>
 
                   {/* Attributes Badges */}
-                  <div className="grid grid-cols-2 gap-2 p-2.5 rounded-lg bg-bg-card/60 border border-border-default/80 text-caption">
+                  <div className="grid grid-cols-2 gap-2 p-2.5 rounded-[6px] bg-bg-card/60 border border-border-default/80 text-caption">
                     <div>
                       <span className="text-fg-secondary block text-caption">Modelo</span>
                       <span className="font-mono text-fg-primary truncate block">{agent.modelId}</span>
@@ -200,7 +200,7 @@ export const AgentsPage: React.FC = () => {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-8 px-2 text-caption text-fg-secondary hover:text-white"
+                    className="h-8 px-2 text-caption text-fg-secondary hover:text-[#ffffff]"
                     onClick={(e) => {
                       e.stopPropagation();
                       toggleStatusMutation.mutate({ id: agent.id, currentStatus: agent.status });
@@ -220,7 +220,7 @@ export const AgentsPage: React.FC = () => {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-8 px-2 text-caption text-fg-secondary hover:text-white"
+                    className="h-8 px-2 text-caption text-fg-secondary hover:text-[#ffffff]"
                     onClick={(e) => handleEdit(agent, e)}
                   >
                     <Settings className="mr-1 h-3 w-3" /> Editar
@@ -243,7 +243,7 @@ export const AgentsPage: React.FC = () => {
       </div>
 
       {filteredAgents.length === 0 && (
-        <div className="p-12 text-center rounded-xl border border-dashed border-border-default">
+        <div className="p-12 text-center rounded-[12px] border border-dashed border-border-default">
           <Bot className="h-10 w-10 text-fg-muted mx-auto mb-3" />
           <p className="text-body font-medium text-fg-secondary">No se encontraron agentes con ese filtro</p>
           <Button variant="outline" size="sm" onClick={() => { setSearchQuery(''); setRoleFilter('ALL'); }} className="mt-3 text-caption">

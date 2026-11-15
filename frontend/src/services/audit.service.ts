@@ -16,7 +16,7 @@ const mockAuditLogs: AuditLogItem[] = [
   {
     id: 'audit-demo-1',
     userId: 'usr-admin-01',
-    userEmail: 'admin@agenthub.dev',
+    userEmail: 'admin@NEXORA.dev',
     action: 'security_gate.approved',
     resource: 'mcp:tool:write_file',
     ip: '127.0.0.1',
@@ -27,7 +27,7 @@ const mockAuditLogs: AuditLogItem[] = [
   {
     id: 'audit-demo-2',
     userId: 'usr-admin-01',
-    userEmail: 'admin@agenthub.dev',
+    userEmail: 'admin@NEXORA.dev',
     action: 'auth.login',
     resource: 'system:auth',
     ip: '127.0.0.1',
@@ -48,7 +48,7 @@ const mockAuditLogs: AuditLogItem[] = [
   {
     id: 'audit-demo-4',
     userId: 'usr-dev-01',
-    userEmail: 'dev@agenthub.dev',
+    userEmail: 'dev@NEXORA.dev',
     action: 'mcp.server_register',
     resource: 'mcp:server:docker_engine',
     ip: '127.0.0.1',
