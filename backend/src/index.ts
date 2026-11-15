@@ -37,7 +37,20 @@ async function main() {
     credentials: true,
   });
 
-  // Support urlencoded and text for POST/PUT without explicit application/json
+  // Support urlencoded, text and empty/undefined bodies for application/json requests (e.g. DELETE)
+  fastify.addContentTypeParser('application/json', { parseAs: 'string' }, (req, body: string | Buffer, done) => {
+    try {
+      const str = typeof body === 'string' ? body : body?.toString('utf8');
+      if (!str || str.trim() === '') {
+        return done(null, {});
+      }
+      const json = JSON.parse(str);
+      done(null, json);
+    } catch (err: any) {
+      done(err, undefined);
+    }
+  });
+
   fastify.addContentTypeParser(['application/x-www-form-urlencoded', 'text/plain'], { parseAs: 'string' }, (req, body: string | Buffer, done) => {
     try {
       const str = typeof body === 'string' ? body : body.toString('utf8');

@@ -41,9 +41,13 @@ export async function apiClient<T>(endpoint: string, options: RequestOptions = {
   }
 
   const defaultHeaders: Record<string, string> = {
-    'Content-Type': 'application/json',
     Accept: 'application/json',
   };
+
+  // Only set Content-Type to application/json if there is a body or it's a mutation with a payload
+  if (rest.body !== undefined && rest.body !== null) {
+    defaultHeaders['Content-Type'] = 'application/json';
+  }
 
   const token = typeof window !== 'undefined' ? localStorage.getItem('NEXORA-token') : null;
   if (token) {
