@@ -120,7 +120,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           >
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[12px] bg-[#08090a] border border-[rgba(255,255,255,0.08)] p-1 shadow-sm group-hover:border-[rgba(228,242,34,0.35)] group-hover:shadow-[0_0_12px_rgba(228,242,34,0.15)] transition-all">
               <img
-                src="/NEXORA-logo.png"
+                src="/nexora-logo.png"
                 alt="NEXORA Logo"
                 className="h-full w-full object-contain filter drop-shadow select-none"
               />

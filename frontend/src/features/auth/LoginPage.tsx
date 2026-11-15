@@ -33,7 +33,7 @@ export const LoginPage: React.FC = () => {
         <div className="text-center mb-8">
           <div className="inline-flex h-14 w-14 items-center justify-center rounded-[12px] bg-[#08090a] border border-[rgba(255,255,255,0.08)] p-2 shadow-xl shadow-[rgba(228,242,34,0.1)] mb-3">
             <img
-              src="/NEXORA-logo.png"
+              src="/nexora-logo.png"
               alt="NEXORA Logo"
               className="h-full w-full object-contain filter drop-shadow select-none"
             />
