@@ -1,6 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import { credentialsService } from '../services/credentials.service.js';
-import { createCredentialSchema } from '../lib/validators.js';
+import { createCredentialSchema, updateCredentialSchema } from '../lib/validators.js';
 
 export async function credentialsRoutes(fastify: FastifyInstance) {
   fastify.get('/credentials', async () => {
@@ -11,6 +11,11 @@ export async function credentialsRoutes(fastify: FastifyInstance) {
     const parsed = createCredentialSchema.parse(req.body);
     const created = await credentialsService.create(parsed);
     return reply.status(201).send(created);
+  });
+
+  fastify.patch<{ Params: { id: string } }>('/credentials/:id', async (req) => {
+    const parsed = updateCredentialSchema.parse(req.body);
+    return credentialsService.update(req.params.id, parsed);
   });
 
   fastify.delete<{ Params: { id: string } }>('/credentials/:id', async (req) => {

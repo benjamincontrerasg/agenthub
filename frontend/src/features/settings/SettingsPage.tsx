@@ -31,6 +31,7 @@ import { CustomSelect } from '@/components/ui/custom-select';
 import { useSettingsStore } from '@/stores/settings.store';
 import { notificationsService, NotificationChannel } from '@/services/notifications.service';
 import { toast } from '@/stores/toast.store';
+import { CredentialsVaultSection } from '@/features/credentials/CredentialsVaultSection';
 
 export const SettingsPage: React.FC = () => {
   const {
@@ -229,77 +230,81 @@ export const SettingsPage: React.FC = () => {
         <div className="md:col-span-9 space-y-6">
           {/* SECURITY & CREDENTIALS TAB */}
           {activeTab === 'security' && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-subtitle flex items-center gap-2">
-                  <Shield className="h-4 w-4 text-fg-success" />
-                  Políticas de Seguridad & Gestión de Credenciales
-                </CardTitle>
-                <CardDescription>
-                  Gobernanza Zero-Trust para la ejecución de herramientas y protección de secretos
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Critical Security Rules Box */}
-                <div className="p-4 rounded-[12px] border border-border-brand/60 bg-bg-brand-subtle/30 text-caption text-fg-secondary space-y-2">
-                  <span className="font-[510] text-fg-brand flex items-center gap-1.5">
-                    <Lock className="h-3.5 w-3.5" /> Directiva de Almacenamiento Seguro (Frontend Safe):
-                  </span>
-                  <p className="text-caption text-fg-secondary leading-relaxed">
-                    NEXORA no almacena API Keys ni tokens privados en el <code>localStorage</code> del navegador ni en variables públicas empaquetadas. Toda credencial es transferida directamente al backend mediante canales cifrados TLS.
-                  </p>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between p-3 rounded-[6px] border border-border-default bg-bg-card/60">
-                    <div>
-                      <span className="text-caption font-[510] text-fg-primary block">
-                        Aprobación Humana Obligatoria para Herramientas de Escritura
-                      </span>
-                      <span className="text-caption text-fg-secondary block mt-0.5">
-                        Toda operación que modifique el disco local (write_file) o cree Pull Requests requerirá confirmación explícita del usuario.
-                      </span>
-                    </div>
-                    <Switch
-                      checked={settings.security.requireHumanApprovalForWriteTools}
-                      onCheckedChange={(val) =>
-                        updateSecurity({ requireHumanApprovalForWriteTools: val })
-                      }
-                    />
+            <div className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-subtitle flex items-center gap-2">
+                    <Shield className="h-4 w-4 text-fg-success" />
+                    Políticas de Seguridad & Gobernanza
+                  </CardTitle>
+                  <CardDescription>
+                    Gobernanza Zero-Trust para la ejecución de herramientas y protección de secretos
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {/* Critical Security Rules Box */}
+                  <div className="p-4 rounded-[12px] border border-border-brand/60 bg-bg-brand-subtle/30 text-caption text-fg-secondary space-y-2">
+                    <span className="font-[510] text-fg-brand flex items-center gap-1.5">
+                      <Lock className="h-3.5 w-3.5" /> Directiva de Almacenamiento Seguro (Frontend Safe):
+                    </span>
+                    <p className="text-caption text-fg-secondary leading-relaxed">
+                      NEXORA no almacena API Keys ni tokens privados en el <code>localStorage</code> del navegador ni en variables públicas empaquetadas. Toda credencial es transferida directamente al backend mediante canales cifrados TLS.
+                    </p>
                   </div>
 
-                  <div className="flex items-center justify-between p-3 rounded-[6px] border border-border-default bg-bg-card/60">
-                    <div>
-                      <span className="text-caption font-[510] text-fg-primary block">
-                        Validación Estricta de Servidores MCP
-                      </span>
-                      <span className="text-caption text-fg-secondary block mt-0.5">
-                        Inspeccionar y requerir verificación de handshake antes de habilitar herramientas en agentes autónomos.
-                      </span>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between p-3 rounded-[6px] border border-border-default bg-bg-card/60">
+                      <div>
+                        <span className="text-caption font-[510] text-fg-primary block">
+                          Aprobación Humana Obligatoria para Herramientas de Escritura
+                        </span>
+                        <span className="text-caption text-fg-secondary block mt-0.5">
+                          Toda operación que modifique el disco local (write_file) o cree Pull Requests requerirá confirmación explícita del usuario.
+                        </span>
+                      </div>
+                      <Switch
+                        checked={settings.security.requireHumanApprovalForWriteTools}
+                        onCheckedChange={(val) =>
+                          updateSecurity({ requireHumanApprovalForWriteTools: val })
+                        }
+                      />
                     </div>
-                    <Switch
-                      checked={settings.security.strictMCPValidation}
-                      onCheckedChange={(val) => updateSecurity({ strictMCPValidation: val })}
-                    />
-                  </div>
 
-                  <div className="flex items-center justify-between p-3 rounded-[6px] border border-border-default bg-bg-card/60">
-                    <div>
-                      <span className="text-caption font-[510] text-fg-primary block">
-                        Telemetría y Diagnóstico Anónimo
-                      </span>
-                      <span className="text-caption text-fg-secondary block mt-0.5">
-                        Envío de estadísticas de latencia y uso sin incluir contenidos de mensajes ni prompts.
-                      </span>
+                    <div className="flex items-center justify-between p-3 rounded-[6px] border border-border-default bg-bg-card/60">
+                      <div>
+                        <span className="text-caption font-[510] text-fg-primary block">
+                          Validación Estricta de Servidores MCP
+                        </span>
+                        <span className="text-caption text-fg-secondary block mt-0.5">
+                          Inspeccionar y requerir verificación de handshake antes de habilitar herramientas en agentes autónomos.
+                        </span>
+                      </div>
+                      <Switch
+                        checked={settings.security.strictMCPValidation}
+                        onCheckedChange={(val) => updateSecurity({ strictMCPValidation: val })}
+                      />
                     </div>
-                    <Switch
-                      checked={settings.security.telemetryEnabled}
-                      onCheckedChange={(val) => updateSecurity({ telemetryEnabled: val })}
-                    />
+
+                    <div className="flex items-center justify-between p-3 rounded-[6px] border border-border-default bg-bg-card/60">
+                      <div>
+                        <span className="text-caption font-[510] text-fg-primary block">
+                          Telemetría y Diagnóstico Anónimo
+                        </span>
+                        <span className="text-caption text-fg-secondary block mt-0.5">
+                          Envío de estadísticas de latencia y uso sin incluir contenidos de mensajes ni prompts.
+                        </span>
+                      </div>
+                      <Switch
+                        checked={settings.security.telemetryEnabled}
+                        onCheckedChange={(val) => updateSecurity({ telemetryEnabled: val })}
+                      />
+                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+
+              <CredentialsVaultSection />
+            </div>
           )}
 
           {/* BACKEND CONNECTION TAB */}

@@ -44,3 +44,20 @@ export function useDeleteCredential() {
     },
   });
 }
+
+export function useUpdateCredential() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, name }: { id: string; name: string }) =>
+      credentialsService.updateCredential(id, { name }),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: CREDENTIALS_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: ['agents'] });
+      toast.success('Credencial actualizada', `El alias se actualizó a '${data.name}'.`);
+    },
+    onError: (error: Error) => {
+      toast.error('Error al actualizar credencial', error.message || 'No se pudo actualizar el alias');
+    },
+  });
+}

@@ -73,6 +73,7 @@ export const AgentFormModal: React.FC<AgentFormModalProps> = ({ agent, open, onC
     control,
     watch,
     setValue,
+    getValues,
     reset,
     formState: { errors, isSubmitting },
   } = useForm<AgentFormData>({
@@ -246,6 +247,13 @@ export const AgentFormModal: React.FC<AgentFormModalProps> = ({ agent, open, onC
                         const p = providers.find((pr) => pr.id === val);
                         if (p && p.models.length > 0) {
                           setValue('modelId', p.models[0].id);
+                        }
+                        const currentCredId = getValues('credentialId');
+                        if (currentCredId) {
+                          const cred = credentials.find((c) => c.id === currentCredId);
+                          if (cred && cred.providerId && cred.providerId !== val) {
+                            setValue('credentialId', '');
+                          }
                         }
                       }}
                       options={providers.map((p) => ({

@@ -40,6 +40,14 @@ describe('Credentials Service (API Key Vault)', () => {
     const all = await credentialsService.getAll();
     expect(all.some((c) => c.id === cred.id)).toBe(true);
 
+    // Update alias name
+    const updated = await credentialsService.update(cred.id, { name: 'OpenAI Test Renamed Key' });
+    expect(updated.name).toBe('OpenAI Test Renamed Key');
+    expect(updated.maskedKey).toBe('sk-••••5678');
+
+    const reFetched = await credentialsService.getById(cred.id);
+    expect(reFetched.name).toBe('OpenAI Test Renamed Key');
+
     // Delete
     const delResult = await credentialsService.delete(cred.id);
     expect(delResult.success).toBe(true);

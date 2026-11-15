@@ -3,6 +3,9 @@ import {
   KeyRound,
   Plus,
   Trash2,
+  Edit2,
+  Check,
+  X,
   ShieldCheck,
   Calendar,
   Lock,
@@ -11,17 +14,21 @@ import {
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import { ProviderLogo } from '@/components/shared/ProviderLogo';
 import { formatDate } from '@/lib/utils';
-import { useCredentials, useDeleteCredential } from './hooks';
+import { useCredentials, useDeleteCredential, useUpdateCredential } from './hooks';
 import { CredentialModal } from './CredentialModal';
 import { APICredential } from '@/types';
 
 export const CredentialsVaultSection: React.FC = () => {
   const { data: credentials = [], isLoading } = useCredentials();
   const deleteMutation = useDeleteCredential();
+  const updateMutation = useUpdateCredential();
   const [modalOpen, setModalOpen] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingName, setEditingName] = useState('');
 
   const handleDelete = async (cred: APICredential) => {
     if (window.confirm(`¿Seguro que deseas eliminar la credencial '${cred.name}'? Los agentes que la utilicen pasarán a usar la clave predeterminada del proveedor.`)) {
@@ -32,6 +39,25 @@ export const CredentialsVaultSection: React.FC = () => {
         setDeletingId(null);
       }
     }
+  };
+
+  const handleStartEdit = (cred: APICredential) => {
+    setEditingId(cred.id);
+    setEditingName(cred.name);
+  };
+
+  const handleSaveEdit = async (id: string) => {
+    const trimmed = editingName.trim();
+    if (!trimmed) return;
+    try {
+      await updateMutation.mutateAsync({ id, name: trimmed });
+      setEditingId(null);
+    } catch {}
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setEditingName('');
   };
 
   return (
@@ -108,27 +134,76 @@ export const CredentialsVaultSection: React.FC = () => {
             >
               <CardHeader className="pb-2.5">
                 <div className="flex items-start justify-between gap-2">
-                  <div className="flex items-center gap-2.5">
-                    <ProviderLogo providerId={cred.providerId} size="md" className="shadow ring-1 ring-slate-800" />
-                    <div>
-                      <CardTitle className="text-sm font-[510] text-fg-primary">
-                        {cred.name}
-                      </CardTitle>
-                      <Badge variant="outline" className="text-xs font-mono capitalize mt-0.5">
-                        {cred.providerId}
-                      </Badge>
+                  <div className="flex items-center gap-2.5 flex-1 min-w-0">
+                    <ProviderLogo providerId={cred.providerId} size="md" className="shadow ring-1 ring-slate-800 shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      {editingId === cred.id ? (
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                          <Input
+                            value={editingName}
+                            onChange={(e) => setEditingName(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') handleSaveEdit(cred.id);
+                              if (e.key === 'Escape') handleCancelEdit();
+                            }}
+                            className="h-7 text-xs py-0 px-2"
+                            autoFocus
+                          />
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 w-7 p-0 text-fg-success hover:bg-fg-success/10 shrink-0"
+                            onClick={() => handleSaveEdit(cred.id)}
+                            isLoading={updateMutation.isPending}
+                            title="Guardar nombre"
+                          >
+                            <Check className="h-3.5 w-3.5" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 w-7 p-0 text-fg-muted hover:bg-slate-700/20 shrink-0"
+                            onClick={handleCancelEdit}
+                            title="Cancelar"
+                          >
+                            <X className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <>
+                          <CardTitle className="text-sm font-[510] text-fg-primary truncate" title={cred.name}>
+                            {cred.name}
+                          </CardTitle>
+                          <Badge variant="outline" className="text-xs font-mono capitalize mt-0.5">
+                            {cred.providerId}
+                          </Badge>
+                        </>
+                      )}
                     </div>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 w-8 p-0 text-fg-secondary hover:text-fg-error"
-                    title="Eliminar credencial"
-                    onClick={() => handleDelete(cred)}
-                    isLoading={deletingId === cred.id}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  {editingId !== cred.id && (
+                    <div className="flex items-center gap-0.5 shrink-0">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 w-8 p-0 text-fg-secondary hover:text-fg-brand"
+                        title="Editar alias"
+                        onClick={() => handleStartEdit(cred)}
+                      >
+                        <Edit2 className="h-3.5 w-3.5" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 w-8 p-0 text-fg-secondary hover:text-fg-error"
+                        title="Eliminar credencial"
+                        onClick={() => handleDelete(cred)}
+                        isLoading={deletingId === cred.id}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </CardHeader>
 

@@ -21,6 +21,27 @@ let mockCredentials: APICredential[] = [
   },
 ];
 
+export function resetMockCredentials() {
+  mockCredentials = [
+    {
+      id: 'cred-mock-1',
+      name: 'OpenAI Producción',
+      providerId: 'openai',
+      maskedKey: 'sk-••••7890',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: 'cred-mock-2',
+      name: 'Anthropic Claude Core',
+      providerId: 'anthropic',
+      maskedKey: 'sk-ant-••••2143',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+  ];
+}
+
 export const credentialsService = {
   async getCredentials(): Promise<APICredential[]> {
     if (isMockMode()) {
@@ -51,6 +72,21 @@ export const credentialsService = {
 
     return apiClient<APICredential>('/credentials', {
       method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  async updateCredential(id: string, data: { name: string }): Promise<APICredential> {
+    if (isMockMode()) {
+      const cred = mockCredentials.find((c) => c.id === id);
+      if (!cred) throw new Error('Credencial no encontrada');
+      cred.name = data.name;
+      cred.updatedAt = new Date().toISOString();
+      return structuredClone(cred);
+    }
+
+    return apiClient<APICredential>(`/credentials/${id}`, {
+      method: 'PATCH',
       body: JSON.stringify(data),
     });
   },

@@ -71,6 +71,32 @@ export const credentialsService = {
     };
   },
 
+  async update(id: string, data: { name: string }): Promise<APICredential> {
+    const existing = db.select().from(schema.apiCredentials).where(eq(schema.apiCredentials.id, id)).get();
+    if (!existing) {
+      throw new NotFoundError('Credencial API', id);
+    }
+    const now = new Date().toISOString();
+    const updatedName = data.name.trim();
+
+    db.update(schema.apiCredentials)
+      .set({
+        name: updatedName,
+        updatedAt: now,
+      })
+      .where(eq(schema.apiCredentials.id, id))
+      .run();
+
+    return {
+      id: existing.id,
+      name: updatedName,
+      providerId: existing.providerId,
+      maskedKey: existing.maskedKey,
+      createdAt: existing.createdAt,
+      updatedAt: now,
+    };
+  },
+
   async delete(id: string): Promise<{ success: boolean }> {
     const existing = db.select().from(schema.apiCredentials).where(eq(schema.apiCredentials.id, id)).get();
     if (!existing) {
