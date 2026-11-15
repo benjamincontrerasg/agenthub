@@ -27,6 +27,7 @@ const NodeWrapper = ({
   borderColor = 'border-border-hover',
   accentColor = 'text-fg-brand',
   providerId,
+  isClaude,
 }: {
   children: React.ReactNode;
   selected?: boolean;
@@ -38,6 +39,7 @@ const NodeWrapper = ({
   borderColor?: string;
   accentColor?: string;
   providerId?: string;
+  isClaude?: boolean;
 }) => {
   const isRunning = status === 'running';
   const isCompleted = status === 'completed';
@@ -53,7 +55,13 @@ const NodeWrapper = ({
       <div className="flex items-center justify-between pb-2 mb-2 border-b border-border-default">
         <div className="flex items-center gap-2">
           {providerId ? (
-            <ProviderLogo providerId={providerId} size="xs" rounded="md" className="shrink-0" />
+            <ProviderLogo
+              providerId={providerId}
+              size={isClaude ? 'sm' : 'xs'}
+              rounded="md"
+              className={`shrink-0 transition-transform duration-200 ${selected && isClaude ? 'scale-110' : ''}`}
+              active={isClaude ? selected : false}
+            />
           ) : (
             <div className={`p-1.5 rounded-md bg-bg-surface/80 ${accentColor}`}>
               <Icon className="h-4 w-4" />
@@ -132,6 +140,8 @@ export const AgentNode = memo((props: any) => {
       ? 'ollama'
       : 'anthropic');
 
+  const isClaude = providerId === 'anthropic';
+
   return (
     <NodeWrapper
       selected={selected}
@@ -139,18 +149,30 @@ export const AgentNode = memo((props: any) => {
       title={data?.label || 'AI Agent'}
       icon={Bot}
       providerId={providerId}
+      isClaude={isClaude}
       badgeText={data?.agentId ? 'Autonomous' : 'Agent'}
       badgeVariant="default"
-      borderColor="border-border-brand/50"
+      borderColor={isClaude && selected ? 'border-orange-500/80' : 'border-border-brand/50'}
       accentColor="text-fg-brand"
     >
       <Handle type="target" position={Position.Left} className="!bg-violet-500 !w-2.5 !h-2.5" />
       <p className="text-caption text-fg-secondary line-clamp-2">{data?.description || 'Ejecuta inferencia con LLM'}</p>
       
       <div className="mt-2 pt-1.5 border-t border-border-default flex items-center justify-between text-caption">
-        <div className="flex items-center gap-1.5 bg-bg-card/70 px-1.5 py-0.5 rounded border border-border-default">
-          <ProviderLogo providerId={providerId} size="xs" showBackground={false} />
-          <span className="font-mono text-fg-secondary capitalize">{providerId}</span>
+        <div className={`flex items-center gap-1.5 px-1.5 py-0.5 rounded border transition-colors ${
+          isClaude && selected ? 'bg-orange-500/10 border-orange-500/30' : 'bg-bg-card/70 border-border-default'
+        }`}>
+          <ProviderLogo
+            providerId={providerId}
+            size="xs"
+            showBackground={false}
+            active={isClaude ? selected : false}
+          />
+          <span className={`font-mono capitalize text-caption ${
+            isClaude && selected ? 'text-orange-400 font-semibold' : 'text-fg-secondary'
+          }`}>
+            {isClaude ? 'Claude' : providerId}
+          </span>
         </div>
         {data?.agentId && (
           <span className="font-mono text-fg-secondary truncate max-w-[90px]">

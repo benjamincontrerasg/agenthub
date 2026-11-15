@@ -9,6 +9,7 @@ interface ProviderLogoProps {
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | number;
   rounded?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
   showBackground?: boolean;
+  active?: boolean;
 }
 
 const sizeMap = {
@@ -27,17 +28,15 @@ const roundedMap = {
   full: 'rounded-full',
 };
 
-export const ClaudeLogo: React.FC<{ className?: string }> = ({ className = 'h-full w-full' }) => (
-  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
-    <rect width="24" height="24" rx="5" fill="#D97757" fillOpacity="0.2" />
-    <path
-      d="M13.5 4.5L10.5 19.5M19.5 10.5L4.5 13.5M16.5 6L7.5 18M18 16.5L6 7.5"
-      stroke="#D97757"
-      strokeWidth="2.2"
-      strokeLinecap="round"
-    />
-    <circle cx="12" cy="12" r="2.2" fill="#D97757" />
-  </svg>
+export const ClaudeLogo: React.FC<{ className?: string; active?: boolean }> = ({
+  className = 'h-full w-full',
+  active = false,
+}) => (
+  <img
+    src={active ? '/logos/claude-active.png' : '/logos/claude-base.png'}
+    alt="Claude"
+    className={`object-contain transition-transform duration-200 select-none ${className}`}
+  />
 );
 
 export const OpenAILogo: React.FC<{ className?: string }> = ({ className = 'h-full w-full' }) => (
@@ -84,6 +83,7 @@ export const ProviderLogo: React.FC<ProviderLogoProps> = ({
   size = 'md',
   rounded = 'lg',
   showBackground = true,
+  active = false,
 }) => {
   const normId = (providerId || name || '').toLowerCase();
   const dimensionClass = typeof size === 'number' ? `h-[${size}px] w-[${size}px]` : sizeMap[size];
@@ -93,7 +93,7 @@ export const ProviderLogo: React.FC<ProviderLogoProps> = ({
   if (normId.includes('anthropic') || normId.includes('claude')) {
     return (
       <div className={`relative shrink-0 flex items-center justify-center ${dimensionClass} ${roundedClass} ${className}`}>
-        <ClaudeLogo className="h-full w-full" />
+        <ClaudeLogo className="h-full w-full" active={active} />
       </div>
     );
   }
