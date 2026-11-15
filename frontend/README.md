@@ -1,4 +1,4 @@
-# AgentHub — Frontend SaaS Platform
+# NEXORA — Frontend SaaS Platform
 
 Plataforma SaaS moderna, profesional y escalable para conectar múltiples proveedores de Inteligencia Artificial (**Anthropic Claude, OpenAI, Google Gemini, Ollama**), administrar servidores **Model Context Protocol (MCP)**, orquestar **agentes autónomos especializados** y diseñar pipelines colaborativos mediante un **editor visual de flujos de trabajo**.
 
@@ -107,8 +107,8 @@ cp .env.example .env
 
 Contenido de `.env`:
 ```env
-VITE_API_URL=https://api.agenthub.dev/v1
-VITE_WS_URL=wss://api.agenthub.dev/ws
+VITE_API_URL=https://api.NEXORA.dev/v1
+VITE_WS_URL=wss://api.NEXORA.dev/ws
 VITE_USE_MOCK=true
 ```
 
@@ -146,15 +146,15 @@ El proyecto incluye la configuración requerida en `vercel.json` para enrutamien
    ```bash
    git init
    git add .
-   git commit -m "feat: initial commit of AgentHub SaaS frontend"
+   git commit -m "feat: initial commit of NEXORA SaaS frontend"
    git branch -M main
-   git remote add origin https://github.com/TU_USUARIO/agenthub.git
+   git remote add origin https://github.com/TU_USUARIO/NEXORA.git
    git push -u origin main
    ```
 
 2. **Conectar en Vercel**:
    - Ingresa a [vercel.com](https://vercel.com) e inicia sesión con tu cuenta de GitHub.
-   - Haz clic en **"Add New Project"** e importa el repositorio de **AgentHub**.
+   - Haz clic en **"Add New Project"** e importa el repositorio de **NEXORA**.
    - En **Root Directory**, selecciona la carpeta `frontend` (si el repo tiene estructura monorepo) o déjala en `./` si subiste directamente el frontend.
    - En **Framework Preset**, Vercel detectará automáticamente **Vite**.
    - En **Build Command**: `npm run build`
