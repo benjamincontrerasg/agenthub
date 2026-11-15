@@ -296,6 +296,51 @@ server {
 
 ---
 
+## 🔌 Añadir un Nuevo Proveedor LLM en 1 Línea
+
+Gracias a la capa unificada `LLMProvider` basada en el adaptador universal `OpenAICompatibleProvider`, agregar cualquier proveedor compatible con la API de OpenAI (Groq, Together, DeepSeek, Mistral, xAI, LM Studio, etc.) no requiere escribir código nuevo ni instalar SDKs adicionales. Solo se añade una entrada al diccionario `PROVIDER_PRESETS` en [`backend/src/providers/registry.ts`](backend/src/providers/registry.ts):
+
+```typescript
+// backend/src/providers/registry.ts
+export const PROVIDER_PRESETS: Record<string, ProviderPreset> = {
+  // ...
+  xai: {
+    id: 'xai',
+    name: 'xAI (Grok)',
+    kind: 'openai-compatible',
+    baseUrl: 'https://api.x.ai/v1',
+    description: 'Modelos Grok-2 y Grok-beta',
+  },
+  deepseek: {
+    id: 'deepseek',
+    name: 'DeepSeek',
+    kind: 'openai-compatible',
+    baseUrl: 'https://api.deepseek.com/v1',
+    description: 'Modelos DeepSeek-V3 y DeepSeek-R1',
+  },
+};
+```
+
+### Tabla de Presets Soportados
+
+| Proveedor ID | Nombre Oficial | Tipo de Adaptador | Endpoint Base Predeterminado | Modelos Destacados |
+| :--- | :--- | :--- | :--- | :--- |
+| `openai` | OpenAI | `openai-compatible` | `https://api.openai.com/v1` | GPT-4o, GPT-4o-mini, o1 |
+| `anthropic` | Anthropic | `anthropic` | `https://api.anthropic.com/v1` | Claude 3.7 Sonnet, Claude 3.5 Sonnet, Haiku |
+| `gemini` | Google Gemini | `openai-compatible` | `https://generativelanguage.googleapis.com/v1beta/openai` | Gemini 2.0 Flash, Gemini 1.5 Pro |
+| `groq` | Groq Cloud | `openai-compatible` | `https://api.groq.com/openai/v1` | Llama 3.3 70B, Mixtral 8x7B (LPUs) |
+| `openrouter` | OpenRouter | `openai-compatible` | `https://openrouter.ai/api/v1` | Enrutador unificado (+200 modelos) |
+| `deepseek` | DeepSeek | `openai-compatible` | `https://api.deepseek.com/v1` | DeepSeek-V3, DeepSeek-R1 |
+| `mistral` | Mistral AI | `openai-compatible` | `https://api.mistral.ai/v1` | Mistral Large, Codestral, Pixtral |
+| `together` | Together AI | `openai-compatible` | `https://api.together.xyz/v1` | Llama 3.3, Qwen 2.5, DeepSeek |
+| `xai` | xAI | `openai-compatible` | `https://api.x.ai/v1` | Grok-2, Grok-beta |
+| `ollama` | Ollama (Local) | `openai-compatible` | `http://localhost:11434/v1` | Llama 3, Mistral, Qwen (local) |
+| `lmstudio` | LM Studio (Local) | `openai-compatible` | `http://localhost:1234/v1` | Inferencia local compatible con OpenAI |
+
+> ℹ️ *Nota sobre dependencias de SDK:* La inferencia de chat y streaming de todos los agentes se ejecuta 100% mediante `fetch` nativo de Node 20 en la capa unificada sin usar SDKs de terceros. Los paquetes `@google/generative-ai` y `openai` se mantienen exclusivamente en `memory.service.ts` para la generación de vectores de incrustación (embeddings) en la búsqueda semántica RAG.
+
+---
+
 ## 🛡️ Política de Seguridad del Local Bridge por Binario
 
 | Binario | Parámetros Permitidos | Parámetros Bloqueados (Zero-Trust) | Mitigación |
@@ -305,6 +350,19 @@ server {
 | `docker` | Subcomandos inspect / build aislados | `-v`, `--volume`, `--mount`, `--privileged`, `--net=host` | Evita escape de contenedor al sistema de archivos del host |
 | `git` | clone, status, diff, log | `-c`, `--exec-path`, `--config-env`, hooks | Bloquea override de configuración maliciosa y ejecución remota |
 | `npx` / `uvx` | Paquetes de servidores MCP declarados | `-e`, `--eval`, `-c` | Previene scripts ad-hoc no auditados |
+
+---
+
+## 🗺️ Roadmap de Seguridad y Despliegue Empresarial
+
+- [x] **Capa Unificada de Proveedores LLM:** Adaptador agnóstico, streaming SSE con acumulación fragmentada de herramientas y aislamiento total de API keys.
+- [x] **Seguridad Zero-Trust en Bridge Local:** Autenticación Bearer obligatoria (`timingSafeEqual`), mitigación de CSRF/DNS Rebinding y lista blanca de argumentos por binario.
+- [x] **Cifrado Robusto en Reposo (v2):** AES-256-GCM con derivación HKDF e IV de 12 bytes; rotación de claves idempotente sin downtime.
+- [x] **Política de Aprobación de Herramientas MCP:** Clasificación de riesgo (`read`, `write`, `destructive`), persistencia de aprobaciones para reconexión y defensa contra prompt injection indirecto.
+- [ ] **Autenticación Multiusuario & JWT:** Soporte de inicio de sesión con tokens de acceso/refresco y revocación.
+- [ ] **Control de Acceso Basado en Roles (RBAC):** Roles de Administrador, Operador, Auditor y Visor con políticas granulares por recurso.
+- [ ] **Multi-Tenancy Aislado:** Espacios de trabajo (workspaces) y organizaciones con aislamiento de bases de datos o esquemas.
+- [ ] **Integración Nativa OIDC / SSO:** Autenticación corporativa mediante Google Workspace, Okta y Microsoft Entra ID.
 
 ---
 
