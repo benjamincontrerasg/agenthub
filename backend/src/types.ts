@@ -71,6 +71,8 @@ export interface MCPToolParameter {
   required?: boolean;
 }
 
+export type ToolRiskLevel = 'read' | 'write' | 'destructive';
+
 export interface MCPTool {
   id: string;
   serverId: string;
@@ -84,6 +86,7 @@ export interface MCPTool {
   };
   isWriteOperation: boolean;
   requiresApproval: boolean;
+  toolRiskLevel?: ToolRiskLevel;
   assignedAgentIds: string[];
 }
 
@@ -196,6 +199,20 @@ export interface Approval {
   payload: Record<string, any>;
   status: 'pending' | 'approved' | 'rejected';
   requestedAt: string;
+  respondedAt?: string;
+}
+
+export interface ToolApproval {
+  id: string;
+  toolName: string;
+  toolArgs: Record<string, any>;
+  agentId: string;
+  agentName: string;
+  riskLevel: ToolRiskLevel;
+  status: 'pending' | 'approved' | 'rejected' | 'expired';
+  affectedPath?: string;
+  expiresAt: string;
+  createdAt: string;
   respondedAt?: string;
 }
 
@@ -348,6 +365,8 @@ export type WSEventType =
   | 'mcp.disconnected'
   | 'tool.requested'
   | 'tool.approval_required'
+  | 'tool.approval_requested'
+  | 'tool.approval_responded'
   | 'workflow.progress';
 
 export interface WSEvent<T = any> {

@@ -119,6 +119,7 @@ export const mcpTools = sqliteTable('mcp_tools', {
   inputSchema: text('input_schema').notNull(), // JSON schema
   isWriteOperation: integer('is_write_operation', { mode: 'boolean' }).notNull().default(false),
   requiresApproval: integer('requires_approval', { mode: 'boolean' }).notNull().default(true),
+  toolRiskLevel: text('tool_risk_level', { enum: ['read', 'write', 'destructive'] }).notNull().default('read'),
 });
 
 export const mcpToolAssignments = sqliteTable('mcp_tool_assignments', {
@@ -241,6 +242,20 @@ export const approvals = sqliteTable('approvals', {
   payload: text('payload').notNull(), // JSON string
   status: text('status', { enum: ['pending', 'approved', 'rejected'] }).notNull().default('pending'),
   requestedAt: text('requested_at').notNull(),
+  respondedAt: text('responded_at'),
+});
+
+export const toolApprovals = sqliteTable('tool_approvals', {
+  id: text('id').primaryKey(),
+  toolName: text('tool_name').notNull(),
+  toolArgs: text('tool_args').notNull(), // JSON string
+  agentId: text('agent_id').notNull(),
+  agentName: text('agent_name').notNull(),
+  riskLevel: text('risk_level', { enum: ['read', 'write', 'destructive'] }).notNull(),
+  status: text('status', { enum: ['pending', 'approved', 'rejected', 'expired'] }).notNull().default('pending'),
+  affectedPath: text('affected_path'),
+  expiresAt: text('expires_at').notNull(),
+  createdAt: text('created_at').notNull(),
   respondedAt: text('responded_at'),
 });
 

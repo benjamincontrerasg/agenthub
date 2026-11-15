@@ -169,6 +169,7 @@ export async function seedDatabase() {
       }).run();
 
       for (const t of s.tools) {
+        const riskLevel = (t as any).toolRiskLevel || (t.isWriteOperation ? (t.name.includes('delete') || t.name.includes('drop') || t.name.includes('destroy') ? 'destructive' : 'write') : 'read');
         db.insert(schema.mcpTools).values({
           id: t.id,
           serverId: s.id,
@@ -177,6 +178,7 @@ export async function seedDatabase() {
           inputSchema: JSON.stringify(t.inputSchema),
           isWriteOperation: t.isWriteOperation,
           requiresApproval: t.requiresApproval,
+          toolRiskLevel: riskLevel,
         }).run();
 
         for (const agentId of t.assignedAgentIds) {

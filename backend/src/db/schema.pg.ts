@@ -67,3 +67,63 @@ export const agents = pgTable('agents', {
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 });
+
+// --- MCP Servers & Tools ---
+
+export const mcpServers = pgTable('mcp_servers', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  description: text('description').notNull(),
+  transport: text('transport').notNull(),
+  commandOrEndpoint: text('command_or_endpoint').notNull(),
+  args: text('args'),
+  env: text('env'),
+  allowedDirectories: text('allowed_directories'),
+  status: text('status').notNull().default('pending_validation'),
+  isActivated: boolean('is_activated').notNull().default(false),
+  error: text('error'),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const mcpTools = pgTable('mcp_tools', {
+  id: text('id').primaryKey(),
+  serverId: text('server_id').notNull().references(() => mcpServers.id, { onDelete: 'cascade' }),
+  name: text('name').notNull(),
+  description: text('description').notNull(),
+  inputSchema: text('input_schema').notNull(),
+  isWriteOperation: boolean('is_write_operation').notNull().default(false),
+  requiresApproval: boolean('requires_approval').notNull().default(true),
+  toolRiskLevel: text('tool_risk_level').notNull().default('read'),
+});
+
+// --- Approvals ---
+
+export const approvals = pgTable('approvals', {
+  id: text('id').primaryKey(),
+  executionId: text('execution_id'),
+  conversationId: text('conversation_id'),
+  toolId: text('tool_id').notNull(),
+  toolName: text('tool_name').notNull(),
+  agentId: text('agent_id').notNull(),
+  agentName: text('agent_name').notNull(),
+  actionDescription: text('action_description').notNull(),
+  payload: text('payload').notNull(),
+  status: text('status').notNull().default('pending'),
+  requestedAt: timestamp('requested_at', { withTimezone: true }).notNull().defaultNow(),
+  respondedAt: timestamp('responded_at', { withTimezone: true }),
+});
+
+export const toolApprovals = pgTable('tool_approvals', {
+  id: text('id').primaryKey(),
+  toolName: text('tool_name').notNull(),
+  toolArgs: text('tool_args').notNull(),
+  agentId: text('agent_id').notNull(),
+  agentName: text('agent_name').notNull(),
+  riskLevel: text('risk_level').notNull(),
+  status: text('status').notNull().default('pending'),
+  affectedPath: text('affected_path'),
+  expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  respondedAt: timestamp('responded_at', { withTimezone: true }),
+});

@@ -38,13 +38,13 @@ export const chatService = {
     });
   },
 
-  async respondApproval(approvalId: string, approved: boolean): Promise<{ success: boolean }> {
+  async respondApproval(approvalId: string, approved: boolean, rememberForSession?: boolean): Promise<{ success: boolean }> {
     if (USE_MOCK) {
       return { success: true };
     }
     return apiClient<{ success: boolean }>(`/chat/approvals/${approvalId}/respond`, {
       method: 'POST',
-      body: JSON.stringify({ approved }),
+      body: JSON.stringify({ approved, rememberForSession }),
     });
   },
 };

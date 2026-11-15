@@ -69,6 +69,8 @@ export interface MCPToolParameter {
   required?: boolean;
 }
 
+export type ToolRiskLevel = 'read' | 'write' | 'destructive';
+
 export interface MCPTool {
   id: string;
   serverId: string;
@@ -82,6 +84,7 @@ export interface MCPTool {
   };
   isWriteOperation: boolean;
   requiresApproval: boolean;
+  toolRiskLevel?: ToolRiskLevel;
   assignedAgentIds: string[];
 }
 
@@ -195,6 +198,18 @@ export interface Approval {
   status: 'pending' | 'approved' | 'rejected';
   requestedAt: string;
   respondedAt?: string;
+}
+
+export interface ToolApprovalRequest {
+  approvalId: string;
+  toolName: string;
+  toolArgs: Record<string, any>;
+  agentId: string;
+  agentName: string;
+  riskLevel: ToolRiskLevel;
+  affectedPath?: string;
+  expiresAt: string;
+  allowRememberSession?: boolean;
 }
 
 export interface Message {

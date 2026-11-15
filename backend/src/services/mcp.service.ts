@@ -36,6 +36,7 @@ export const mcpService = {
             inputSchema,
             isWriteOperation: t.isWriteOperation,
             requiresApproval: t.requiresApproval,
+            toolRiskLevel: (t.toolRiskLevel as any) || (t.isWriteOperation ? 'write' : 'read'),
             assignedAgentIds,
           };
         });
@@ -149,6 +150,7 @@ export const mcpService = {
         }),
         isWriteOperation: false,
         requiresApproval: false,
+        toolRiskLevel: 'read',
       }).run();
     }
 

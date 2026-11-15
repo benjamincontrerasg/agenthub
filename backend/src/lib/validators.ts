@@ -82,4 +82,11 @@ export const sendMessageSchema = z.object({
 
 export const respondApprovalSchema = z.object({
   approved: z.boolean(),
+  rememberForSession: z.boolean().optional(),
+});
+
+export const respondToolApprovalSchema = z.object({
+  approved: z.boolean(),
+  rememberForSession: z.boolean().optional(),
+  sessionId: z.string().optional(),
 });

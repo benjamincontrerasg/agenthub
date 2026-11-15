@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { mcpService } from '../services/mcp.service.js';
-import { registerMCPServerSchema, toggleMCPActivationSchema } from '../lib/validators.js';
+import { toolPolicyService } from '../services/tool-policy.service.js';
+import { registerMCPServerSchema, toggleMCPActivationSchema, respondToolApprovalSchema } from '../lib/validators.js';
 
 export async function mcpRoutes(fastify: FastifyInstance) {
   fastify.get('/mcp/servers', async () => {
@@ -26,5 +27,14 @@ export async function mcpRoutes(fastify: FastifyInstance) {
 
   fastify.delete<{ Params: { id: string } }>('/mcp/servers/:id', async (req) => {
     return mcpService.delete(req.params.id);
+  });
+
+  fastify.get('/mcp/approvals/pending', async () => {
+    return toolPolicyService.getPendingApprovals();
+  });
+
+  fastify.post<{ Params: { id: string } }>('/mcp/approvals/:id/respond', async (req) => {
+    const parsed = respondToolApprovalSchema.parse(req.body);
+    return toolPolicyService.respondApproval(req.params.id, parsed.approved, parsed.rememberForSession, parsed.sessionId);
   });
 }

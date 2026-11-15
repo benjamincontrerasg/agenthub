@@ -8,6 +8,7 @@ import { aiEngine } from './ai-engine.js';
 import { agentService } from './agent.service.js';
 import { memoryService } from './memory.service.js';
 import { auditService } from './audit.service.js';
+import { toolPolicyService } from './tool-policy.service.js';
 
 export const chatService = {
   async getConversations(): Promise<Conversation[]> {
@@ -194,7 +195,7 @@ export const chatService = {
     return userMessage;
   },
 
-  async respondApproval(approvalId: string, approved: boolean): Promise<{ success: boolean }> {
+  async respondApproval(approvalId: string, approved: boolean, rememberForSession?: boolean): Promise<{ success: boolean }> {
     const app = db.select().from(schema.approvals).where(eq(schema.approvals.id, approvalId)).get();
     if (!app) {
       throw new NotFoundError('Aprobación requerida', approvalId);
@@ -210,6 +211,14 @@ export const chatService = {
       })
       .where(eq(schema.approvals.id, approvalId))
       .run();
+
+    // Si el usuario marcó recordar en sesión y la herramienta no es destructiva, guardar en memoria
+    if (approved && rememberForSession && app.conversationId) {
+      const risk = toolPolicyService.determineRiskLevel(app.toolName);
+      if (risk === 'write') {
+        toolPolicyService.rememberToolForSession(app.conversationId, app.toolName);
+      }
+    }
 
     // Update corresponding tool execution
     db.update(schema.toolExecutions)
