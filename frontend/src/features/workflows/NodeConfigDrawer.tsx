@@ -50,7 +50,7 @@ export const NodeConfigDrawer: React.FC<NodeConfigDrawerProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-md text-fg-secondary hover:bg-[#161718] hover:text-[#ffffff]"
+            className="p-1 rounded-md text-fg-secondary hover:bg-bg-surface hover:text-[#ffffff]"
           >
             <X className="h-4 w-4" />
           </button>

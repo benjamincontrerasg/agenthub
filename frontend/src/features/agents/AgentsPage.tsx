@@ -111,7 +111,7 @@ export const AgentsPage: React.FC = () => {
               onClick={() => setRoleFilter(role)}
               className={`px-2.5 py-1 rounded-[6px] text-caption font-medium transition-colors cursor-pointer ${roleFilter === role
                   ? 'bg-bg-brand text-fg-primary shadow-sm'
-                  : 'bg-bg-card/80 text-fg-secondary hover:bg-[#161718] hover:text-[#d0d6e0] border border-border-default'
+                  : 'bg-bg-card/80 text-fg-secondary hover:bg-bg-surface hover:text-[#d0d6e0] border border-border-default'
                 }`}
             >
               {role === 'ALL' ? 'Todos' : role}
@@ -130,7 +130,7 @@ export const AgentsPage: React.FC = () => {
             <Card
               key={agent.id}
               onClick={() => navigate(`/agents/${agent.id}`)}
-              className="flex flex-col justify-between border-border-default bg-bg-card/50 hover:border-[#23252a]/80 hover:bg-[#0f1011]/80 transition-all cursor-pointer group"
+              className="flex flex-col justify-between border-border-default bg-bg-card/50 hover:border-border-default/80 hover:bg-bg-surface transition-all cursor-pointer group"
             >
               <div>
                 <CardHeader className="pb-3">

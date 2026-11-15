@@ -11,8 +11,8 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       <div className="w-full">
         <textarea
           className={cn(
-            'flex min-h-[80px] w-full rounded-[6px] border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)] px-3 py-2 text-body text-[#d0d6e0] placeholder:text-[#62666d] shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#d0d6e0] focus-visible:border-[#d0d6e0] disabled:cursor-not-allowed disabled:opacity-50 resize-y',
-            error && 'border-fg-error focus-visible:ring-red-500',
+            'flex min-h-[80px] w-full rounded-[6px] border border-border-default bg-bg-surface px-3 py-2 text-body text-fg-primary placeholder:text-fg-muted shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-border-brand focus-visible:border-border-brand disabled:cursor-not-allowed disabled:opacity-50 resize-y',
+            error && 'border-fg-error focus-visible:ring-fg-error',
             className
           )}
           ref={ref}

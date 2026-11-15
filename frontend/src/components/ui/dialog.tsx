@@ -61,7 +61,7 @@ export function DialogContent({
       {onClose && (
         <button
           onClick={onClose}
-          className="absolute right-4 top-4 rounded-[6px] p-1 text-fg-secondary hover:bg-[#161718] hover:text-[#ffffff] transition-colors cursor-pointer"
+          className="absolute right-4 top-4 rounded-[6px] p-1 text-fg-secondary hover:bg-bg-surface hover:text-[#ffffff] transition-colors cursor-pointer"
         >
           <X className="h-4 w-4" />
           <span className="sr-only">Cerrar</span>

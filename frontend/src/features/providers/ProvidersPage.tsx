@@ -118,7 +118,7 @@ export const ProvidersPage: React.FC = () => {
             return (
               <Card
                 key={provider.id}
-                className="flex flex-col justify-between border-border-default bg-bg-card/60 hover:border-[#23252a]/80 transition-all"
+                className="flex flex-col justify-between border-border-default bg-bg-card/60 hover:border-border-default/80 transition-all"
               >
                 <div>
                   <CardHeader className="flex flex-row items-start justify-between pb-3">
@@ -174,7 +174,7 @@ export const ProvidersPage: React.FC = () => {
                         {provider.models.map((model) => (
                           <div
                             key={model.id}
-                            className="flex items-center justify-between text-caption py-1 px-2 rounded hover:bg-[#0f1011]/60 transition-colors"
+                            className="flex items-center justify-between text-caption py-1 px-2 rounded hover:bg-bg-surface transition-colors"
                           >
                             <div className="flex items-center gap-2">
                               <span className="font-medium text-fg-primary">{model.name}</span>

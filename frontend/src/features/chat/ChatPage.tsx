@@ -119,7 +119,7 @@ export const ChatPage: React.FC = () => {
                 className={`p-2.5 rounded-[6px] text-caption cursor-pointer transition-colors ${
                   activeConversationId === c.id
                     ? 'bg-bg-brand-subtle/40 border border-border-brand/60 text-fg-primary'
-                    : 'text-fg-secondary hover:bg-[#0f1011]/60 hover:text-[#d0d6e0] border border-transparent'
+                    : 'text-fg-secondary hover:bg-bg-surface hover:text-[#d0d6e0] border border-transparent'
                 }`}
               >
                 <div className="flex items-center justify-between">

@@ -570,7 +570,7 @@ export const AgentDetailPage: React.FC = () => {
                       .map((mem) => (
                         <div
                           key={mem.id}
-                          className="p-3.5 rounded-[12px] border border-border-default bg-bg-card/80 hover:border-[#23252a] transition-colors flex items-start justify-between gap-3"
+                          className="p-3.5 rounded-[12px] border border-border-default bg-bg-card/80 hover:border-border-default transition-colors flex items-start justify-between gap-3"
                         >
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1.5">
@@ -631,7 +631,7 @@ export const AgentDetailPage: React.FC = () => {
                   </thead>
                   <tbody className="divide-y divide-slate-800/60">
                     {agentExecutions.map((ex) => (
-                      <tr key={ex.id} className="hover:bg-[#0f1011]/40">
+                      <tr key={ex.id} className="hover:bg-bg-card/40">
                         <td className="py-2.5 pl-2 font-mono text-fg-brand">{ex.id}</td>
                         <td className="py-2.5 text-fg-primary">{ex.workflowName}</td>
                         <td className="py-2.5">

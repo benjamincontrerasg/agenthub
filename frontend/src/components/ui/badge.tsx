@@ -8,9 +8,9 @@ const badgeVariants = cva(
     variants: {
       variant: {
         default:
-          'bg-[rgba(255,255,255,0.05)] text-[#d0d6e0] border border-[#23252a]',
+          'bg-[rgba(255,255,255,0.05)] text-[#d0d6e0] border border-border-default',
         secondary:
-          'bg-[rgba(255,255,255,0.03)] text-[#8a8f98] border border-[#23252a]',
+          'bg-[rgba(255,255,255,0.03)] text-[#8a8f98] border border-border-default',
         success:
           'bg-[rgba(39,166,68,0.12)] text-[#27a644] border border-[#27a644]/40',
         warning:
@@ -20,7 +20,7 @@ const badgeVariants = cva(
         info:
           'bg-[rgba(2,184,204,0.12)] text-[#02b8cc] border border-[#02b8cc]/40',
         outline:
-          'bg-transparent text-[#8a8f98] border border-[#23252a]',
+          'bg-transparent text-[#8a8f98] border border-border-default',
       },
     },
     defaultVariants: {

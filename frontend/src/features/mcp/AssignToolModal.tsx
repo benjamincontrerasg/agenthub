@@ -66,7 +66,7 @@ export const AssignToolModal: React.FC<AssignToolModalProps> = ({ tool, open, on
                 className={`flex items-center justify-between p-2.5 rounded-[6px] border text-caption cursor-pointer transition-colors ${
                   isAssigned
                     ? 'border-border-brand/70 bg-bg-brand-subtle/25'
-                    : 'border-border-default bg-bg-card/50 hover:border-[#23252a]'
+                    : 'border-border-default bg-bg-card/50 hover:border-border-default'
                 }`}
               >
                 <div className="flex items-center gap-2.5">

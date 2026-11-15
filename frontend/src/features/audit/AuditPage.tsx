@@ -239,7 +239,7 @@ export const AuditPage: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-slate-800/60">
                   {filteredLogs.map((log) => (
-                    <tr key={log.id} className="hover:bg-[#0f1011]/40 transition-colors">
+                    <tr key={log.id} className="hover:bg-bg-card/40 transition-colors">
                       <td className="py-2.5 pl-2 font-mono text-fg-secondary whitespace-nowrap">
                         {formatDate(log.timestamp)}
                       </td>
@@ -276,7 +276,7 @@ export const AuditPage: React.FC = () => {
                       <td className="py-2.5 text-right pr-2">
                         <button
                           onClick={() => setSelectedLog(log)}
-                          className="px-2 py-1 rounded border border-border-default hover:bg-[#161718] text-[11px] font-medium text-fg-primary cursor-pointer"
+                          className="px-2 py-1 rounded border border-border-default hover:bg-bg-surface text-[11px] font-medium text-fg-primary cursor-pointer"
                         >
                           Ver Payload
                         </button>

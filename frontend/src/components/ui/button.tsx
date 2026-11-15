@@ -14,12 +14,12 @@ const buttonVariants = cva(
         // White Pill / High-contrast secondary
         secondary:
           'bg-[#ffffff] text-[#08090a] font-[510] hover:bg-[#e5e5e6] active:scale-[0.98]',
-        // Ghost / Outline button (Hairline border #23252a)
+        // Ghost / Outline button (Hairline border)
         outline:
-          'border border-[#23252a] bg-transparent text-[#d0d6e0] hover:bg-[#161718] hover:border-[#383b3f] hover:text-[#ffffff]',
+          'border border-border-default bg-transparent text-fg-secondary hover:bg-bg-surface hover:border-border-hover hover:text-fg-primary',
         // Pure text nav button
         ghost:
-          'text-[#d0d6e0] hover:bg-[#161718] hover:text-[#ffffff]',
+          'text-fg-secondary hover:bg-bg-surface hover:text-fg-primary',
         destructive:
           'bg-[#eb5757]/15 border border-[#eb5757]/30 text-[#eb5757] hover:bg-[#eb5757]/25',
         success:

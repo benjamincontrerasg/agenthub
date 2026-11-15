@@ -376,7 +376,7 @@ export const AgentFormModal: React.FC<AgentFormModalProps> = ({ agent, open, onC
                       className={`group relative flex items-center justify-between p-2.5 rounded-[6px] border text-caption cursor-pointer transition-all ${
                         isChecked
                           ? 'border-[#e4f222] bg-[#e4f222]/[0.06] shadow-[0_0_12px_rgba(228,242,34,0.06)]'
-                          : 'border-[#23252a] bg-[#0f1011]/80 hover:border-[#383b3f] hover:bg-[#161718]'
+                          : 'border-border-default bg-bg-surface hover:border-border-hover hover:bg-bg-surface'
                       }`}
                     >
                       <div className="flex items-center gap-3 overflow-hidden">

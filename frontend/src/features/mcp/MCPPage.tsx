@@ -326,7 +326,7 @@ export const MCPPage: React.FC = () => {
                   className={`p-3.5 rounded-[12px] border text-left transition-all cursor-pointer ${
                     isSelected
                       ? 'border-border-brand/80 bg-bg-card/90 shadow-md shadow-violet-950/30'
-                      : 'border-border-default/80 bg-bg-card/40 hover:bg-[#0f1011]/70 hover:border-[#23252a]'
+                      : 'border-border-default/80 bg-bg-card/40 hover:bg-bg-card/70 hover:border-border-default'
                   }`}
                 >
                   <div className="flex items-start justify-between">

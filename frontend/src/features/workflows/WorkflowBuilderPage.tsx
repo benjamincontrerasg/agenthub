@@ -416,7 +416,7 @@ export const WorkflowBuilderPage: React.FC = () => {
 
         <button
           onClick={() => handleAddNode('agent', 'AI Agent')}
-          className="flex items-center gap-2 px-2.5 py-1.5 rounded-[6px] text-caption font-medium text-fg-secondary hover:bg-[#161718] hover:text-[#ffffff] transition-colors cursor-pointer"
+          className="flex items-center gap-2 px-2.5 py-1.5 rounded-[6px] text-caption font-medium text-fg-secondary hover:bg-bg-surface hover:text-[#ffffff] transition-colors cursor-pointer"
         >
           <Bot className="h-3.5 w-3.5 text-fg-brand" />
           <span>AI Agent</span>
@@ -424,7 +424,7 @@ export const WorkflowBuilderPage: React.FC = () => {
 
         <button
           onClick={() => handleAddNode('mcp_tool', 'MCP Tool')}
-          className="flex items-center gap-2 px-2.5 py-1.5 rounded-[6px] text-caption font-medium text-fg-secondary hover:bg-[#161718] hover:text-[#ffffff] transition-colors cursor-pointer"
+          className="flex items-center gap-2 px-2.5 py-1.5 rounded-[6px] text-caption font-medium text-fg-secondary hover:bg-bg-surface hover:text-[#ffffff] transition-colors cursor-pointer"
         >
           <Wrench className="h-3.5 w-3.5 text-fg-warning" />
           <span>MCP Tool</span>
@@ -432,7 +432,7 @@ export const WorkflowBuilderPage: React.FC = () => {
 
         <button
           onClick={() => handleAddNode('condition', 'Condición')}
-          className="flex items-center gap-2 px-2.5 py-1.5 rounded-[6px] text-caption font-medium text-fg-secondary hover:bg-[#161718] hover:text-[#ffffff] transition-colors cursor-pointer"
+          className="flex items-center gap-2 px-2.5 py-1.5 rounded-[6px] text-caption font-medium text-fg-secondary hover:bg-bg-surface hover:text-[#ffffff] transition-colors cursor-pointer"
         >
           <GitBranch className="h-3.5 w-3.5 text-fg-brand" />
           <span>Condition</span>
@@ -440,7 +440,7 @@ export const WorkflowBuilderPage: React.FC = () => {
 
         <button
           onClick={() => handleAddNode('parallel', 'Paralelo')}
-          className="flex items-center gap-2 px-2.5 py-1.5 rounded-[6px] text-caption font-medium text-fg-secondary hover:bg-[#161718] hover:text-[#ffffff] transition-colors cursor-pointer"
+          className="flex items-center gap-2 px-2.5 py-1.5 rounded-[6px] text-caption font-medium text-fg-secondary hover:bg-bg-surface hover:text-[#ffffff] transition-colors cursor-pointer"
         >
           <Split className="h-3.5 w-3.5 text-purple-400" />
           <span>Parallel</span>
@@ -448,7 +448,7 @@ export const WorkflowBuilderPage: React.FC = () => {
 
         <button
           onClick={() => handleAddNode('human_approval', 'Human Approval')}
-          className="flex items-center gap-2 px-2.5 py-1.5 rounded-[6px] text-caption font-medium text-fg-secondary hover:bg-[#161718] hover:text-[#ffffff] transition-colors cursor-pointer"
+          className="flex items-center gap-2 px-2.5 py-1.5 rounded-[6px] text-caption font-medium text-fg-secondary hover:bg-bg-surface hover:text-[#ffffff] transition-colors cursor-pointer"
         >
           <ShieldCheck className="h-3.5 w-3.5 text-fg-warning" />
           <span>Human Approval</span>
@@ -456,7 +456,7 @@ export const WorkflowBuilderPage: React.FC = () => {
 
         <button
           onClick={() => handleAddNode('output', 'Output')}
-          className="flex items-center gap-2 px-2.5 py-1.5 rounded-[6px] text-caption font-medium text-fg-secondary hover:bg-[#161718] hover:text-[#ffffff] transition-colors cursor-pointer"
+          className="flex items-center gap-2 px-2.5 py-1.5 rounded-[6px] text-caption font-medium text-fg-secondary hover:bg-bg-surface hover:text-[#ffffff] transition-colors cursor-pointer"
         >
           <Package className="h-3.5 w-3.5 text-fg-brand" />
           <span>Output</span>
@@ -464,7 +464,7 @@ export const WorkflowBuilderPage: React.FC = () => {
 
         <button
           onClick={() => handleAddNode('end', 'End Pipeline')}
-          className="flex items-center gap-2 px-2.5 py-1.5 rounded-[6px] text-caption font-medium text-fg-secondary hover:bg-[#161718] hover:text-[#ffffff] transition-colors cursor-pointer"
+          className="flex items-center gap-2 px-2.5 py-1.5 rounded-[6px] text-caption font-medium text-fg-secondary hover:bg-bg-surface hover:text-[#ffffff] transition-colors cursor-pointer"
         >
           <Flag className="h-3.5 w-3.5 text-fg-error" />
           <span>End</span>
@@ -487,7 +487,7 @@ export const WorkflowBuilderPage: React.FC = () => {
           maxZoom={1.5}
         >
           <Background color="#1e293b" gap={20} size={1} variant={BackgroundVariant.Dots} />
-          <Controls className="!bg-[#0f1011] !border-slate-800 !text-white fill-white" />
+          <Controls className="!bg-bg-card !border-slate-800 !text-white fill-white" />
           <MiniMap
             nodeStrokeColor="#64748b"
             nodeColor="#334155"
@@ -515,7 +515,7 @@ export const WorkflowBuilderPage: React.FC = () => {
                 <Sparkles className="h-5 w-5 text-fg-brand" />
                 <h2 className="text-lg font-[510] text-fg-primary">Plantillas de Workflow</h2>
               </div>
-              <button onClick={() => setShowTemplatesModal(false)} className="p-1.5 rounded-[6px] text-fg-secondary hover:text-fg-primary hover:bg-[#161718] transition-colors cursor-pointer">
+              <button onClick={() => setShowTemplatesModal(false)} className="p-1.5 rounded-[6px] text-fg-secondary hover:text-fg-primary hover:bg-bg-surface transition-colors cursor-pointer">
                 <Square className="h-4 w-4" />
               </button>
             </div>
@@ -571,7 +571,7 @@ export const WorkflowBuilderPage: React.FC = () => {
                 <Globe className="h-5 w-5 text-fg-success" />
                 <h2 className="text-lg font-[510] text-fg-primary">Webhook de Trigger</h2>
               </div>
-              <button onClick={() => { setShowWebhookModal(false); setCopiedWebhook(false); }} className="p-1.5 rounded-[6px] text-fg-secondary hover:text-fg-primary hover:bg-[#161718] transition-colors cursor-pointer">
+              <button onClick={() => { setShowWebhookModal(false); setCopiedWebhook(false); }} className="p-1.5 rounded-[6px] text-fg-secondary hover:text-fg-primary hover:bg-bg-surface transition-colors cursor-pointer">
                 <Square className="h-4 w-4" />
               </button>
             </div>

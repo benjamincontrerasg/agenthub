@@ -118,7 +118,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             onClick={onCloseMobile}
             className="flex items-center space-x-3 overflow-hidden group"
           >
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[12px] bg-[#08090a] border border-[rgba(255,255,255,0.08)] p-1 shadow-sm group-hover:border-[rgba(228,242,34,0.35)] group-hover:shadow-[0_0_12px_rgba(228,242,34,0.15)] transition-all">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[12px] bg-bg-surface border border-border-default p-1 shadow-sm transition-all">
               <img
                 src="/nexora-logo.png"
                 alt="NEXORA Logo"
@@ -127,13 +127,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </div>
             {!collapsed && (
               <div className="flex flex-col">
-                <span className="text-subtitle font-[510] tracking-tight text-[#ffffff] flex items-center gap-1.5">
+                <span className="text-subtitle font-[510] tracking-tight text-fg-primary flex items-center gap-1.5">
                   NEXORA
-                  <span className="text-caption font-mono px-1.5 py-0.2 rounded-[4px] bg-bg-brand-subtle text-[#e4f222] border border-[rgba(228,242,34,0.35)]">
+                  <span className="text-caption font-mono px-1.5 py-0.2 rounded-[4px] bg-bg-brand-subtle text-fg-brand border border-border-brand">
                     SaaS
                   </span>
                 </span>
-                <span className="text-caption text-[#8a8f98]">Multi-Agent System</span>
+                <span className="text-caption text-fg-muted">Multi-Agent System</span>
               </div>
             )}
           </NavLink>
@@ -153,7 +153,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {navGroups.map((group) => (
             <div key={group.groupTitle} className="space-y-1">
               {!collapsed && (
-                <div className="px-3 pb-1 text-caption font-[510] uppercase tracking-wider text-[#62666d]">
+                <div className="px-3 pb-1 text-caption font-[510] uppercase tracking-wider text-fg-muted">
                   {group.groupTitle}
                 </div>
               )}
@@ -174,14 +174,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     className={cn(
                       'flex items-center rounded-[6px] px-3 py-2 text-body font-medium transition-all group relative',
                       isActive
-                        ? 'bg-[rgba(228,242,34,0.08)] text-[#e4f222] font-[510] border border-[rgba(228,242,34,0.25)] shadow-xs'
-                        : 'text-[#8a8f98] hover:bg-[#161718] hover:text-[#d0d6e0]'
+                        ? 'bg-bg-brand-subtle text-fg-brand font-[510] border border-border-brand shadow-xs'
+                        : 'text-fg-secondary hover:bg-bg-surface hover:text-fg-primary'
                     )}
                   >
                     <Icon
                       className={cn(
                         'h-4 w-4 shrink-0 transition-colors',
-                        isActive ? 'text-[#e4f222]' : 'text-[#62666d] group-hover:text-[#d0d6e0]',
+                        isActive ? 'text-fg-brand' : 'text-fg-muted group-hover:text-fg-primary',
                         collapsed ? 'mx-auto' : 'mr-3'
                       )}
                     />

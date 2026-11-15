@@ -45,7 +45,7 @@ export const LoginPage: React.FC = () => {
         </div>
 
         {/* Card */}
-        <div className="rounded-[12px] border border-[#23252a] bg-[#0f1011] p-6 shadow-2xl backdrop-blur-sm">
+        <div className="rounded-[12px] border border-border-default bg-bg-card p-6 shadow-2xl backdrop-blur-sm">
           <div className="flex items-center justify-between mb-6 pb-4 border-b border-border-default">
             <div>
               <h2 className="text-subtitle font-[510] text-[#ffffff]">Iniciar Sesión</h2>
@@ -78,7 +78,7 @@ export const LoginPage: React.FC = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   placeholder="admin@nexora.dev"
-                  className="w-full rounded-[6px] border border-[#23252a] bg-[rgba(255,255,255,0.02)] pl-10 pr-3 py-2 text-body text-fg-primary focus:border-border-brand focus:outline-none placeholder:text-[#62666d]"
+                  className="w-full rounded-[6px] border border-border-default bg-[rgba(255,255,255,0.02)] pl-10 pr-3 py-2 text-body text-fg-primary focus:border-border-brand focus:outline-none placeholder:text-[#62666d]"
                 />
               </div>
             </div>
@@ -95,7 +95,7 @@ export const LoginPage: React.FC = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   placeholder="••••••••"
-                  className="w-full rounded-[6px] border border-[#23252a] bg-[rgba(255,255,255,0.02)] pl-10 pr-3 py-2 text-body text-fg-primary focus:border-border-brand focus:outline-none placeholder:text-[#62666d]"
+                  className="w-full rounded-[6px] border border-border-default bg-[rgba(255,255,255,0.02)] pl-10 pr-3 py-2 text-body text-fg-primary focus:border-border-brand focus:outline-none placeholder:text-[#62666d]"
                 />
               </div>
             </div>
@@ -134,7 +134,7 @@ export const LoginPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => handleQuickLogin('developer')}
-                className="p-2 rounded-[6px] border border-border-default bg-bg-surface hover:bg-[#161718] text-center transition-colors cursor-pointer"
+                className="p-2 rounded-[6px] border border-border-default bg-bg-surface hover:bg-bg-surface text-center transition-colors cursor-pointer"
               >
                 <div className="text-caption font-[510] text-[#ffffff]">Developer</div>
                 <div className="text-[11px] text-fg-secondary">Agentes & MCP</div>
@@ -143,7 +143,7 @@ export const LoginPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => handleQuickLogin('viewer')}
-                className="p-2 rounded-[6px] border border-border-default bg-bg-surface hover:bg-[#161718] text-center transition-colors cursor-pointer"
+                className="p-2 rounded-[6px] border border-border-default bg-bg-surface hover:bg-bg-surface text-center transition-colors cursor-pointer"
               >
                 <div className="text-caption font-[510] text-[#8a8f98]">Viewer</div>
                 <div className="text-[11px] text-fg-secondary">Solo Auditoría</div>

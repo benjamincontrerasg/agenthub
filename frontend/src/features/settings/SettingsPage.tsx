@@ -201,7 +201,7 @@ export const SettingsPage: React.FC = () => {
                 className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-[12px] text-caption font-medium transition-all text-left cursor-pointer ${
                   isActive
                     ? 'bg-bg-brand/20 text-fg-brand font-[510] border border-border-brand/40 shadow-sm'
-                    : 'text-fg-secondary hover:bg-[#0f1011] hover:text-[#d0d6e0] border border-transparent'
+                    : 'text-fg-secondary hover:bg-bg-card hover:text-[#d0d6e0] border border-transparent'
                 }`}
               >
                 <Icon className={`h-4 w-4 ${isActive ? 'text-fg-brand' : 'text-fg-muted'}`} />

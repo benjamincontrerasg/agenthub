@@ -60,7 +60,7 @@ export function TabsTrigger({
       className={cn(
         'inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-caption font-medium transition-all cursor-pointer',
         isActive
-          ? 'bg-[#161718] text-[#ffffff] shadow-sm font-[510] text-[#e4f222]'
+          ? 'bg-bg-surface text-[#ffffff] shadow-sm font-[510] text-[#e4f222]'
           : 'text-[#8a8f98] hover:text-[#d0d6e0]',
         className
       )}

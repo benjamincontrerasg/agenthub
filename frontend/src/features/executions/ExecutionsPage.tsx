@@ -101,7 +101,7 @@ export const ExecutionsPage: React.FC = () => {
               className={`px-2.5 py-1 rounded-[6px] text-caption font-medium transition-colors cursor-pointer ${
                 statusFilter === st
                   ? 'bg-bg-brand text-fg-primary shadow-sm'
-                  : 'bg-bg-card/80 text-fg-secondary hover:bg-[#161718] hover:text-[#d0d6e0] border border-border-default'
+                  : 'bg-bg-card/80 text-fg-secondary hover:bg-bg-surface hover:text-[#d0d6e0] border border-border-default'
               }`}
             >
               {st === 'ALL'
@@ -132,7 +132,7 @@ export const ExecutionsPage: React.FC = () => {
                 className={`p-3.5 rounded-[12px] border text-left transition-all cursor-pointer ${
                   isSelected
                     ? 'border-border-brand/80 bg-bg-card shadow-lg shadow-violet-950/20'
-                    : 'border-border-default/80 bg-bg-card/40 hover:bg-[#0f1011]/70 hover:border-[#23252a]'
+                    : 'border-border-default/80 bg-bg-card/40 hover:bg-bg-card/70 hover:border-border-default'
                 }`}
               >
                 <div className="flex items-center justify-between">
@@ -284,7 +284,7 @@ export const ExecutionsPage: React.FC = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="relative pl-6 space-y-6 before:absolute before:bottom-0 before:top-2 before:left-2 before:w-[2px] before:bg-[#161718]">
+                <div className="relative pl-6 space-y-6 before:absolute before:bottom-0 before:top-2 before:left-2 before:w-[2px] before:bg-bg-surface">
                   {activeExecution.steps.map((step, idx) => (
                     <div key={step.id || idx} className="relative">
                       {/* Step Indicator Dot */}
