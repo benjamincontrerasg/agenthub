@@ -121,6 +121,28 @@ export const WorkflowBuilderPage: React.FC = () => {
   );
 
   const onNodeClick = useCallback((_: React.MouseEvent, node: Node) => {
+    // Si no es un agente de Claude o si ya está expandido, abrir drawer
+    const isClaude =
+      node.type === 'agentNode' &&
+      ((node.data?.label as string || '').toLowerCase().includes('developer') ||
+       (node.data?.label as string || '').toLowerCase().includes('coordinator') ||
+       (node.data?.agentId as string || '').toLowerCase().includes('developer') ||
+       (node.data?.agentId as string || '').toLowerCase().includes('coordinator'));
+
+    if (!isClaude || node.data?.isExpanded) {
+      setSelectedNode(node);
+    }
+  }, []);
+
+  const onNodeDoubleClick = useCallback((_: React.MouseEvent, node: Node) => {
+    // Doble clic abre/cierra la tarjeta expandida del agente
+    setNodes((prev) =>
+      prev.map((n) =>
+        n.id === node.id
+          ? { ...n, data: { ...n.data, isExpanded: !n.data?.isExpanded } }
+          : n
+      )
+    );
     setSelectedNode(node);
   }, []);
 
@@ -458,6 +480,7 @@ export const WorkflowBuilderPage: React.FC = () => {
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
           onNodeClick={onNodeClick}
+          onNodeDoubleClick={onNodeDoubleClick}
           nodeTypes={nodeTypes as any}
           fitView
           minZoom={0.2}

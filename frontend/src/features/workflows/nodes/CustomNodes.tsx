@@ -120,7 +120,11 @@ export const StartNode = memo((props: any) => {
 });
 
 export const AgentNode = memo((props: any) => {
-  const { data, selected } = props;
+  const { data, selected, dragging } = props;
+  const [internalExpanded, setInternalExpanded] = React.useState(false);
+  const [isMouseDown, setIsMouseDown] = React.useState(false);
+  
+  const isExpanded = data?.isExpanded ?? internalExpanded;
   const label = (data?.label || '').toLowerCase();
   const agentId = (data?.agentId || '').toLowerCase();
 
@@ -142,24 +146,47 @@ export const AgentNode = memo((props: any) => {
 
   const isClaude = providerId === 'anthropic';
 
-  // Si es Claude y NO está seleccionado: mostrar únicamente el logo pixel-art en estado base
-  if (isClaude && !selected) {
+  // Si está siendo arrastrado o presionado con el ratón
+  const isInteracting = dragging || isMouseDown || selected;
+
+  // Estado Compacto: se muestra inicialmente o hasta que se hace doble clic
+  if (isClaude && !isExpanded) {
     return (
-      <div className="relative group cursor-pointer transition-all duration-300 transform hover:scale-110">
+      <div
+        className="relative group cursor-grab active:cursor-grabbing transition-transform duration-150 transform hover:scale-105 active:scale-95"
+        onDoubleClick={(e) => {
+          e.stopPropagation();
+          setInternalExpanded(true);
+        }}
+        onMouseDown={() => setIsMouseDown(true)}
+        onMouseUp={() => setIsMouseDown(false)}
+      >
         <Handle
           type="target"
           position={Position.Left}
           className="!bg-orange-500 !w-3 !h-3 !border-2 !border-slate-900"
         />
 
-        <div className="p-3 rounded-2xl border-2 border-orange-500/40 bg-bg-card/90 shadow-2xl backdrop-blur-md flex flex-col items-center justify-center gap-1.5 hover:border-orange-500 hover:shadow-orange-500/20 transition-all">
+        <div
+          className={`p-3 rounded-2xl border-2 bg-bg-card/95 shadow-2xl backdrop-blur-md flex flex-col items-center justify-center gap-1.5 transition-all ${
+            isInteracting
+              ? 'border-orange-500 shadow-orange-500/30 ring-2 ring-orange-500/20'
+              : 'border-orange-500/40 hover:border-orange-500 hover:shadow-orange-500/20'
+          }`}
+        >
+          {/* Al hacer un clic y arrastrar (o estar interactuando), muestra claude-active (claude 1), si no claude-base (claude 2) */}
           <img
-            src="/logos/claude-base.png"
+            src={isInteracting ? '/logos/claude-active.png' : '/logos/claude-base.png'}
             alt="Claude"
-            className="w-14 h-14 object-contain drop-shadow-md select-none pointer-events-none"
+            className="w-14 h-14 object-contain drop-shadow-md select-none pointer-events-none transition-transform duration-150"
           />
-          <span className="text-[11px] font-bold text-orange-300 font-mono tracking-tight px-1.5 py-0.5 rounded bg-orange-500/10 border border-orange-500/20">
-            {data?.label || 'Claude'}
+          <div className="flex items-center gap-1">
+            <span className="text-[11px] font-bold text-orange-300 font-mono tracking-tight px-1.5 py-0.5 rounded bg-orange-500/10 border border-orange-500/20">
+              {data?.label || 'Claude'}
+            </span>
+          </div>
+          <span className="text-[9px] text-slate-400 font-sans tracking-wide">
+            Doble clic para expandir
           </span>
         </div>
 
@@ -172,9 +199,17 @@ export const AgentNode = memo((props: any) => {
     );
   }
 
-  // Estado expandido (cuando se clickea / está seleccionado, o para otros agentes)
+  // Estado Expandido (abierto al hacer doble clic o para otros agentes)
   return (
-    <div className="animate-in fade-in zoom-in-95 duration-200">
+    <div
+      className="animate-in fade-in zoom-in-95 duration-200"
+      onDoubleClick={(e) => {
+        if (isClaude) {
+          e.stopPropagation();
+          setInternalExpanded(false);
+        }
+      }}
+    >
       <NodeWrapper
         selected={selected}
         status={data?.status}
@@ -183,7 +218,7 @@ export const AgentNode = memo((props: any) => {
         providerId={providerId}
         isClaude={isClaude}
         badgeText={data?.agentId ? 'Autonomous' : 'Agent'}
-        badgeVariant={isClaude ? 'default' : 'default'}
+        badgeVariant="default"
         borderColor={isClaude ? 'border-orange-500 ring-2 ring-orange-500/40 shadow-orange-500/30' : 'border-border-brand/50'}
         accentColor="text-fg-brand"
       >
@@ -198,7 +233,7 @@ export const AgentNode = memo((props: any) => {
               providerId={providerId}
               size="sm"
               showBackground={false}
-              active={true}
+              active={isInteracting || isExpanded}
             />
             <span className={`font-mono capitalize text-caption ${
               isClaude ? 'text-orange-400 font-bold' : 'text-fg-secondary'
