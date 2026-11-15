@@ -122,7 +122,14 @@ export const StartNode = memo((props: any) => {
 export const AgentNode = memo((props: any) => {
   const { data, selected, dragging } = props;
   const [internalExpanded, setInternalExpanded] = React.useState(false);
-  const [isMouseDown, setIsMouseDown] = React.useState(false);
+  const [isPressed, setIsPressed] = React.useState(false);
+
+  // Listener global de mouseup para asegurar que al soltar el ratón en cualquier lugar se apague el estado
+  React.useEffect(() => {
+    const handleGlobalMouseUp = () => setIsPressed(false);
+    window.addEventListener('mouseup', handleGlobalMouseUp);
+    return () => window.removeEventListener('mouseup', handleGlobalMouseUp);
+  }, []);
   
   const isExpanded = data?.isExpanded ?? internalExpanded;
   const label = (data?.label || '').toLowerCase();
@@ -146,8 +153,8 @@ export const AgentNode = memo((props: any) => {
 
   const isClaude = providerId === 'anthropic';
 
-  // Si está siendo arrastrado o presionado con el ratón
-  const isInteracting = dragging || isMouseDown || selected;
+  // Solo activo si se está manteniendo presionado el ratón o arrastrando
+  const isCurrentlyDraggingOrPressed = Boolean(dragging || isPressed);
 
   // Estado Compacto: se muestra inicialmente o hasta que se hace doble clic
   if (isClaude && !isExpanded) {
@@ -158,8 +165,12 @@ export const AgentNode = memo((props: any) => {
           e.stopPropagation();
           setInternalExpanded(true);
         }}
-        onMouseDown={() => setIsMouseDown(true)}
-        onMouseUp={() => setIsMouseDown(false)}
+        onMouseDown={(e) => {
+          if (e.button === 0) {
+            setIsPressed(true);
+          }
+        }}
+        onMouseUp={() => setIsPressed(false)}
       >
         <Handle
           type="target"
@@ -169,14 +180,14 @@ export const AgentNode = memo((props: any) => {
 
         <div
           className={`p-3 rounded-2xl border-2 bg-bg-card/95 shadow-2xl backdrop-blur-md flex flex-col items-center justify-center gap-1.5 transition-all ${
-            isInteracting
+            isCurrentlyDraggingOrPressed
               ? 'border-orange-500 shadow-orange-500/30 ring-2 ring-orange-500/20'
               : 'border-orange-500/40 hover:border-orange-500 hover:shadow-orange-500/20'
           }`}
         >
-          {/* Al hacer un clic y arrastrar (o estar interactuando), muestra claude-active (claude 1), si no claude-base (claude 2) */}
+          {/* Muestra claude1 (> <) ÚNICAMENTE mientras se mantiene presionado el ratón o se arrastra. Al soltar vuelve inmediatamente a claude2 */}
           <img
-            src={isInteracting ? '/logos/claude-active.png' : '/logos/claude-base.png'}
+            src={isCurrentlyDraggingOrPressed ? '/logos/claude-active.png' : '/logos/claude-base.png'}
             alt="Claude"
             className="w-14 h-14 object-contain drop-shadow-md select-none pointer-events-none transition-transform duration-150"
           />
@@ -233,7 +244,7 @@ export const AgentNode = memo((props: any) => {
               providerId={providerId}
               size="sm"
               showBackground={false}
-              active={isInteracting || isExpanded}
+              active={isCurrentlyDraggingOrPressed}
             />
             <span className={`font-mono capitalize text-caption ${
               isClaude ? 'text-orange-400 font-bold' : 'text-fg-secondary'
