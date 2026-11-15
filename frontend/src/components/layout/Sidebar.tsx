@@ -38,6 +38,191 @@ interface NavGroup {
   items: NavItem[];
 }
 
+interface SidebarNavItemProps {
+  item: NavItem;
+  isActive: boolean;
+  collapsed: boolean;
+  pendingApprovalsCount: number;
+  onCloseMobile: () => void;
+}
+
+const SidebarNavItem: React.FC<SidebarNavItemProps> = ({
+  item,
+  isActive,
+  collapsed,
+  pendingApprovalsCount,
+  onCloseMobile,
+}) => {
+  const Icon = item.icon;
+  const [isHovered, setIsHovered] = React.useState(false);
+  const [mousePos, setMousePos] = React.useState({ x: 50, y: 50 });
+  const containerRef = React.useRef<HTMLAnchorElement | null>(null);
+  const canvasRef = React.useRef<HTMLCanvasElement | null>(null);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    setMousePos({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    });
+  };
+
+  React.useEffect(() => {
+    if (!isHovered && !isActive) return;
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let animId: number;
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    ctx.scale(dpr, dpr);
+
+    const w = rect.width;
+    const h = rect.height;
+
+    // Partículas: en hover son más dinámicas, en activo son brasas ambientales suaves
+    const count = isHovered ? 16 : 8;
+    const particles = Array.from({ length: count }).map(() => ({
+      x: Math.random() * w,
+      y: Math.random() * h,
+      vx: (Math.random() - 0.5) * 0.7,
+      vy: -0.25 - Math.random() * 0.5,
+      size: Math.random() * 1.6 + 0.8,
+      alpha: Math.random() * 0.7 + 0.2,
+      fadeSpeed: 0.008 + Math.random() * 0.012,
+      color: Math.random() > 0.35 ? '#e4f222' : '#ffffff',
+    }));
+
+    const render = () => {
+      ctx.clearRect(0, 0, w, h);
+
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.alpha -= p.fadeSpeed;
+
+        if (p.alpha <= 0 || p.y < -2 || p.x < -2 || p.x > w + 2) {
+          p.x = Math.random() * w;
+          p.y = h + 2;
+          p.vx = (Math.random() - 0.5) * 0.7;
+          p.vy = -0.25 - Math.random() * 0.5;
+          p.alpha = Math.random() * 0.7 + 0.3;
+        }
+
+        ctx.save();
+        ctx.globalAlpha = p.alpha;
+        ctx.shadowBlur = 4;
+        ctx.shadowColor = p.color;
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      animId = requestAnimationFrame(render);
+    };
+
+    render();
+
+    return () => {
+      cancelAnimationFrame(animId);
+      if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+    };
+  }, [isHovered, isActive]);
+
+  return (
+    <NavLink
+      ref={containerRef}
+      to={item.path}
+      onClick={onCloseMobile}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onMouseMove={handleMouseMove}
+      title={collapsed ? item.label : undefined}
+      className={cn(
+        'group relative flex items-center rounded-[8px] px-3 py-2 text-body font-medium transition-all duration-200 overflow-hidden select-none',
+        isActive
+          ? 'text-fg-brand font-[510] border border-[#e4f222]/80 shadow-[0_0_20px_-2px_rgba(228,242,34,0.4),inset_0_0_12px_rgba(228,242,34,0.15)] bg-[radial-gradient(ellipse_at_center,_rgba(228,242,34,0.18)_0%,_rgba(228,242,34,0.06)_55%,_rgba(15,16,17,0.9)_100%)]'
+          : isHovered
+          ? 'text-fg-primary border border-[#e4f222]/45 shadow-[0_0_15px_-3px_rgba(228,242,34,0.25)]'
+          : 'text-fg-secondary border border-transparent hover:text-fg-primary'
+      )}
+    >
+      {/* Difuminado interactivo con halo que sigue al cursor en hover */}
+      {isHovered && !isActive && (
+        <div
+          className="pointer-events-none absolute inset-0 transition-opacity duration-200"
+          style={{
+            background: `radial-gradient(130px circle at ${mousePos.x}px ${mousePos.y}px, rgba(228, 242, 34, 0.18) 0%, rgba(228, 242, 34, 0.05) 50%, transparent 80%)`,
+          }}
+        />
+      )}
+
+      {/* Partículas animadas en movimiento */}
+      {(isHovered || isActive) && (
+        <canvas
+          ref={canvasRef}
+          className="pointer-events-none absolute inset-0 h-full w-full rounded-[8px]"
+        />
+      )}
+
+      {/* Icono con resplandor neón */}
+      <Icon
+        className={cn(
+          'h-4 w-4 shrink-0 transition-all duration-200 relative z-10',
+          isActive
+            ? 'text-fg-brand drop-shadow-[0_0_8px_rgba(228,242,34,0.7)]'
+            : isHovered
+            ? 'text-fg-brand drop-shadow-[0_0_5px_rgba(228,242,34,0.5)]'
+            : 'text-fg-muted group-hover:text-fg-primary',
+          collapsed ? 'mx-auto' : 'mr-3'
+        )}
+      />
+
+      {/* Etiqueta del enlace */}
+      {!collapsed && (
+        <span
+          className={cn(
+            'flex-1 truncate text-caption sm:text-body relative z-10 transition-colors',
+            isActive
+              ? 'text-fg-brand font-[510] drop-shadow-[0_0_8px_rgba(228,242,34,0.5)]'
+              : isHovered
+              ? 'text-fg-primary'
+              : 'text-fg-secondary'
+          )}
+        >
+          {item.label}
+        </span>
+      )}
+
+      {/* Contador de Aprobaciones Pendientes */}
+      {!collapsed && item.showBadge && (
+        <span className="relative z-10 ml-auto rounded-full bg-fg-warning/20 px-2 py-0.5 text-caption font-mono font-[510] text-fg-warning border border-fg-warning/40 animate-pulse">
+          {pendingApprovalsCount} pend.
+        </span>
+      )}
+
+      {collapsed && item.showBadge && (
+        <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-fg-warning shadow-[0_0_6px_#fbbf24]" />
+      )}
+
+      {/* Barra de iluminación neón izquierda (solo cuando está prendido/clickeado) */}
+      {isActive && (
+        <div className="absolute left-0 top-1.5 bottom-1.5 w-1 rounded-r bg-[#e4f222] shadow-[0_0_10px_#e4f222,0_0_20px_#e4f222]" />
+      )}
+    </NavLink>
+  );
+};
+
 export const Sidebar: React.FC<SidebarProps> = ({
   collapsed,
   onToggleCollapse,
@@ -159,52 +344,20 @@ export const Sidebar: React.FC<SidebarProps> = ({
               )}
 
               {group.items.map((item) => {
-                const Icon = item.icon;
                 const isActive =
                   item.path === '/'
                     ? location.pathname === '/'
                     : location.pathname.startsWith(item.path);
 
                 return (
-                  <NavLink
+                  <SidebarNavItem
                     key={item.path}
-                    to={item.path}
-                    onClick={onCloseMobile}
-                    title={collapsed ? item.label : undefined}
-                    className={cn(
-                      'flex items-center rounded-[6px] px-3 py-2 text-body font-medium transition-all group relative',
-                      isActive
-                        ? 'bg-bg-brand-subtle text-fg-brand font-[510] border border-border-brand shadow-xs'
-                        : 'text-fg-secondary hover:bg-bg-surface hover:text-fg-primary'
-                    )}
-                  >
-                    <Icon
-                      className={cn(
-                        'h-4 w-4 shrink-0 transition-colors',
-                        isActive ? 'text-fg-brand' : 'text-fg-muted group-hover:text-fg-primary',
-                        collapsed ? 'mx-auto' : 'mr-3'
-                      )}
-                    />
-
-                    {!collapsed && (
-                      <span className="flex-1 truncate text-caption sm:text-body">{item.label}</span>
-                    )}
-
-                    {/* Pending Approvals Counter Badge */}
-                    {!collapsed && item.showBadge && (
-                      <span className="ml-auto rounded-full bg-fg-warning/20 px-2 py-0.5 text-caption font-mono font-[510] text-fg-warning border border-fg-warning/40 animate-pulse">
-                        {pendingApprovalsCount} pend.
-                      </span>
-                    )}
-
-                    {collapsed && item.showBadge && (
-                      <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-fg-warning" />
-                    )}
-
-                    {isActive && (
-                      <div className="absolute left-0 top-1.5 bottom-1.5 w-1 rounded-r bg-[#e4f222]" />
-                    )}
-                  </NavLink>
+                    item={item}
+                    isActive={isActive}
+                    collapsed={collapsed}
+                    pendingApprovalsCount={pendingApprovalsCount}
+                    onCloseMobile={onCloseMobile}
+                  />
                 );
               })}
             </div>
