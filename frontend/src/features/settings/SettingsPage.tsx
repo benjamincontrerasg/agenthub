@@ -27,6 +27,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Select } from '@/components/ui/select';
+import { CustomSelect } from '@/components/ui/custom-select';
 import { useSettingsStore } from '@/stores/settings.store';
 import { notificationsService, NotificationChannel } from '@/services/notifications.service';
 import { toast } from '@/stores/toast.store';
@@ -527,21 +528,31 @@ export const SettingsPage: React.FC = () => {
                   Apariencia e Identidad Visual
                 </CardTitle>
                 <CardDescription>
-                  Tema tecnológico oscuro profesional con acentos violetas y azules
+                  Personaliza el tema visual, modo claro/oscuro y preferencias de accesibilidad
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-center justify-between p-3 rounded-[6px] border border-border-default bg-bg-card/60">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-[6px] border border-border-default bg-bg-card/60 gap-3">
                   <div>
                     <span className="text-caption font-[510] text-fg-primary block">Tema Visual</span>
                     <span className="text-caption text-fg-secondary block mt-0.5">
-                      Tema oscuro de alta fidelidad predeterminado para NEXORA SaaS.
+                      Selecciona entre la precisión oscura Midnight o el tema blanco limpio.
                     </span>
                   </div>
-                  <Badge variant="default">Oscuro (Fondo #090d16)</Badge>
+                  <div className="w-full sm:w-56">
+                    <CustomSelect
+                      value={settings.appearance?.theme || 'dark'}
+                      onChange={(val) => updateAppearance({ theme: val as 'dark' | 'light' | 'system' })}
+                      options={[
+                        { value: 'dark', label: 'Oscuro (Midnight)', description: 'Fondo near-black #08090a' },
+                        { value: 'light', label: 'Blanco (Claro)', description: 'Lienzo blanco limpio y bordes sutiles' },
+                        { value: 'system', label: 'Automático (Sistema)', description: 'Sincronizar con el sistema operativo' },
+                      ]}
+                    />
+                  </div>
                 </div>
 
-                <div className="flex items-center justify-between p-3 rounded-[6px] border border-border-default bg-bg-card/60">
+                <div className="flex items-center justify-between p-3.5 rounded-[6px] border border-border-default bg-bg-card/60">
                   <div>
                     <span className="text-caption font-[510] text-fg-primary block">
                       Reducción de Animaciones
