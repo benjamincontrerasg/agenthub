@@ -21,6 +21,8 @@ export interface AIProvider {
   badge: string;
   status: 'connected' | 'disconnected' | 'error' | 'testing';
   defaultModelId: string;
+  kind?: string;
+  baseUrl?: string;
   models: AIModel[];
   hasApiKey: boolean;
   apiEndpoint?: string;
@@ -280,8 +282,8 @@ export interface AnalyticsSummary {
   activeAgents: number;
   connectedProviders: number;
   connectedMCPServers: number;
-  tokensByProvider: { provider: string; tokens: number; cost: number }[];
-  tokensByAgent: { agent: string; tokens: number; cost: number }[];
+  tokensByProvider: { provider: string; tokens: number; cost: number | null }[];
+  tokensByAgent: { agent: string; tokens: number; cost: number | null }[];
   activityTimeline: {
     date: string;
     tokens: number;

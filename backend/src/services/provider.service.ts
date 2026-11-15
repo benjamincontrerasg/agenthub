@@ -4,9 +4,8 @@ import { eq } from 'drizzle-orm';
 import { AIProvider, ProviderId } from '../types.js';
 import { encrypt, decrypt } from '../lib/crypto.js';
 import { NotFoundError, ValidationError } from '../lib/errors.js';
-import Anthropic from '@anthropic-ai/sdk';
-import OpenAI from 'openai';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { createProvider, LLMProvider } from '../providers/index.js';
+import { validateSafeUrl } from '../lib/ssrf.js';
 
 export const providerService = {
   async getAll(): Promise<AIProvider[]> {
@@ -21,6 +20,8 @@ export const providerService = {
         description: p.description,
         logo: p.logo,
         badge: p.badge,
+        kind: p.kind,
+        baseUrl: p.baseUrl ?? undefined,
         status: p.status as any,
         defaultModelId: p.defaultModelId,
         hasApiKey: p.hasApiKey,
@@ -61,6 +62,8 @@ export const providerService = {
       description: p.description,
       logo: p.logo,
       badge: p.badge,
+      kind: p.kind,
+      baseUrl: p.baseUrl ?? undefined,
       status: p.status as any,
       defaultModelId: p.defaultModelId,
       hasApiKey: p.hasApiKey,
@@ -86,10 +89,21 @@ export const providerService = {
     };
   },
 
-  async connect(id: ProviderId, apiKey: string, defaultModelId?: string): Promise<{ success: boolean; message: string }> {
+  async connect(
+    id: ProviderId,
+    apiKey: string,
+    defaultModelId?: string,
+    baseUrl?: string,
+    kind?: string
+  ): Promise<{ success: boolean; message: string }> {
     const p = db.select().from(schema.providers).where(eq(schema.providers.id, id)).get();
     if (!p) {
       throw new NotFoundError('Proveedor', id);
+    }
+
+    if (baseUrl) {
+      const allowLocal = id === 'ollama' || id === 'lmstudio' || kind === 'ollama' || kind === 'lmstudio';
+      await validateSafeUrl(baseUrl, { allowLocalhost: allowLocal });
     }
 
     // Encrypt sensitive API key at rest
@@ -101,6 +115,8 @@ export const providerService = {
         hasApiKey: true,
         status: 'connected',
         defaultModelId: defaultModelId || p.defaultModelId,
+        baseUrl: baseUrl ?? p.baseUrl,
+        kind: kind ?? p.kind,
         lastTested: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       })
@@ -148,38 +164,66 @@ export const providerService = {
     };
   },
 
-  async updateDefaultModel(id: ProviderId, defaultModelId: string): Promise<{ success: boolean; message: string }> {
+  async updateDefaultModel(
+    id: ProviderId,
+    defaultModelId?: string,
+    baseUrl?: string,
+    kind?: string
+  ): Promise<{ success: boolean; message: string }> {
     const p = db.select().from(schema.providers).where(eq(schema.providers.id, id)).get();
     if (!p) {
       throw new NotFoundError('Proveedor', id);
     }
 
-    const model = db.select().from(schema.models).where(eq(schema.models.id, defaultModelId)).get();
-    if (!model || model.providerId !== id) {
-      throw new ValidationError(`El modelo '${defaultModelId}' no pertenece al proveedor '${id}'`);
+    if (baseUrl) {
+      const allowLocal = id === 'ollama' || id === 'lmstudio' || kind === 'ollama' || kind === 'lmstudio';
+      await validateSafeUrl(baseUrl, { allowLocalhost: allowLocal });
+    }
+
+    if (defaultModelId) {
+      const model = db.select().from(schema.models).where(eq(schema.models.id, defaultModelId)).get();
+      if (!model || model.providerId !== id) {
+        throw new ValidationError(`El modelo '${defaultModelId}' no pertenece al proveedor '${id}'`);
+      }
+
+      db.update(schema.providers)
+        .set({
+          defaultModelId,
+          baseUrl: baseUrl ?? p.baseUrl,
+          kind: kind ?? p.kind,
+          updatedAt: new Date().toISOString(),
+        })
+        .where(eq(schema.providers.id, id))
+        .run();
+
+      db.update(schema.models)
+        .set({ isDefault: false })
+        .where(eq(schema.models.providerId, id))
+        .run();
+
+      db.update(schema.models)
+        .set({ isDefault: true })
+        .where(eq(schema.models.id, defaultModelId))
+        .run();
+
+      return {
+        success: true,
+        message: `Configuración de ${p.name} actualizada.`,
+      };
     }
 
     db.update(schema.providers)
       .set({
-        defaultModelId,
+        baseUrl: baseUrl ?? p.baseUrl,
+        kind: kind ?? p.kind,
         updatedAt: new Date().toISOString(),
       })
       .where(eq(schema.providers.id, id))
       .run();
 
-    db.update(schema.models)
-      .set({ isDefault: false })
-      .where(eq(schema.models.providerId, id))
-      .run();
-
-    db.update(schema.models)
-      .set({ isDefault: true })
-      .where(eq(schema.models.id, defaultModelId))
-      .run();
-
     return {
       success: true,
-      message: `Modelo predeterminado de ${p.name} actualizado a ${model.name}.`,
+      message: `Configuración de ${p.name} actualizada.`,
     };
   },
 
@@ -189,46 +233,34 @@ export const providerService = {
       throw new NotFoundError('Proveedor', id);
     }
 
-    const startTime = Date.now();
-    let isConnected = true;
-    let message = 'Ping de conexión completado satisfactoriamente.';
-
+    let plainKey: string | undefined;
     if (p.encryptedApiKey) {
       try {
-        const apiKey = decrypt(p.encryptedApiKey);
-        if (id === 'openai') {
-          const client = new OpenAI({ apiKey });
-          await client.models.list();
-          message = 'Conexión con OpenAI API (Modelos y cuota) validada con éxito.';
-        } else if (id === 'anthropic') {
-          const client = new Anthropic({ apiKey });
-          await client.models.list({ limit: 1 });
-          message = 'Conexión con Anthropic API (Claude) validada con éxito.';
-        } else if (id === 'gemini') {
-          const genAI = new GoogleGenerativeAI(apiKey);
-          const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-          await model.countTokens({ contents: [{ role: 'user', parts: [{ text: 'ping' }] }] });
-          message = 'Conexión con Google Gemini API validada con éxito (Token check OK).';
-        } else if (id === 'ollama') {
-          const endpoint = p.apiEndpoint || 'http://localhost:11434';
-          const res = await fetch(`${endpoint}/api/tags`);
-          if (!res.ok) throw new Error('Ollama no responde');
-          message = 'Instancia de Ollama local responde activamente.';
-        }
+        plainKey = decrypt(p.encryptedApiKey);
       } catch (err: any) {
-        // If external API call failed, fallback or report
-        console.warn(`[Provider Test] Real API check returned:`, err.message);
-        message = `Prueba de conectividad completada (Diagnóstico: ${err.message || 'Verificación OK'})`;
+        console.warn(`[Provider] Error al descifrar clave de ${p.name}:`, err.message);
       }
     }
 
-    const latencyMs = Math.max(Date.now() - startTime, Math.floor(Math.random() * 60) + 40);
+    const provider: LLMProvider = createProvider({
+      id: p.id,
+      kind: p.kind || undefined,
+      baseUrl: p.baseUrl || p.apiEndpoint || undefined,
+      apiKey: plainKey,
+    });
+
+    const testRes = await provider.test();
+    const isConnected = testRes.ok;
+    const latencyMs = testRes.latencyMs;
+    const message = testRes.ok
+      ? `Conexión con ${p.name} validada con éxito (${latencyMs}ms).`
+      : `Diagnóstico de conexión: ${testRes.error || 'Error al conectar'}`;
 
     db.update(schema.providers)
       .set({
         latencyMs,
         lastTested: new Date().toISOString(),
-        status: 'connected',
+        status: isConnected ? 'connected' : 'error',
         updatedAt: new Date().toISOString(),
       })
       .where(eq(schema.providers.id, id))

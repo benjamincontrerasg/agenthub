@@ -74,7 +74,33 @@ export async function seedDatabase() {
           supportsToolCalling: m.supportsToolCalling,
           isDefault: m.isDefault ?? false,
         }).run();
+
+        db.insert(schema.providerModels).values({
+          providerId: p.id,
+          modelId: m.id,
+          contextWindow: m.contextWindow,
+          inputCostPer1M: m.inputPricePerMillion,
+          outputCostPer1M: m.outputPricePerMillion,
+          supportsTools: m.supportsToolCalling ?? true,
+        }).run();
       }
+    }
+  }
+
+  const existingProviderModels = db.select().from(schema.providerModels).all();
+  if (existingProviderModels.length === 0) {
+    const allModels = db.select().from(schema.models).all();
+    for (const m of allModels) {
+      try {
+        db.insert(schema.providerModels).values({
+          providerId: m.providerId,
+          modelId: m.id,
+          contextWindow: m.contextWindow,
+          inputCostPer1M: m.inputPricePerMillion,
+          outputCostPer1M: m.outputPricePerMillion,
+          supportsTools: m.supportsToolCalling ?? true,
+        }).run();
+      } catch {}
     }
   }
 

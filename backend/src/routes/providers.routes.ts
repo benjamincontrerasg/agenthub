@@ -11,11 +11,11 @@ export async function providersRoutes(fastify: FastifyInstance) {
     return providerService.getById(req.params.id);
   });
 
-  fastify.post<{ Params: { id: string }; Body: { apiKey: string; defaultModelId?: string } }>(
+  fastify.post<{ Params: { id: string }; Body: { apiKey: string; defaultModelId?: string; baseUrl?: string; kind?: string } }>(
     '/providers/:id/connect',
     async (req) => {
       const parsed = connectProviderSchema.parse(req.body);
-      return providerService.connect(req.params.id, parsed.apiKey, parsed.defaultModelId);
+      return providerService.connect(req.params.id, parsed.apiKey, parsed.defaultModelId, parsed.baseUrl, parsed.kind);
     }
   );
 
@@ -23,11 +23,11 @@ export async function providersRoutes(fastify: FastifyInstance) {
     return providerService.disconnect(req.params.id);
   });
 
-  fastify.patch<{ Params: { id: string }; Body: { defaultModelId: string } }>(
+  fastify.patch<{ Params: { id: string }; Body: { defaultModelId?: string; baseUrl?: string; kind?: string } }>(
     '/providers/:id',
     async (req) => {
       const parsed = updateProviderSchema.parse(req.body);
-      return providerService.updateDefaultModel(req.params.id, parsed.defaultModelId);
+      return providerService.updateDefaultModel(req.params.id, parsed.defaultModelId, parsed.baseUrl, parsed.kind);
     }
   );
 

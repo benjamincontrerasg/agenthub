@@ -158,3 +158,29 @@ export async function* parseSSEStream(body: ReadableStream<Uint8Array>): AsyncGe
     reader.releaseLock();
   }
 }
+
+/**
+ * Ejecuta una operación HTTP con backoff exponencial (máx 2 reintentos) para errores retryable.
+ */
+export async function withExponentialBackoff<T>(
+  fn: () => Promise<T>,
+  options: { maxRetries?: number; initialDelayMs?: number } = {}
+): Promise<T> {
+  const maxRetries = options.maxRetries ?? 2;
+  const initialDelay = options.initialDelayMs ?? 500;
+
+  let attempt = 0;
+  while (true) {
+    try {
+      return await fn();
+    } catch (err: any) {
+      const isRetryable = err?.retryable || err?.status === 429 || (err?.status && err.status >= 500);
+      if (attempt >= maxRetries || !isRetryable) {
+        throw err;
+      }
+      attempt++;
+      const delay = initialDelay * Math.pow(2, attempt - 1);
+      await new Promise((r) => setTimeout(r, delay));
+    }
+  }
+}

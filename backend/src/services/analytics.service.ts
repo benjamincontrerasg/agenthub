@@ -4,6 +4,44 @@ import { eq } from 'drizzle-orm';
 import { AnalyticsSummary } from '../types.js';
 
 export const analyticsService = {
+  getModelRate(providerId: string, modelId: string): number | null {
+    try {
+      const pm = db
+        .select()
+        .from(schema.providerModels)
+        .where(eq(schema.providerModels.providerId, providerId))
+        .all()
+        .find((m) => m.modelId === modelId);
+
+      if (pm && pm.inputCostPer1M !== null && pm.inputCostPer1M !== undefined) {
+        return pm.inputCostPer1M;
+      }
+    } catch {}
+
+    try {
+      const m = db
+        .select()
+        .from(schema.models)
+        .where(eq(schema.models.providerId, providerId))
+        .all()
+        .find((m) => m.id === modelId);
+
+      if (m && m.inputPricePerMillion !== null && m.inputPricePerMillion !== undefined) {
+        return m.inputPricePerMillion;
+      }
+    } catch {}
+
+    return null;
+  },
+
+  calculateCost(providerId: string, modelId: string, tokens: number): number | null {
+    const rate = this.getModelRate(providerId, modelId);
+    if (rate === null || rate === undefined) {
+      return null;
+    }
+    return Number(((tokens / 1_000_000) * rate).toFixed(4));
+  },
+
   async getSummary(): Promise<AnalyticsSummary> {
     const providers = db.select().from(schema.providers).all();
     const agents = db.select().from(schema.agents).all();
@@ -21,6 +59,10 @@ export const analyticsService = {
     for (const a of agents) {
       totalTokens += a.totalTokens;
       completedRuns += a.totalRuns;
+      const agentCost = this.calculateCost(a.providerId, a.modelId, a.totalTokens);
+      if (agentCost !== null) {
+        totalCost += agentCost;
+      }
     }
 
     for (const e of executions) {
@@ -39,11 +81,14 @@ export const analyticsService = {
       { provider: 'Ollama (Local)', tokens: 380_000, cost: 0.0 },
     ];
 
-    const tokensByAgent = agents.map((a) => ({
-      agent: a.name,
-      tokens: a.totalTokens || 250_000,
-      cost: Number(((a.totalTokens || 250_000) / 1_000_000 * 6.5).toFixed(2)),
-    }));
+    const tokensByAgent = agents.map((a) => {
+      const cost = this.calculateCost(a.providerId, a.modelId, a.totalTokens || 250_000);
+      return {
+        agent: a.name,
+        tokens: a.totalTokens || 250_000,
+        cost,
+      };
+    });
 
     const activityTimeline = [
       { date: '08 Nov', tokens: 340000, executions: 22, cost: 3.8 },

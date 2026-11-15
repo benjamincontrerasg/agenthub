@@ -9,6 +9,8 @@ export const providers = sqliteTable('providers', {
   description: text('description').notNull(),
   logo: text('logo').notNull(),
   badge: text('badge').notNull(),
+  kind: text('kind').notNull().default('openai-compatible'),
+  baseUrl: text('base_url'),
   status: text('status', { enum: ['connected', 'disconnected', 'error', 'testing'] }).notNull().default('disconnected'),
   defaultModelId: text('default_model_id').notNull(),
   hasApiKey: integer('has_api_key', { mode: 'boolean' }).notNull().default(false),
@@ -34,6 +36,17 @@ export const models = sqliteTable('models', {
   supportsToolCalling: integer('supports_tool_calling', { mode: 'boolean' }).notNull().default(true),
   isDefault: integer('is_default', { mode: 'boolean' }).notNull().default(false),
 });
+
+export const providerModels = sqliteTable('provider_models', {
+  providerId: text('provider_id').notNull().references(() => providers.id, { onDelete: 'cascade' }),
+  modelId: text('model_id').notNull(),
+  contextWindow: integer('context_window').default(128000),
+  inputCostPer1M: real('input_cost_per_1m'),
+  outputCostPer1M: real('output_cost_per_1m'),
+  supportsTools: integer('supports_tools', { mode: 'boolean' }).notNull().default(true),
+}, (table) => [
+  primaryKey({ columns: [table.providerId, table.modelId] })
+]);
 
 // --- Agents ---
 

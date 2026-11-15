@@ -5,7 +5,22 @@ import { WorkflowExecution, ExecutionStep, ExecutionLog } from '../types.js';
 import { NotFoundError } from '../lib/errors.js';
 import { wsManager } from './websocket.service.js';
 
+const activeControllers = new Map<string, AbortController>();
+
 export const executionService = {
+  getExecutionSignal(id: string): AbortSignal {
+    let controller = activeControllers.get(id);
+    if (!controller) {
+      controller = new AbortController();
+      activeControllers.set(id, controller);
+    }
+    return controller.signal;
+  },
+
+  finishExecution(id: string) {
+    activeControllers.delete(id);
+  },
+
   async getAll(): Promise<WorkflowExecution[]> {
     const list = db.select().from(schema.workflowExecutions).all();
     const allSteps = db.select().from(schema.executionSteps).all();
@@ -141,6 +156,12 @@ export const executionService = {
   },
 
   async cancel(id: string): Promise<{ success: boolean }> {
+    const controller = activeControllers.get(id);
+    if (controller) {
+      controller.abort();
+      activeControllers.delete(id);
+    }
+
     const e = db.select().from(schema.workflowExecutions).where(eq(schema.workflowExecutions.id, id)).get();
     if (!e) {
       throw new NotFoundError('Ejecución', id);

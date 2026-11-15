@@ -3,10 +3,14 @@ import { z } from 'zod';
 export const connectProviderSchema = z.object({
   apiKey: z.string().min(1, 'API key es requerida'),
   defaultModelId: z.string().optional(),
+  baseUrl: z.string().url('URL inválida').optional(),
+  kind: z.string().optional(),
 });
 
 export const updateProviderSchema = z.object({
-  defaultModelId: z.string().min(1, 'defaultModelId es requerido'),
+  defaultModelId: z.string().min(1, 'defaultModelId es requerido').optional(),
+  baseUrl: z.string().url('URL inválida').optional(),
+  kind: z.string().optional(),
 });
 
 export const createAgentSchema = z.object({
