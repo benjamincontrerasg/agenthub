@@ -34,10 +34,15 @@ function sanitizeErrorMessage(status: number, statusText: string, bodyText: stri
   }
 
   if (!detail && bodyText) {
-    // Sanitizar cualquier apariencia de Bearer o tokens
-    detail = bodyText
+    detail = bodyText;
+  }
+
+  if (detail) {
+    // Sanitizar cualquier apariencia de Bearer, sk-, ant-, tokens o claves
+    detail = detail
       .replace(/Bearer\s+[A-Za-z0-9\-_\.]+/gi, 'Bearer [REDACTED]')
-      .replace(/(?:key|token|secret)=([A-Za-z0-9\-_\.]+)/gi, '$1=[REDACTED]')
+      .replace(/(?:key|token|secret|password)(?:\s*[:=]\s*|\s+)([A-Za-z0-9\-_\.]+)/gi, 'token: [REDACTED]')
+      .replace(/(?:sk-|ant-|key-|ghp_)[A-Za-z0-9\-_\.]+/gi, '[REDACTED]')
       .slice(0, 300);
   }
 
