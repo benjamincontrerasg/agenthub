@@ -52,11 +52,13 @@ import {
   Upload,
   Globe,
   Check,
+  RotateCcw,
 } from 'lucide-react';
 import { toast } from '@/stores/toast.store';
 import { WORKFLOW_TEMPLATES, WorkflowTemplate } from './templates';
 
 const nodeTypes = {
+  // Primary custom node definitions
   startNode: StartNode,
   agentNode: AgentNode,
   mcpToolNode: MCPToolNode,
@@ -65,6 +67,22 @@ const nodeTypes = {
   approvalNode: ApprovalNode,
   outputNode: OutputNode,
   endNode: EndNode,
+
+  // Canonical aliases used across templates, backend & imports
+  start: StartNode,
+  agent: AgentNode,
+  mcp_tool: MCPToolNode,
+  mcpTool: MCPToolNode,
+  tool: MCPToolNode,
+  condition: ConditionNode,
+  parallel: ParallelNode,
+  human_approval: ApprovalNode,
+  approval: ApprovalNode,
+  output: OutputNode,
+  end: EndNode,
+
+  // Graceful fallback for unmapped or default nodes
+  default: AgentNode,
 };
 
 export const WorkflowBuilderPage: React.FC = () => {
@@ -77,6 +95,7 @@ export const WorkflowBuilderPage: React.FC = () => {
     createWorkflow,
     duplicateWorkflow,
     deleteWorkflow,
+    resetWorkflowToDefault,
     startSimulation,
     stopSimulation,
     isSimulating,
@@ -96,11 +115,11 @@ export const WorkflowBuilderPage: React.FC = () => {
   // Sync state if active workflow changes
   React.useEffect(() => {
     if (currentWorkflow) {
-      setNodes(currentWorkflow.nodes as any);
-      setEdges(currentWorkflow.edges as any);
+      setNodes(currentWorkflow.nodes as any || []);
+      setEdges(currentWorkflow.edges as any || []);
       setSelectedNode(null);
     }
-  }, [currentWorkflow?.id]);
+  }, [currentWorkflow?.id, currentWorkflow?.updatedAt]);
 
   const onNodesChange = useCallback(
     (changes: any) => setNodes((nds) => applyNodeChanges(changes, nds)),
@@ -313,6 +332,22 @@ export const WorkflowBuilderPage: React.FC = () => {
             title="Exportar Workflow como JSON"
           >
             <Download className="h-3.5 w-3.5" />
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-caption h-8 text-fg-muted hover:text-fg-primary"
+            onClick={() => {
+              if (currentWorkflow && confirm('¿Deseas restablecer este pipeline a su configuración predeterminada con todos sus nodos originales?')) {
+                resetWorkflowToDefault(currentWorkflow.id);
+                toast.success('Pipeline Restablecido', 'Se restauraron los nodos originales.');
+              }
+            }}
+            title="Restablecer pipeline a valores predeterminados"
+          >
+            <RotateCcw className="mr-1.5 h-3.5 w-3.5" />
+            Restablecer
           </Button>
 
           <Button
@@ -542,11 +577,12 @@ export const WorkflowBuilderPage: React.FC = () => {
                       size="sm"
                       className="shrink-0 text-caption"
                       onClick={() => {
-                        createWorkflow(tpl.workflow.name, tpl.workflow.description);
-                        const created = workflows[workflows.length - 1];
-                        if (created) {
-                          saveWorkflow(created.id, tpl.workflow.nodes as any, tpl.workflow.edges as any);
-                          setActiveWorkflowId(created.id);
+                        const newWf = createWorkflow(tpl.workflow.name, tpl.workflow.description);
+                        if (newWf) {
+                          saveWorkflow(newWf.id, tpl.workflow.nodes as any, tpl.workflow.edges as any);
+                          setActiveWorkflowId(newWf.id);
+                          setNodes(tpl.workflow.nodes as any);
+                          setEdges(tpl.workflow.edges as any);
                         }
                         setShowTemplatesModal(false);
                         toast.success('Plantilla Aplicada', `Pipeline "${tpl.name}" creado desde plantilla.`);
