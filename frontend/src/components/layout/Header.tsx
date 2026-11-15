@@ -36,6 +36,7 @@ const sectionTitles: Record<string, { title: string; subtitle: string }> = {
   '/chat': { title: 'Chat Multi-Agente', subtitle: 'Espacio de trabajo donde tus agentes colaboran y piden aprobación' },
   '/executions': { title: 'Centro de Ejecuciones', subtitle: 'Historial, trazabilidad y estado de tareas en tiempo real' },
   '/analytics': { title: 'Uso y Métricas', subtitle: 'Consumo de tokens, costos estimados y rendimiento de inferencia' },
+  '/audit': { title: 'Auditoría Zero-Trust', subtitle: 'Trazabilidad inmutable de eventos, aprobaciones y cumplimiento' },
   '/settings': { title: 'Configuración', subtitle: 'Ajustes del sistema, seguridad y claves de cifrado' },
 };
 

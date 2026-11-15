@@ -117,4 +117,35 @@ export const mcpService = {
       method: 'DELETE',
     });
   },
+
+  async executeTool(
+    serverId: string,
+    toolName: string,
+    input: Record<string, any>
+  ): Promise<{ output: any; executionTimeMs: number; requiresApproval: boolean }> {
+    if (isMockMode()) {
+      const start = Date.now();
+      await new Promise((r) => setTimeout(r, 150 + Math.random() * 200));
+      const elapsed = Date.now() - start;
+      const server = mockServers.find((s) => s.id === serverId);
+      const tool = server?.tools.find((t) => t.name === toolName);
+      return {
+        output: {
+          success: true,
+          message: `Ejecución simulada de "${toolName}" completada.`,
+          data: { input, timestamp: new Date().toISOString(), mockResult: true },
+        },
+        executionTimeMs: elapsed,
+        requiresApproval: tool?.requiresApproval || false,
+      };
+    }
+
+    return apiClient<{ output: any; executionTimeMs: number; requiresApproval: boolean }>(
+      `/mcp/servers/${serverId}/tools/${encodeURIComponent(toolName)}/execute`,
+      {
+        method: 'POST',
+        body: JSON.stringify({ input }),
+      }
+    );
+  },
 };

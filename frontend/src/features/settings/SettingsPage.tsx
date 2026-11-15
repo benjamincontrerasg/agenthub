@@ -15,6 +15,10 @@ import {
   Lock,
   AlertTriangle,
   RotateCcw,
+  Plus,
+  Trash2,
+  Send,
+  Globe,
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -24,6 +28,8 @@ import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Select } from '@/components/ui/select';
 import { useSettingsStore } from '@/stores/settings.store';
+import { notificationsService, NotificationChannel } from '@/services/notifications.service';
+import { toast } from '@/stores/toast.store';
 
 export const SettingsPage: React.FC = () => {
   const {
@@ -48,6 +54,66 @@ export const SettingsPage: React.FC = () => {
   const [isTesting, setIsTesting] = useState(false);
   const [isTestingBridge, setIsTestingBridge] = useState(false);
   const [saveFeedback, setSaveFeedback] = useState<string | null>(null);
+
+  // External Notification Webhooks state
+  const [channels, setChannels] = useState<NotificationChannel[]>([]);
+  const [newChannelName, setNewChannelName] = useState('');
+  const [newChannelType, setNewChannelType] = useState<'slack' | 'discord' | 'webhook'>('slack');
+  const [newChannelUrl, setNewChannelUrl] = useState('');
+  const [isSendingTest, setIsSendingTest] = useState(false);
+
+  React.useEffect(() => {
+    notificationsService.getChannels().then(setChannels).catch(console.error);
+  }, []);
+
+  const handleAddChannel = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newChannelName.trim() || !newChannelUrl.trim()) return;
+    try {
+      const added = await notificationsService.addChannel({
+        name: newChannelName.trim(),
+        type: newChannelType,
+        url: newChannelUrl.trim(),
+      });
+      setChannels((prev) => [...prev, added]);
+      setNewChannelName('');
+      setNewChannelUrl('');
+      toast.success('Canal Registrado', `Se agregó el canal "${added.name}".`);
+    } catch {
+      toast.error('Error', 'No se pudo agregar el canal.');
+    }
+  };
+
+  const handleToggleChannel = async (id: string, enabled: boolean) => {
+    try {
+      const updated = await notificationsService.toggleChannel(id, enabled);
+      setChannels((prev) => prev.map((c) => (c.id === id ? updated : c)));
+    } catch {
+      toast.error('Error', 'No se pudo actualizar el estado del canal.');
+    }
+  };
+
+  const handleDeleteChannel = async (id: string) => {
+    try {
+      await notificationsService.deleteChannel(id);
+      setChannels((prev) => prev.filter((c) => c.id !== id));
+      toast.success('Canal Eliminado', 'Canal de notificación removido.');
+    } catch {
+      toast.error('Error', 'No se pudo eliminar el canal.');
+    }
+  };
+
+  const handleSendTestNotification = async () => {
+    setIsSendingTest(true);
+    try {
+      const res = await notificationsService.sendTest();
+      toast.success('Prueba Enviada', `Notificación enviada a ${res.sent} canal(es). Fallidos: ${res.failed}.`);
+    } catch {
+      toast.error('Error', 'Error al enviar notificación de prueba.');
+    } finally {
+      setIsSendingTest(false);
+    }
+  };
 
   const handleTestBridge = async () => {
     setIsTestingBridge(true);
@@ -597,6 +663,110 @@ export const SettingsPage: React.FC = () => {
                       updateNotifications({ executionFailed: val })
                     }
                   />
+                </div>
+
+                {/* External Notification Webhooks (Slack/Discord/Custom) */}
+                <div className="pt-6 border-t border-border-default space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                    <div>
+                      <h4 className="text-body font-semibold text-fg-primary flex items-center gap-2">
+                        <Globe className="h-4 w-4 text-fg-brand" />
+                        Webhooks Externos (Slack / Discord / Custom)
+                      </h4>
+                      <p className="text-caption text-fg-secondary">
+                        Envía eventos de seguridad, alertas Zero-Trust y requerimientos de aprobación a tus canales de mensajería.
+                      </p>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleSendTestNotification}
+                      disabled={isSendingTest || channels.length === 0}
+                      className="text-caption"
+                    >
+                      <Send className="mr-1.5 h-3.5 w-3.5" />
+                      {isSendingTest ? 'Enviando...' : 'Enviar Prueba'}
+                    </Button>
+                  </div>
+
+                  {/* Add Channel Form */}
+                  <form onSubmit={handleAddChannel} className="grid grid-cols-1 sm:grid-cols-12 gap-2 p-3 rounded-xl border border-border-default bg-bg-card/40">
+                    <div className="sm:col-span-4">
+                      <Input
+                        placeholder="Nombre (ej: #ops-alerts)"
+                        value={newChannelName}
+                        onChange={(e) => setNewChannelName(e.target.value)}
+                        className="text-caption h-8"
+                      />
+                    </div>
+                    <div className="sm:col-span-3">
+                      <Select
+                        value={newChannelType}
+                        onChange={(e) => setNewChannelType(e.target.value as any)}
+                        className="text-caption h-8"
+                      >
+                        <option value="slack">Slack</option>
+                        <option value="discord">Discord</option>
+                        <option value="webhook">Webhook Genérico</option>
+                      </Select>
+                    </div>
+                    <div className="sm:col-span-4">
+                      <Input
+                        placeholder="https://hooks.slack.com/services/..."
+                        value={newChannelUrl}
+                        onChange={(e) => setNewChannelUrl(e.target.value)}
+                        className="text-caption h-8 font-mono text-xs"
+                      />
+                    </div>
+                    <div className="sm:col-span-1">
+                      <Button type="submit" size="sm" className="w-full text-caption h-8" disabled={!newChannelName.trim() || !newChannelUrl.trim()}>
+                        <Plus className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+                  </form>
+
+                  {/* Configured Channels List */}
+                  <div className="space-y-2">
+                    {channels.length === 0 ? (
+                      <p className="text-caption text-fg-secondary py-2 text-center">No hay canales externos registrados.</p>
+                    ) : (
+                      channels.map((ch) => (
+                        <div
+                          key={ch.id}
+                          className="flex items-center justify-between p-3 rounded-lg border border-border-default bg-bg-card/60 gap-3"
+                        >
+                          <div className="flex items-center gap-3 min-w-0">
+                            <Badge variant={ch.type === 'slack' ? 'default' : ch.type === 'discord' ? 'secondary' : 'outline'} className="capitalize font-mono text-[10px]">
+                              {ch.type}
+                            </Badge>
+                            <div className="min-w-0">
+                              <span className="text-caption font-semibold text-fg-primary block truncate">
+                                {ch.name}
+                              </span>
+                              <span className="text-[11px] text-fg-secondary font-mono truncate block max-w-xs sm:max-w-md">
+                                {ch.url}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0">
+                            <Switch
+                              checked={ch.enabled}
+                              onCheckedChange={(val) => handleToggleChannel(ch.id, val)}
+                            />
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7 text-fg-secondary hover:text-fg-error"
+                              onClick={() => handleDeleteChannel(ch.id)}
+                              title="Eliminar Canal"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
                 </div>
               </CardContent>
             </Card>

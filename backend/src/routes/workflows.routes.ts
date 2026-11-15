@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { workflowService } from '../services/workflow.service.js';
 import { saveWorkflowSchema, executeWorkflowSchema } from '../lib/validators.js';
+import { auditService } from '../services/audit.service.js';
 
 export async function workflowsRoutes(fastify: FastifyInstance) {
   fastify.get('/workflows', async () => {
@@ -19,6 +20,27 @@ export async function workflowsRoutes(fastify: FastifyInstance) {
   fastify.post<{ Params: { id: string } }>('/workflows/:id/execute', async (req) => {
     const parsed = executeWorkflowSchema.parse(req.body || {});
     return workflowService.execute(req.params.id, parsed.inputs);
+  });
+
+  // Webhook trigger endpoint for CI/CD and external systems
+  fastify.post<{ Params: { id: string } }>('/workflows/:id/trigger', async (req, reply) => {
+    const wf = await workflowService.getById(req.params.id);
+    const body = (req.body as any) || {};
+
+    await auditService.log({
+      action: 'workflow.triggered_webhook',
+      resource: `workflow:${wf.id}`,
+      ip: req.ip,
+      status: 'success',
+      details: { workflowName: wf.name, payloadKeys: Object.keys(body) },
+    });
+
+    const result = await workflowService.execute(req.params.id, body);
+    return reply.send({
+      success: true,
+      message: `Workflow '${wf.name}' iniciado exitosamente vía Webhook Trigger.`,
+      executionId: result.executionId,
+    });
   });
 
   fastify.delete<{ Params: { id: string } }>('/workflows/:id', async (req) => {

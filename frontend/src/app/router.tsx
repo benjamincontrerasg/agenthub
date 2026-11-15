@@ -11,6 +11,7 @@ import { ExecutionsPage } from '@/features/executions/ExecutionsPage';
 import { AnalyticsPage } from '@/features/analytics/AnalyticsPage';
 import { SettingsPage } from '@/features/settings/SettingsPage';
 import { LoginPage } from '@/features/auth/LoginPage';
+import { AuditPage } from '@/features/audit/AuditPage';
 
 export const router = createBrowserRouter([
   {
@@ -60,6 +61,10 @@ export const router = createBrowserRouter([
       {
         path: 'settings',
         element: <SettingsPage />,
+      },
+      {
+        path: 'audit',
+        element: <AuditPage />,
       },
       {
         path: '*',

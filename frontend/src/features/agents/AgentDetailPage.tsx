@@ -19,17 +19,20 @@ import {
   Database,
   Plus,
   Search,
+  Download,
+  Upload,
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { useAgent, useToggleAgentStatus, useDeleteAgent, useAgentMemories, useAddAgentMemory, useDeleteAgentMemory } from './hooks';
+import { useAgent, useToggleAgentStatus, useDeleteAgent, useAgentMemories, useAddAgentMemory, useDeleteAgentMemory, useCreateAgent } from './hooks';
 import { useMCPStore } from '@/stores/mcp.store';
 import { useExecutionsStore } from '@/stores/executions.store';
 import { AgentFormModal } from './AgentFormModal';
 import { formatNumber, formatDate } from '@/lib/utils';
 import { AgentAvatar } from '@/components/shared/AgentAvatar';
 import { ProviderLogo } from '@/components/shared/ProviderLogo';
+import { toast } from '@/stores/toast.store';
 
 export const AgentDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -37,6 +40,7 @@ export const AgentDetailPage: React.FC = () => {
   const { data: agent, isLoading } = useAgent(id);
   const toggleStatusMutation = useToggleAgentStatus();
   const deleteMutation = useDeleteAgent();
+  const createAgentMutation = useCreateAgent();
   const { getAllTools } = useMCPStore();
   const { executions } = useExecutionsStore();
 
@@ -84,6 +88,76 @@ export const AgentDetailPage: React.FC = () => {
         onSuccess: () => navigate('/agents'),
       });
     }
+  };
+
+  const handleExportAgent = () => {
+    const exportData = {
+      _exportVersion: '1.0',
+      _exportedAt: new Date().toISOString(),
+      _platform: 'AgentHub',
+      name: agent.name,
+      description: agent.description,
+      role: agent.role,
+      providerId: agent.providerId,
+      modelId: agent.modelId,
+      systemPrompt: agent.systemPrompt,
+      temperature: agent.temperature,
+      maxIterations: agent.maxIterations,
+      allowedToolIds: agent.allowedToolIds,
+      allowedAgentCommunicationIds: agent.allowedAgentCommunicationIds,
+      status: agent.status,
+    };
+    const jsonStr = JSON.stringify(exportData, null, 2);
+    const blob = new Blob([jsonStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `agent-${agent.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success('Agente Exportado', `Configuración de "${agent.name}" exportada como JSON.`);
+  };
+
+  const handleImportAgent = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        try {
+          const imported = JSON.parse(ev.target?.result as string);
+          if (!imported.name || !imported.systemPrompt) {
+            toast.error('Formato Inválido', 'El archivo JSON no contiene un agente válido.');
+            return;
+          }
+          createAgentMutation.mutate({
+            name: imported.name + ' (Importado)',
+            description: imported.description || '',
+            role: imported.role || 'Developer',
+            providerId: imported.providerId || 'anthropic',
+            modelId: imported.modelId || 'claude-sonnet-4-20250514',
+            systemPrompt: imported.systemPrompt,
+            temperature: imported.temperature ?? 0.7,
+            maxIterations: imported.maxIterations ?? 10,
+            allowedToolIds: imported.allowedToolIds || [],
+            allowedAgentCommunicationIds: imported.allowedAgentCommunicationIds || [],
+            status: 'paused' as const,
+          }, {
+            onSuccess: (created) => {
+              toast.success('Agente Importado', `"${created.name}" creado desde archivo JSON.`);
+              navigate(`/agents/${created.id}`);
+            },
+          });
+        } catch {
+          toast.error('Error de Importación', 'El archivo no contiene JSON válido.');
+        }
+      };
+      reader.readAsText(file);
+    };
+    input.click();
   };
 
   return (
@@ -145,6 +219,24 @@ export const AgentDetailPage: React.FC = () => {
             onClick={() => setEditModalOpen(true)}
           >
             <Settings className="mr-1.5 h-3.5 w-3.5" /> Editar
+          </Button>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleExportAgent}
+            title="Exportar configuración como JSON"
+          >
+            <Download className="mr-1.5 h-3.5 w-3.5" /> Exportar
+          </Button>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleImportAgent}
+            title="Importar agente desde JSON"
+          >
+            <Upload className="mr-1.5 h-3.5 w-3.5" /> Importar
           </Button>
 
           <Button

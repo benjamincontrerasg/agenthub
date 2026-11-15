@@ -49,8 +49,12 @@ import {
   Sparkles,
   Layers,
   Download,
+  Upload,
+  Globe,
+  Check,
 } from 'lucide-react';
 import { toast } from '@/stores/toast.store';
+import { WORKFLOW_TEMPLATES, WorkflowTemplate } from './templates';
 
 const nodeTypes = {
   startNode: StartNode,
@@ -85,6 +89,9 @@ export const WorkflowBuilderPage: React.FC = () => {
   const [edges, setEdges] = useState<Edge[]>(currentWorkflow?.edges as any || []);
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [saveFeedback, setSaveFeedback] = useState<string | null>(null);
+  const [showTemplatesModal, setShowTemplatesModal] = useState(false);
+  const [showWebhookModal, setShowWebhookModal] = useState(false);
+  const [copiedWebhook, setCopiedWebhook] = useState(false);
 
   // Sync state if active workflow changes
   React.useEffect(() => {
@@ -289,6 +296,65 @@ export const WorkflowBuilderPage: React.FC = () => {
           <Button
             variant="ghost"
             size="sm"
+            className="text-caption h-8"
+            onClick={() => setShowTemplatesModal(true)}
+            title="Crear desde plantilla"
+          >
+            <Sparkles className="mr-1 h-3.5 w-3.5 text-fg-brand" /> Plantillas
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-caption h-8"
+            onClick={() => setShowWebhookModal(true)}
+            title="Webhook de Trigger externo"
+          >
+            <Globe className="mr-1 h-3.5 w-3.5 text-fg-success" /> Webhook
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-caption h-8"
+            onClick={() => {
+              const input = document.createElement('input');
+              input.type = 'file';
+              input.accept = '.json';
+              input.onchange = (e) => {
+                const file = (e.target as HTMLInputElement).files?.[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                  try {
+                    const imported = JSON.parse(ev.target?.result as string);
+                    if (!imported.name || !imported.nodes) {
+                      toast.error('Formato Inválido', 'El archivo JSON no contiene un workflow válido.');
+                      return;
+                    }
+                    createWorkflow(imported.name, imported.description || 'Workflow importado');
+                    const created = workflows[workflows.length - 1];
+                    if (created) {
+                      saveWorkflow(created.id, imported.nodes, imported.edges || []);
+                      setActiveWorkflowId(created.id);
+                    }
+                    toast.success('Workflow Importado', `"${imported.name}" importado correctamente.`);
+                  } catch {
+                    toast.error('Error de Importación', 'El archivo no contiene JSON válido.');
+                  }
+                };
+                reader.readAsText(file);
+              };
+              input.click();
+            }}
+            title="Importar Workflow desde JSON"
+          >
+            <Upload className="mr-1 h-3.5 w-3.5" /> Importar
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="sm"
             className="text-caption h-8 text-fg-brand"
             onClick={handleNewWorkflow}
           >
@@ -415,6 +481,120 @@ export const WorkflowBuilderPage: React.FC = () => {
           onUpdate={handleUpdateNodeData}
           onDelete={handleDeleteNode}
         />
+      )}
+
+      {/* Templates Modal */}
+      {showTemplatesModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setShowTemplatesModal(false)}>
+          <div className="w-full max-w-2xl mx-4 max-h-[80vh] overflow-y-auto rounded-2xl border border-border-default bg-bg-card shadow-2xl p-6" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-fg-brand" />
+                <h2 className="text-lg font-bold text-fg-primary">Plantillas de Workflow</h2>
+              </div>
+              <button onClick={() => setShowTemplatesModal(false)} className="p-1.5 rounded-lg text-fg-secondary hover:text-fg-primary hover:bg-slate-800 transition-colors cursor-pointer">
+                <Square className="h-4 w-4" />
+              </button>
+            </div>
+            <p className="text-caption text-fg-secondary mb-4">
+              Selecciona una plantilla predefinida para iniciar un pipeline con nodos y conexiones preconfiguradas.
+            </p>
+            <div className="space-y-3">
+              {WORKFLOW_TEMPLATES.map((tpl) => (
+                <div key={tpl.id} className="p-4 rounded-xl border border-border-default bg-bg-card/60 hover:border-border-brand/60 transition-colors">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="text-body font-semibold text-fg-primary">{tpl.name}</h3>
+                        <Badge variant="secondary" className="text-[10px]">{tpl.badge}</Badge>
+                        <Badge variant="outline" className="text-[10px]">{tpl.category}</Badge>
+                      </div>
+                      <p className="text-caption text-fg-secondary leading-relaxed">{tpl.description}</p>
+                      <p className="text-caption text-fg-secondary mt-1 font-mono">
+                        {tpl.workflow.nodes.length} nodos · {tpl.workflow.edges.length} conexiones
+                      </p>
+                    </div>
+                    <Button
+                      variant="default"
+                      size="sm"
+                      className="shrink-0 text-caption"
+                      onClick={() => {
+                        createWorkflow(tpl.workflow.name, tpl.workflow.description);
+                        const created = workflows[workflows.length - 1];
+                        if (created) {
+                          saveWorkflow(created.id, tpl.workflow.nodes as any, tpl.workflow.edges as any);
+                          setActiveWorkflowId(created.id);
+                        }
+                        setShowTemplatesModal(false);
+                        toast.success('Plantilla Aplicada', `Pipeline "${tpl.name}" creado desde plantilla.`);
+                      }}
+                    >
+                      <Plus className="mr-1 h-3.5 w-3.5" /> Crear
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Webhook Info Modal */}
+      {showWebhookModal && currentWorkflow && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setShowWebhookModal(false)}>
+          <div className="w-full max-w-lg mx-4 rounded-2xl border border-border-default bg-bg-card shadow-2xl p-6" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-2">
+                <Globe className="h-5 w-5 text-fg-success" />
+                <h2 className="text-lg font-bold text-fg-primary">Webhook de Trigger</h2>
+              </div>
+              <button onClick={() => { setShowWebhookModal(false); setCopiedWebhook(false); }} className="p-1.5 rounded-lg text-fg-secondary hover:text-fg-primary hover:bg-slate-800 transition-colors cursor-pointer">
+                <Square className="h-4 w-4" />
+              </button>
+            </div>
+            <p className="text-caption text-fg-secondary mb-4">
+              Usa este endpoint para disparar la ejecución de este workflow externamente vía HTTP POST.
+            </p>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-caption font-semibold text-fg-secondary mb-1.5 uppercase tracking-wider">URL del Webhook</label>
+                <div className="flex items-center gap-2">
+                  <code className="flex-1 p-2.5 rounded-lg bg-black/60 border border-border-default text-caption font-mono text-fg-brand break-all">
+                    POST http://localhost:3001/v1/workflows/{currentWorkflow.id}/trigger
+                  </code>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-9 w-9 shrink-0"
+                    onClick={() => {
+                      navigator.clipboard.writeText(`http://localhost:3001/v1/workflows/${currentWorkflow.id}/trigger`);
+                      setCopiedWebhook(true);
+                      setTimeout(() => setCopiedWebhook(false), 2000);
+                    }}
+                  >
+                    {copiedWebhook ? <Check className="h-4 w-4 text-fg-success" /> : <Copy className="h-4 w-4" />}
+                  </Button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-caption font-semibold text-fg-secondary mb-1.5 uppercase tracking-wider">Ejemplo cURL</label>
+                <pre className="p-3 rounded-lg bg-black/60 border border-border-default text-caption font-mono text-fg-secondary leading-relaxed whitespace-pre-wrap">
+{`curl -X POST \\
+  http://localhost:3001/v1/workflows/${currentWorkflow.id}/trigger \\
+  -H "Content-Type: application/json" \\
+  -H "Authorization: Bearer <JWT_TOKEN>" \\
+  -d '{"triggeredBy": "external-webhook"}'`}
+                </pre>
+              </div>
+
+              <div className="p-3 rounded-lg bg-bg-brand-subtle/20 border border-border-brand/30 text-caption text-fg-secondary">
+                <span className="font-semibold text-fg-brand">💡 Nota:</span> El webhook requiere autenticación JWT. Configura los headers de autorización apropiadamente.
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

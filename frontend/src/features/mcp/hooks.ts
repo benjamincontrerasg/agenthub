@@ -83,3 +83,26 @@ export function useDeleteMCPServer() {
     },
   });
 }
+
+export function useExecuteMCPTool() {
+  return useMutation({
+    mutationFn: ({
+      serverId,
+      toolName,
+      input,
+    }: {
+      serverId: string;
+      toolName: string;
+      input: Record<string, any>;
+    }) => mcpService.executeTool(serverId, toolName, input),
+    onSuccess: (_data, variables) => {
+      toast.success(
+        'Herramienta Ejecutada',
+        `"${variables.toolName}" completada en ${_data.executionTimeMs}ms.`
+      );
+    },
+    onError: (error: Error) => {
+      toast.error('Error de ejecución', error.message || 'No se pudo ejecutar la herramienta MCP');
+    },
+  });
+}

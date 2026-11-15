@@ -17,6 +17,9 @@ import {
   Users,
   ChevronRight,
   RefreshCw,
+  Zap,
+  Clock,
+  Code,
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -27,6 +30,7 @@ import {
   useValidateMCPServer,
   useToggleMCPActivation,
   useDeleteMCPServer,
+  useExecuteMCPTool,
 } from './hooks';
 import { RegisterMCPServerModal } from './RegisterMCPServerModal';
 import { AssignToolModal } from './AssignToolModal';
@@ -38,10 +42,22 @@ export const MCPPage: React.FC = () => {
   const validateMutation = useValidateMCPServer();
   const toggleActivationMutation = useToggleMCPActivation();
   const deleteMutation = useDeleteMCPServer();
+  const executeMutation = useExecuteMCPTool();
 
   const [selectedServerId, setSelectedServerId] = useState<string | null>(null);
   const [registerModalOpen, setRegisterModalOpen] = useState(false);
   const [selectedToolForAssign, setSelectedToolForAssign] = useState<MCPTool | null>(null);
+  const [activeTab, setActiveTab] = useState<'details' | 'playground'>('details');
+
+  // Playground state
+  const [playgroundServerId, setPlaygroundServerId] = useState<string>('');
+  const [playgroundToolName, setPlaygroundToolName] = useState<string>('');
+  const [playgroundInput, setPlaygroundInput] = useState<string>('{}');
+  const [playgroundResult, setPlaygroundResult] = useState<{
+    output: any;
+    executionTimeMs: number;
+    requiresApproval: boolean;
+  } | null>(null);
 
   const activeServer = servers.find((s) => s.id === (selectedServerId || servers[0]?.id)) || servers[0];
 
@@ -82,8 +98,214 @@ export const MCPPage: React.FC = () => {
         </Button>
       </div>
 
-      {/* Main Split Interface */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      {/* Tab Navigation */}
+      <div className="flex border-b border-border-default space-x-1">
+        <button
+          onClick={() => setActiveTab('details')}
+          className={`flex items-center gap-2 px-4 py-2 text-caption font-medium border-b-2 transition-colors cursor-pointer ${
+            activeTab === 'details'
+              ? 'border-border-brand text-fg-brand font-semibold'
+              : 'border-transparent text-fg-secondary hover:text-fg-primary'
+          }`}
+        >
+          <Server className="h-4 w-4" />
+          <span>Servidores y Herramientas</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('playground')}
+          className={`flex items-center gap-2 px-4 py-2 text-caption font-medium border-b-2 transition-colors cursor-pointer ${
+            activeTab === 'playground'
+              ? 'border-border-brand text-fg-brand font-semibold'
+              : 'border-transparent text-fg-secondary hover:text-fg-primary'
+          }`}
+        >
+          <Zap className="h-4 w-4" />
+          <span>Playground de Herramientas</span>
+        </button>
+      </div>
+
+      {/* Tab: Playground */}
+      {activeTab === 'playground' && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Left: Tool Selector & Input */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-subtitle flex items-center gap-2">
+                <Code className="h-4 w-4 text-fg-brand" />
+                Selector y Parámetros
+              </CardTitle>
+              <CardDescription>
+                Selecciona un servidor y herramienta MCP para ejecutar en tiempo real
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <label className="block text-caption font-medium text-fg-secondary mb-1">Servidor MCP</label>
+                <select
+                  value={playgroundServerId}
+                  onChange={(e) => {
+                    setPlaygroundServerId(e.target.value);
+                    setPlaygroundToolName('');
+                    setPlaygroundResult(null);
+                  }}
+                  className="w-full rounded-lg border border-border-default bg-bg-surface px-3 py-2 text-caption text-fg-primary focus:border-border-brand focus:outline-none"
+                >
+                  <option value="">Seleccionar servidor...</option>
+                  {servers.filter((s) => s.isActivated).map((s) => (
+                    <option key={s.id} value={s.id}>{s.name} ({s.transport})</option>
+                  ))}
+                </select>
+              </div>
+
+              {playgroundServerId && (
+                <div>
+                  <label className="block text-caption font-medium text-fg-secondary mb-1">Herramienta</label>
+                  <select
+                    value={playgroundToolName}
+                    onChange={(e) => {
+                      setPlaygroundToolName(e.target.value);
+                      setPlaygroundResult(null);
+                      const srv = servers.find((s) => s.id === playgroundServerId);
+                      const tool = srv?.tools.find((t) => t.name === e.target.value);
+                      if (tool?.inputSchema.properties) {
+                        const defaults: Record<string, any> = {};
+                        Object.entries(tool.inputSchema.properties).forEach(([key, def]) => {
+                          defaults[key] = def.type === 'number' ? 0 : def.type === 'boolean' ? false : '';
+                        });
+                        setPlaygroundInput(JSON.stringify(defaults, null, 2));
+                      } else {
+                        setPlaygroundInput('{}');
+                      }
+                    }}
+                    className="w-full rounded-lg border border-border-default bg-bg-surface px-3 py-2 text-caption text-fg-primary focus:border-border-brand focus:outline-none"
+                  >
+                    <option value="">Seleccionar herramienta...</option>
+                    {servers.find((s) => s.id === playgroundServerId)?.tools.map((t) => (
+                      <option key={t.id} value={t.name}>
+                        {t.name} {t.isWriteOperation ? '⚠️ Escritura' : '🔒 Lectura'}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {playgroundToolName && (() => {
+                const srv = servers.find((s) => s.id === playgroundServerId);
+                const tool = srv?.tools.find((t) => t.name === playgroundToolName);
+                return tool ? (
+                  <div className="p-3 rounded-lg bg-bg-card/60 border border-border-default">
+                    <p className="text-caption text-fg-secondary mb-1">{tool.description}</p>
+                    <div className="flex items-center gap-2">
+                      {tool.isWriteOperation ? (
+                        <Badge variant="warning" className="text-[10px] gap-1">
+                          <ShieldAlert className="h-3 w-3" /> Operación de Escritura
+                        </Badge>
+                      ) : (
+                        <Badge variant="info" className="text-[10px] gap-1">
+                          <ShieldCheck className="h-3 w-3" /> Solo Lectura
+                        </Badge>
+                      )}
+                      {tool.requiresApproval && (
+                        <Badge variant="secondary" className="text-[10px]">Requiere Aprobación</Badge>
+                      )}
+                    </div>
+                  </div>
+                ) : null;
+              })()}
+
+              <div>
+                <label className="block text-caption font-medium text-fg-secondary mb-1">
+                  Parámetros de Entrada (JSON)
+                </label>
+                <textarea
+                  value={playgroundInput}
+                  onChange={(e) => setPlaygroundInput(e.target.value)}
+                  rows={8}
+                  className="w-full rounded-lg border border-border-default bg-black/60 p-3 text-caption font-mono text-fg-primary focus:border-border-brand focus:outline-none placeholder:text-slate-500"
+                  placeholder='{"key": "value"}'
+                />
+              </div>
+
+              <Button
+                variant="default"
+                className="w-full"
+                size="sm"
+                disabled={!playgroundServerId || !playgroundToolName || executeMutation.isPending}
+                onClick={() => {
+                  try {
+                    const parsed = JSON.parse(playgroundInput);
+                    executeMutation.mutate(
+                      { serverId: playgroundServerId, toolName: playgroundToolName, input: parsed },
+                      { onSuccess: (data) => setPlaygroundResult(data) }
+                    );
+                  } catch {
+                    setPlaygroundResult(null);
+                  }
+                }}
+              >
+                {executeMutation.isPending ? (
+                  <>
+                    <RefreshCw className="mr-1.5 h-3.5 w-3.5 animate-spin" /> Ejecutando...
+                  </>
+                ) : (
+                  <>
+                    <Play className="mr-1.5 h-3.5 w-3.5 fill-current" /> Ejecutar Herramienta
+                  </>
+                )}
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Right: Execution Result */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-subtitle flex items-center gap-2">
+                <Terminal className="h-4 w-4 text-fg-success" />
+                Resultado de Ejecución
+              </CardTitle>
+              <CardDescription>
+                Salida, latencia y metadatos de la última invocación
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {playgroundResult ? (
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3 text-caption">
+                    <Badge variant="success" className="gap-1">
+                      <CheckCircle2 className="h-3 w-3" /> Completado
+                    </Badge>
+                    <span className="flex items-center gap-1 text-fg-secondary font-mono">
+                      <Clock className="h-3 w-3" /> {playgroundResult.executionTimeMs}ms
+                    </span>
+                    {playgroundResult.requiresApproval && (
+                      <Badge variant="warning" className="text-[10px]">Requiere Aprobación</Badge>
+                    )}
+                  </div>
+                  <pre className="p-4 rounded-lg bg-black/60 border border-border-default text-caption font-mono text-fg-primary leading-relaxed whitespace-pre-wrap overflow-x-auto max-h-[400px] overflow-y-auto">
+                    {JSON.stringify(playgroundResult.output, null, 2)}
+                  </pre>
+                </div>
+              ) : executeMutation.isError ? (
+                <div className="text-center py-8 border border-dashed border-fg-error/30 rounded-xl">
+                  <XCircle className="h-8 w-8 text-fg-error mx-auto mb-2" />
+                  <p className="text-caption text-fg-error">Error en la ejecución</p>
+                  <p className="text-caption text-fg-secondary mt-1">{(executeMutation.error as Error)?.message}</p>
+                </div>
+              ) : (
+                <div className="text-center py-12 border border-dashed border-border-default rounded-xl">
+                  <Zap className="h-8 w-8 text-fg-secondary mx-auto mb-2 opacity-50" />
+                  <p className="text-body font-medium text-fg-secondary">Sin resultado aún</p>
+                  <p className="text-caption text-fg-secondary mt-1">Selecciona una herramienta y ejecuta para ver la salida aquí.</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Tab: Server Details - Main Split Interface */}
+      {activeTab === 'details' && <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left: Servers List (4 columns) */}
         <div className="lg:col-span-4 space-y-3">
           <div className="flex items-center justify-between text-caption font-semibold text-fg-secondary uppercase tracking-wider px-1">
@@ -365,7 +587,7 @@ export const MCPPage: React.FC = () => {
             <p className="text-body font-medium text-fg-secondary">No hay servidor MCP seleccionado</p>
           </div>
         )}
-      </div>
+      </div>}
 
       {/* Register Server Modal */}
       <RegisterMCPServerModal

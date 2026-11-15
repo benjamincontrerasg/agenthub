@@ -87,6 +87,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     {
       groupTitle: 'Ajustes',
       items: [
+        { path: '/audit', label: 'Auditoría Zero-Trust', icon: ShieldCheck },
         { path: '/settings', label: 'Configuración', icon: Settings },
       ],
     },
