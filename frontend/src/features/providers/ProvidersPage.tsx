@@ -19,6 +19,7 @@ import { ProviderLogo } from '@/components/shared/ProviderLogo';
 import { AIProvider } from '@/types';
 import { formatDate } from '@/lib/utils';
 import { useProviders, useTestProvider, useDisconnectProvider } from './hooks';
+import { ApiKeysVault } from '@/features/settings/ApiKeysVault';
 
 export const ProvidersPage: React.FC = () => {
   const { data: providers = [], isLoading, isError, error, refetch } = useProviders();
@@ -258,6 +259,11 @@ export const ProvidersPage: React.FC = () => {
           })}
         </div>
       )}
+
+      {/* Dedicated API Keys Vault Section */}
+      <div className="pt-2">
+        <ApiKeysVault />
+      </div>
 
       {/* Provider Configuration Modal */}
       <ProviderModal

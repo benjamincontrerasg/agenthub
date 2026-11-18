@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { ProviderLogo } from '@/components/shared/ProviderLogo';
+import { useAgents } from '@/features/agents/hooks';
 
 // Base wrapper for consistent SaaS styling
 const NodeWrapper = ({
@@ -121,6 +122,7 @@ export const StartNode = memo((props: any) => {
 
 export const AgentNode = memo((props: any) => {
   const { data, selected, dragging } = props;
+  const { data: agents = [] } = useAgents();
   const [internalExpanded, setInternalExpanded] = React.useState(false);
   const [isPressed, setIsPressed] = React.useState(false);
 
@@ -132,12 +134,22 @@ export const AgentNode = memo((props: any) => {
   }, []);
   
   const isExpanded = data?.isExpanded ?? internalExpanded;
-  const label = (data?.label || '').toLowerCase();
+  const matchedAgent = agents.find((a) => a.id === data?.agentId);
+
+  const rawProviderId =
+    data?.providerId ||
+    matchedAgent?.providerId ||
+    '';
+
+  const label = (data?.label || matchedAgent?.name || '').toLowerCase();
   const agentId = (data?.agentId || '').toLowerCase();
+  const agentRole = (matchedAgent?.role || '').toLowerCase();
 
   const providerId =
-    data?.providerId ||
-    (label.includes('architect') || agentId.includes('architect')
+    rawProviderId ||
+    (label.includes('ollama') || agentId.includes('ollama') || agentRole.includes('ollama')
+      ? 'ollama'
+      : label.includes('architect') || agentId.includes('architect')
       ? 'openai'
       : label.includes('developer') || agentId.includes('developer')
       ? 'anthropic'
@@ -147,8 +159,6 @@ export const AgentNode = memo((props: any) => {
       ? 'gemini'
       : label.includes('coordinator') || agentId.includes('coordinator')
       ? 'anthropic'
-      : label.includes('ollama') || agentId.includes('ollama')
-      ? 'ollama'
       : 'anthropic');
 
   const isClaude = providerId === 'anthropic';
@@ -395,11 +405,11 @@ export const AgentNode = memo((props: any) => {
       <NodeWrapper
         selected={selected}
         status={data?.status}
-        title={data?.label || 'AI Agent'}
+        title={data?.label && data.label !== 'AI Agent' ? data.label : (matchedAgent?.name || data?.label || 'AI Agent')}
         icon={Bot}
         providerId={providerId}
         isClaude={isClaude}
-        badgeText={data?.agentId ? 'Autonomous' : 'Agent'}
+        badgeText={data?.agentId ? (matchedAgent?.role || 'Autonomous') : 'Agent'}
         badgeVariant="default"
         borderColor={
           isClaude
@@ -454,8 +464,8 @@ export const AgentNode = memo((props: any) => {
             </span>
           </div>
           {data?.agentId && (
-            <span className="font-mono text-fg-secondary truncate max-w-[90px]">
-              {data.agentId}
+            <span className="font-mono text-fg-secondary truncate max-w-[110px]" title={matchedAgent?.name || data.agentId}>
+              {matchedAgent?.name || data.agentId}
             </span>
           )}
         </div>

@@ -85,12 +85,21 @@ export const NodeConfigDrawer: React.FC<NodeConfigDrawerProps> = ({
             </label>
             <Select
               value={data.agentId || ''}
-              onChange={(e) => handleChange('agentId', e.target.value)}
+              onChange={(e) => {
+                const selectedAgent = agents.find((a) => a.id === e.target.value);
+                onUpdate(selectedNode.id, {
+                  ...data,
+                  agentId: e.target.value,
+                  providerId: selectedAgent?.providerId || '',
+                  label: (!data.label || data.label === 'AI Agent') && selectedAgent ? selectedAgent.name : data.label,
+                  description: (!data.description || data.description === 'Ejecuta inferencia con LLM') && selectedAgent ? (selectedAgent.description || `Rol: ${selectedAgent.role}`) : data.description,
+                });
+              }}
             >
               <option value="">Selecciona un agente...</option>
               {agents.map((a) => (
                 <option key={a.id} value={a.id}>
-                  {a.name} ({a.role})
+                  {a.name} ({a.role} • {a.providerId})
                 </option>
               ))}
             </Select>

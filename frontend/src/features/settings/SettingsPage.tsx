@@ -31,6 +31,7 @@ import { CustomSelect } from '@/components/ui/custom-select';
 import { useSettingsStore } from '@/stores/settings.store';
 import { notificationsService, NotificationChannel } from '@/services/notifications.service';
 import { toast } from '@/stores/toast.store';
+import { ApiKeysVault } from './ApiKeysVault';
 
 export const SettingsPage: React.FC = () => {
   const {
@@ -47,8 +48,8 @@ export const SettingsPage: React.FC = () => {
   } = useSettingsStore();
 
   const [activeTab, setActiveTab] = useState<
-    'profile' | 'appearance' | 'preferences' | 'security' | 'backend' | 'localAgent' | 'notifications'
-  >('security');
+    'apiKeys' | 'profile' | 'appearance' | 'preferences' | 'security' | 'backend' | 'localAgent' | 'notifications'
+  >('apiKeys');
 
   const [testResult, setTestResult] = useState<string | null>(null);
   const [bridgeTestResult, setBridgeTestResult] = useState<string | null>(null);
@@ -151,6 +152,7 @@ export const SettingsPage: React.FC = () => {
   };
 
   const tabs = [
+    { id: 'apiKeys', label: 'Claves de API (LLMs)', icon: KeyRound },
     { id: 'security', label: 'Seguridad & Credenciales', icon: Shield },
     { id: 'backend', label: 'Conexión Backend', icon: Server },
     { id: 'localAgent', label: 'Local Agent & Sandbox', icon: Terminal },
@@ -227,6 +229,9 @@ export const SettingsPage: React.FC = () => {
 
         {/* Right Settings Form Area (9 cols) */}
         <div className="md:col-span-9 space-y-6">
+          {/* API KEYS VAULT TAB */}
+          {activeTab === 'apiKeys' && <ApiKeysVault />}
+
           {/* SECURITY & CREDENTIALS TAB */}
           {activeTab === 'security' && (
             <Card>
