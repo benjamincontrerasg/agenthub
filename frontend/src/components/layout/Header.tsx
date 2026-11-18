@@ -22,6 +22,7 @@ import { useAuthStore } from '@/stores/auth.store';
 import { useAgents } from '@/features/agents/hooks';
 import { useMCPStore } from '@/stores/mcp.store';
 import { useWorkflows } from '@/features/workflows/hooks';
+import { isMockMode } from '@/services/providers.service';
 
 interface HeaderProps {
   onOpenMobile: () => void;
@@ -150,14 +151,24 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
           </kbd>
         </button>
 
-        {/* Simulation Mode Compact Badge */}
-        <div className="hidden sm:flex items-center space-x-1.5 rounded-[6px] border border-border-brand/40 bg-bg-brand-subtle px-2.5 py-1 text-caption">
-          <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-bg-brand opacity-75"></span>
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-bg-brand"></span>
-          </span>
-          <span className="text-fg-brand font-medium">Modo Simulación</span>
-        </div>
+        {/* Dynamic Backend / Simulation Badge */}
+        {isMockMode() ? (
+          <div className="hidden sm:flex items-center space-x-1.5 rounded-[6px] border border-border-warning/40 bg-bg-warning-subtle px-2.5 py-1 text-caption">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-fg-warning opacity-75"></span>
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-fg-warning"></span>
+            </span>
+            <span className="text-fg-warning font-medium">Modo Simulación</span>
+          </div>
+        ) : (
+          <div className="hidden sm:flex items-center space-x-1.5 rounded-[6px] border border-border-success/40 bg-bg-success-subtle px-2.5 py-1 text-caption">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-fg-success opacity-75"></span>
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-fg-success"></span>
+            </span>
+            <span className="text-fg-success font-medium">Backend Conectado</span>
+          </div>
+        )}
 
         {/* Notifications Popover */}
         <div className="relative">

@@ -16,7 +16,7 @@ describe('PASO 5 — Auth Store & Protección Frontend', () => {
 
   it('no crea un token ni usuario admin falso cuando el backend falla (elimina fallback offline)', async () => {
     // Simular error de red o backend no disponible
-    global.fetch = vi.fn().mockRejectedValue(new Error('Network error'));
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('Network error')));
 
     const success = await useAuthStore.getState().login('admin@nexora.dev', 'admin123');
 
@@ -37,10 +37,10 @@ describe('PASO 5 — Auth Store & Protección Frontend', () => {
     };
     const mockToken = 'mock-valid-jwt-token';
 
-    global.fetch = vi.fn().mockResolvedValue({
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
       ok: true,
       json: async () => ({ user: mockUser, token: mockToken }),
-    });
+    }));
 
     const success = await useAuthStore.getState().login('admin@nexora.dev', 'admin123');
 
