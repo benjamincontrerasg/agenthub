@@ -1,6 +1,9 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+const rawApiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+const API_BASE = rawApiUrl.replace(/\/v1\/?$/, '').replace(/\/+$/, '');
+
 export interface AuthUser {
   id: string;
   email: string;
@@ -18,29 +21,23 @@ interface AuthState {
 
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
-  setDemoUser: (role: 'admin' | 'developer' | 'viewer') => void;
   clearError: () => void;
 }
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set, get) => ({
-      user: {
-        id: 'usr-admin-default',
-        email: 'admin@NEXORA.dev',
-        name: 'Administrador SecOps',
-        role: 'admin',
-        organizationId: 'org-default',
-      },
-      token: 'jwt-dev-token-default-admin',
-      isAuthenticated: true,
+    (set, _get) => ({
+      // Estado inicial: SIN sesión (el usuario debe autenticarse)
+      user: null,
+      token: null,
+      isAuthenticated: false,
       isLoading: false,
       error: null,
 
       login: async (email: string, password: string) => {
         set({ isLoading: true, error: null });
         try {
-          const res = await fetch('http://localhost:3001/auth/login', {
+          const res = await fetch(`${API_BASE}/auth/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password }),
@@ -65,30 +62,12 @@ export const useAuthStore = create<AuthState>()(
             error: null,
           });
           return true;
-        } catch (err: any) {
-          // Fallback offline / desarrollo
-          if (email === 'admin@NEXORA.dev' && password === 'admin123') {
-            const mockUser: AuthUser = {
-              id: 'usr-admin-default',
-              email: 'admin@NEXORA.dev',
-              name: 'Administrador SecOps',
-              role: 'admin',
-            };
-            const mockToken = 'jwt-dev-token-default-admin';
-            if (typeof window !== 'undefined') {
-              localStorage.setItem('NEXORA-token', mockToken);
-            }
-            set({
-              user: mockUser,
-              token: mockToken,
-              isAuthenticated: true,
-              isLoading: false,
-              error: null,
-            });
-            return true;
-          }
-
-          set({ isLoading: false, error: err.message || 'Error al conectar con el servidor de autenticación' });
+        } catch (_err: any) {
+          // Sin fallback offline: si el backend no responde, mostrar error real
+          set({
+            isLoading: false,
+            error: 'No se pudo conectar con el servidor de autenticación. Verifica que el backend esté corriendo.',
+          });
           return false;
         }
       },
@@ -103,39 +82,6 @@ export const useAuthStore = create<AuthState>()(
           isAuthenticated: false,
           error: null,
         });
-      },
-
-      setDemoUser: (role: 'admin' | 'developer' | 'viewer') => {
-        const rolesMap: Record<string, AuthUser> = {
-          admin: {
-            id: 'usr-admin-default',
-            email: 'admin@NEXORA.dev',
-            name: 'Administrador SecOps',
-            role: 'admin',
-          },
-          developer: {
-            id: 'usr-dev-01',
-            email: 'dev@NEXORA.dev',
-            name: 'Ingeniero de Agentes',
-            role: 'developer',
-          },
-          viewer: {
-            id: 'usr-viewer-01',
-            email: 'auditor@NEXORA.dev',
-            name: 'Auditor Externo',
-            role: 'viewer',
-          },
-        };
-
-        const u = rolesMap[role] || rolesMap.admin;
-        set({
-          user: u,
-          token: `jwt-dev-token-${role}`,
-          isAuthenticated: true,
-        });
-        if (typeof window !== 'undefined') {
-          localStorage.setItem('NEXORA-token', `jwt-dev-token-${role}`);
-        }
       },
 
       clearError: () => set({ error: null }),

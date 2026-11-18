@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
-  const { login, setDemoUser, isLoading, error, clearError } = useAuthStore();
+  const { login, isLoading, error, clearError } = useAuthStore();
   const [email, setEmail] = useState('admin@nexora.dev');
   const [password, setPassword] = useState('admin123');
 
@@ -18,9 +18,17 @@ export const LoginPage: React.FC = () => {
     }
   };
 
-  const handleQuickLogin = (role: 'admin' | 'developer' | 'viewer') => {
-    setDemoUser(role);
-    navigate('/');
+  const handleQuickLogin = async (role: 'admin' | 'developer') => {
+    const creds = {
+      admin: { email: 'admin@nexora.dev', password: 'admin123' },
+      developer: { email: 'dev@nexora.dev', password: 'dev123' },
+    }[role];
+    setEmail(creds.email);
+    setPassword(creds.password);
+    const success = await login(creds.email, creds.password);
+    if (success) {
+      navigate('/');
+    }
   };
 
   return (
@@ -121,32 +129,23 @@ export const LoginPage: React.FC = () => {
             <p className="text-caption font-medium text-fg-secondary mb-2.5 text-center">
               Acceso Rápido por Perfil (Demo & Desarrollo):
             </p>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 gap-3">
               <button
                 type="button"
                 onClick={() => handleQuickLogin('admin')}
-                className="p-2 rounded-[6px] border border-border-brand/40 bg-bg-brand-subtle hover:bg-bg-brand-subtle/80 text-center transition-colors cursor-pointer"
+                className="p-2.5 rounded-[6px] border border-border-brand/40 bg-bg-brand-subtle hover:bg-bg-brand-subtle/80 text-center transition-colors cursor-pointer"
               >
-                <div className="text-caption font-[510] text-fg-brand">Admin</div>
-                <div className="text-[11px] text-fg-secondary">Control Total</div>
+                <div className="text-caption font-[510] text-fg-brand">Admin Demo</div>
+                <div className="text-[11px] text-fg-secondary">admin@nexora.dev</div>
               </button>
 
               <button
                 type="button"
                 onClick={() => handleQuickLogin('developer')}
-                className="p-2 rounded-[6px] border border-border-default bg-bg-surface hover:bg-bg-surface text-center transition-colors cursor-pointer"
+                className="p-2.5 rounded-[6px] border border-border-default bg-bg-surface hover:bg-bg-surface text-center transition-colors cursor-pointer"
               >
-                <div className="text-caption font-[510] text-[#ffffff]">Developer</div>
-                <div className="text-[11px] text-fg-secondary">Agentes & MCP</div>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleQuickLogin('viewer')}
-                className="p-2 rounded-[6px] border border-border-default bg-bg-surface hover:bg-bg-surface text-center transition-colors cursor-pointer"
-              >
-                <div className="text-caption font-[510] text-[#8a8f98]">Viewer</div>
-                <div className="text-[11px] text-fg-secondary">Solo Auditoría</div>
+                <div className="text-caption font-[510] text-[#ffffff]">Developer Demo</div>
+                <div className="text-[11px] text-fg-secondary">dev@nexora.dev</div>
               </button>
             </div>
           </div>

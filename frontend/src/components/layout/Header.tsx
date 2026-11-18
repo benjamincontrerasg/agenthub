@@ -44,7 +44,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { settings } = useSettingsStore();
-  const { user, logout, setDemoUser } = useAuthStore();
+  const { user, logout } = useAuthStore();
   const { data: agents = [] } = useAgents();
   const { getAllTools } = useMCPStore();
   const { data: workflows = [] } = useWorkflows();
@@ -130,7 +130,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
               v1.0-preview
             </Badge>
           </div>
-          <p className="text-caption text-fg-mutedg-primaryg-secondary hidden md:block">
+          <p className="text-caption text-fg-secondary hidden md:block">
             {currentSection.subtitle}
           </p>
         </div>
@@ -143,9 +143,9 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
           onClick={() => setSearchOpen(true)}
           className="flex items-center space-x-2 rounded-[6px] border border-border-default bg-bg-surface px-3 py-1.5 text-caption text-[#8a8f98] hover:border-border-hover hover:text-[#d0d6e0] transition-colors cursor-pointer"
         >
-          <Search className="h-3.5 w-3.5 text-fg-mutedg-primaryg-secondary" />
+          <Search className="h-3.5 w-3.5 text-fg-secondary" />
           <span className="hidden sm:inline">Buscar agente, MCP o workflow...</span>
-          <kbd className="hidden md:inline-flex rounded bg-bg-surface px-1.5 py-0.5 text-caption font-mono text-fg-mutedg-primaryg-secondary">
+          <kbd className="hidden md:inline-flex rounded bg-bg-surface px-1.5 py-0.5 text-caption font-mono text-fg-secondary">
             ⌘K
           </kbd>
         </button>
@@ -153,10 +153,10 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
         {/* Simulation Mode Compact Badge */}
         <div className="hidden sm:flex items-center space-x-1.5 rounded-[6px] border border-border-brand/40 bg-bg-brand-subtle px-2.5 py-1 text-caption">
           <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-bg-cardg-brand opacity-75"></span>
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-bg-cardg-brand"></span>
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-bg-brand opacity-75"></span>
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-bg-brand"></span>
           </span>
-          <span className="text-fg-mutedg-primaryg-brand font-medium">Modo Simulación</span>
+          <span className="text-fg-brand font-medium">Modo Simulación</span>
         </div>
 
         {/* Notifications Popover */}
@@ -177,7 +177,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
             <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-[12px] border border-border-default bg-bg-card p-4 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150">
               <div className="flex items-center justify-between pb-3 border-b border-border-default">
                 <span className="text-body font-[510] text-[#ffffff]">Notificaciones</span>
-                <span className="rounded-full bg-bg-brand-subtle px-2 py-0.5 text-caption text-fg-mutedg-primaryg-brand font-mono">
+                <span className="rounded-full bg-bg-brand-subtle px-2 py-0.5 text-caption text-fg-brand font-mono">
                   3 nuevas
                 </span>
               </div>
@@ -194,15 +194,15 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
                     <div className="flex items-center justify-between">
                       <span className="text-caption font-[510] text-[#ffffff] flex items-center gap-1.5">
                         {n.type === 'warning' ? (
-                          <AlertTriangle className="h-3 w-3 text-fg-mutedg-primaryg-warning" />
+                          <AlertTriangle className="h-3 w-3 text-fg-warning" />
                         ) : (
-                          <CheckCircle2 className="h-3 w-3 text-fg-mutedg-primaryg-success" />
+                          <CheckCircle2 className="h-3 w-3 text-fg-success" />
                         )}
                         {n.title}
                       </span>
-                      <span className="text-caption text-fg-mutedg-primaryg-secondary">{n.time}</span>
+                      <span className="text-caption text-fg-secondary">{n.time}</span>
                     </div>
-                    <p className="mt-1 text-caption text-fg-mutedg-primaryg-secondary line-clamp-2">{n.message}</p>
+                    <p className="mt-1 text-caption text-fg-secondary line-clamp-2">{n.message}</p>
                   </div>
                 ))}
               </div>
@@ -219,10 +219,10 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
             <div className="flex h-6 w-6 items-center justify-center rounded-[4px] bg-[#e4f222] text-caption font-[510] text-[#08090a]">
               {(user?.name || settings.profile.name).substring(0, 2).toUpperCase()}
             </div>
-            <span className="hidden md:inline text-caption font-medium text-fg-mutedg-primaryg-primary max-w-[90px] truncate">
+            <span className="hidden md:inline text-caption font-medium text-fg-primary max-w-[90px] truncate">
               {user?.name || settings.profile.name}
             </span>
-            <ChevronDown className="h-3.5 w-3.5 text-fg-mutedg-primaryg-secondary" />
+            <ChevronDown className="h-3.5 w-3.5 text-fg-secondary" />
           </button>
 
           {showUserMenu && (
@@ -230,30 +230,17 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
               <div className="px-3 py-2 border-b border-border-default">
                 <div className="flex items-center justify-between">
                   <p className="text-caption font-[510] text-[#ffffff]">{user?.name || settings.profile.name}</p>
-                  <Badge variant="outline" className="text-[10px] font-mono uppercase text-fg-mutedg-primaryg-brand border-border-brand/50">
-                    {user?.role || 'admin'}
+                  <Badge variant="outline" className="text-[10px] font-mono uppercase text-fg-brand border-border-brand/50">
+                    {user?.role || 'viewer'}
                   </Badge>
                 </div>
-                <p className="text-caption text-fg-mutedg-primaryg-secondary truncate">{user?.email || settings.profile.email}</p>
+                <p className="text-caption text-fg-secondary truncate">{user?.email || settings.profile.email}</p>
               </div>
 
-              {/* Demo Role Switcher */}
-              <div className="py-1.5 px-2 border-b border-border-default">
-                <span className="text-[11px] font-medium text-fg-mutedg-primaryg-secondary uppercase block mb-1">Cambiar Rol RBAC</span>
-                <div className="grid grid-cols-3 gap-1">
-                  {(['admin', 'developer', 'viewer'] as const).map((r) => (
-                    <button
-                      key={r}
-                      onClick={() => setDemoUser(r)}
-                      className={`px-1.5 py-0.5 rounded text-[11px] font-medium cursor-pointer transition-colors ${(user?.role || 'admin') === r
-                          ? 'bg-bg-brand text-fg-mutedg-primaryg-primary font-[510]'
-                          : 'bg-bg-surface text-fg-mutedg-primaryg-secondary hover:text-fg-mutedg-primaryg-primary'
-                        }`}
-                    >
-                      {r}
-                    </button>
-                  ))}
-                </div>
+              {/* Real RBAC Role Info */}
+              <div className="py-2 px-3 border-b border-border-default bg-bg-surface/50">
+                <span className="text-[10px] font-mono uppercase text-fg-secondary block">Rol Activo (JWT)</span>
+                <span className="text-caption font-[510] text-fg-primary capitalize">{user?.role || 'Sin rol'}</span>
               </div>
 
               <div className="py-1">
@@ -274,7 +261,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
                   }}
                   className="flex w-full items-center px-3 py-1.5 text-caption text-[#8a8f98] hover:bg-bg-surface hover:text-[#ffffff] rounded-[6px] cursor-pointer"
                 >
-                  <Shield className="mr-2 h-3.5 w-3.5 text-fg-mutedg-primaryg-secondary" />
+                  <Shield className="mr-2 h-3.5 w-3.5 text-fg-secondary" />
                   Políticas de Seguridad
                 </button>
                 <button
@@ -283,9 +270,9 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
                     logout();
                     navigate('/login');
                   }}
-                  className="flex w-full items-center px-3 py-1.5 text-caption text-fg-mutedg-primaryg-error hover:bg-bg-error-subtle rounded-md cursor-pointer mt-1"
+                  className="flex w-full items-center px-3 py-1.5 text-caption text-fg-error hover:bg-bg-error-subtle rounded-md cursor-pointer mt-1"
                 >
-                  <LogOut className="mr-2 h-3.5 w-3.5 text-fg-mutedg-primaryg-error" />
+                  <LogOut className="mr-2 h-3.5 w-3.5 text-fg-error" />
                   Cerrar Sesión
                 </button>
               </div>
@@ -306,19 +293,19 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
           >
             <div className="flex items-center justify-between pb-3 border-b border-border-default">
               <div className="flex items-center space-x-2 flex-1">
-                <Search className="h-4 w-4 text-fg-mutedg-primaryg-brand" />
+                <Search className="h-4 w-4 text-fg-brand" />
                 <input
                   type="text"
                   autoFocus
                   placeholder="Escribe para buscar agentes, MCPs, workflows o atajos..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-transparent text-body text-fg-mutedg-primaryg-primary focus:outline-none placeholder:text-[#62666d]"
+                  className="w-full bg-transparent text-body text-fg-primary focus:outline-none placeholder:text-[#62666d]"
                 />
               </div>
               <button
                 onClick={() => setSearchOpen(false)}
-                className="text-fg-mutedg-primaryg-secondary hover:text-[#ffffff] p-1 rounded-md"
+                className="text-fg-secondary hover:text-[#ffffff] p-1 rounded-md"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -330,7 +317,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
                 <>
                   {matchedAgents.length > 0 && (
                     <div>
-                      <span className="text-caption font-[510] uppercase text-fg-mutedg-primaryg-brand px-2 py-0.5 block">
+                      <span className="text-caption font-[510] uppercase text-fg-brand px-2 py-0.5 block">
                         Agentes
                       </span>
                       {matchedAgents.map((ag) => (
@@ -340,10 +327,10 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
                             setSearchOpen(false);
                             navigate(`/agents/${ag.id}`);
                           }}
-                          className="p-2 rounded-[6px] hover:bg-bg-surface cursor-pointer flex items-center justify-between text-fg-mutedg-primaryg-primary"
+                          className="p-2 rounded-[6px] hover:bg-bg-surface cursor-pointer flex items-center justify-between text-fg-primary"
                         >
                           <span className="flex items-center gap-2">
-                            <Bot className="h-3.5 w-3.5 text-fg-mutedg-primaryg-brand" />
+                            <Bot className="h-3.5 w-3.5 text-fg-brand" />
                             {ag.name}
                           </span>
                           <Badge variant="outline" className="text-caption">
@@ -356,7 +343,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
 
                   {matchedTools.length > 0 && (
                     <div>
-                      <span className="text-caption font-[510] uppercase text-fg-mutedg-primaryg-warning px-2 py-0.5 block">
+                      <span className="text-caption font-[510] uppercase text-fg-warning px-2 py-0.5 block">
                         Herramientas MCP
                       </span>
                       {matchedTools.map((tl) => (
@@ -366,13 +353,13 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
                             setSearchOpen(false);
                             navigate('/mcp');
                           }}
-                          className="p-2 rounded-[6px] hover:bg-bg-surface cursor-pointer flex items-center justify-between text-fg-mutedg-primaryg-primary"
+                          className="p-2 rounded-[6px] hover:bg-bg-surface cursor-pointer flex items-center justify-between text-fg-primary"
                         >
                           <span className="flex items-center gap-2">
-                            <Wrench className="h-3.5 w-3.5 text-fg-mutedg-primaryg-warning" />
+                            <Wrench className="h-3.5 w-3.5 text-fg-warning" />
                             {tl.name}
                           </span>
-                          <span className="text-caption text-fg-mutedg-primaryg-secondary">{tl.serverName}</span>
+                          <span className="text-caption text-fg-secondary">{tl.serverName}</span>
                         </div>
                       ))}
                     </div>
@@ -380,7 +367,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
 
                   {matchedWorkflows.length > 0 && (
                     <div>
-                      <span className="text-caption font-[510] uppercase text-fg-mutedg-primaryg-brand px-2 py-0.5 block">
+                      <span className="text-caption font-[510] uppercase text-fg-brand px-2 py-0.5 block">
                         Workflows
                       </span>
                       {matchedWorkflows.map((wf) => (
@@ -390,65 +377,65 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
                             setSearchOpen(false);
                             navigate('/workflows');
                           }}
-                          className="p-2 rounded-[6px] hover:bg-bg-surface cursor-pointer flex items-center justify-between text-fg-mutedg-primaryg-primary"
+                          className="p-2 rounded-[6px] hover:bg-bg-surface cursor-pointer flex items-center justify-between text-fg-primary"
                         >
                           <span className="flex items-center gap-2">
-                            <GitFork className="h-3.5 w-3.5 text-fg-mutedg-primaryg-brand" />
+                            <GitFork className="h-3.5 w-3.5 text-fg-brand" />
                             {wf.name}
                           </span>
-                          <span className="text-caption font-mono text-fg-mutedg-primaryg-secondary">v{wf.version}</span>
+                          <span className="text-caption font-mono text-fg-secondary">v{wf.version}</span>
                         </div>
                       ))}
                     </div>
                   )}
 
                   {matchedAgents.length === 0 && matchedTools.length === 0 && matchedWorkflows.length === 0 && (
-                    <p className="text-fg-mutedg-primaryg-secondary text-center py-4">No se encontraron resultados para "{searchQuery}"</p>
+                    <p className="text-fg-secondary text-center py-4">No se encontraron resultados para "{searchQuery}"</p>
                   )}
                 </>
               ) : (
                 /* Default Shortcuts */
                 <div>
-                  <div className="text-caption font-[510] text-fg-mutedg-primaryg-secondary px-2 py-1">Accesos Directos Rápidos</div>
+                  <div className="text-caption font-[510] text-fg-secondary px-2 py-1">Accesos Directos Rápidos</div>
                   <button
                     onClick={() => {
                       setSearchOpen(false);
                       navigate('/chat');
                     }}
-                    className="w-full text-left px-3 py-2 rounded-[6px] hover:bg-bg-surface text-fg-mutedg-primaryg-primary flex items-center justify-between cursor-pointer"
+                    className="w-full text-left px-3 py-2 rounded-[6px] hover:bg-bg-surface text-fg-primary flex items-center justify-between cursor-pointer"
                   >
                     <span>💬 Abrir Multi-Agent Chat Room</span>
-                    <span className="text-caption text-fg-mutedg-primaryg-brand font-mono">/chat</span>
+                    <span className="text-caption text-fg-brand font-mono">/chat</span>
                   </button>
                   <button
                     onClick={() => {
                       setSearchOpen(false);
                       navigate('/workflows');
                     }}
-                    className="w-full text-left px-3 py-2 rounded-[6px] hover:bg-bg-surface text-fg-mutedg-primaryg-primary flex items-center justify-between cursor-pointer"
+                    className="w-full text-left px-3 py-2 rounded-[6px] hover:bg-bg-surface text-fg-primary flex items-center justify-between cursor-pointer"
                   >
                     <span>⚡ Editor Visual de Workflows</span>
-                    <span className="text-caption text-fg-mutedg-primaryg-brand font-mono">/workflows</span>
+                    <span className="text-caption text-fg-brand font-mono">/workflows</span>
                   </button>
                   <button
                     onClick={() => {
                       setSearchOpen(false);
                       navigate('/mcp');
                     }}
-                    className="w-full text-left px-3 py-2 rounded-[6px] hover:bg-bg-surface text-fg-mutedg-primaryg-primary flex items-center justify-between cursor-pointer"
+                    className="w-full text-left px-3 py-2 rounded-[6px] hover:bg-bg-surface text-fg-primary flex items-center justify-between cursor-pointer"
                   >
                     <span>🔌 Administrar Servidores MCP</span>
-                    <span className="text-caption text-fg-mutedg-primaryg-brand font-mono">/mcp</span>
+                    <span className="text-caption text-fg-brand font-mono">/mcp</span>
                   </button>
                   <button
                     onClick={() => {
                       setSearchOpen(false);
                       navigate('/executions');
                     }}
-                    className="w-full text-left px-3 py-2 rounded-[6px] hover:bg-bg-surface text-fg-mutedg-primaryg-primary flex items-center justify-between cursor-pointer"
+                    className="w-full text-left px-3 py-2 rounded-[6px] hover:bg-bg-surface text-fg-primary flex items-center justify-between cursor-pointer"
                   >
                     <span>📊 Centro de Ejecución & Event Timeline</span>
-                    <span className="text-caption text-fg-mutedg-primaryg-brand font-mono">/executions</span>
+                    <span className="text-caption text-fg-brand font-mono">/executions</span>
                   </button>
                 </div>
               )}

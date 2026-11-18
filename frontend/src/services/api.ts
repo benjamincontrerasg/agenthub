@@ -1,3 +1,5 @@
+import { useAuthStore } from '@/stores/auth.store';
+
 /**
  * Central API Client for NEXORA
  * Handles base configuration, token headers, error normalization,
@@ -64,6 +66,15 @@ export async function apiClient<T>(endpoint: string, options: RequestOptions = {
     });
 
     if (!response.ok) {
+      if (response.status === 401) {
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('NEXORA-token');
+          useAuthStore.getState().logout();
+          if (!window.location.pathname.startsWith('/login')) {
+            window.location.href = '/login';
+          }
+        }
+      }
       const errorBody = await response.json().catch(() => ({ message: response.statusText }));
       throw new ApiError(errorBody.message || 'Error en la petición al servidor', response.status, errorBody);
     }

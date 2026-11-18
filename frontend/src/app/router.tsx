@@ -12,15 +12,39 @@ import { AnalyticsPage } from '@/features/analytics/AnalyticsPage';
 import { SettingsPage } from '@/features/settings/SettingsPage';
 import { LoginPage } from '@/features/auth/LoginPage';
 import { AuditPage } from '@/features/audit/AuditPage';
+import { useAuthStore } from '@/stores/auth.store';
+
+/**
+ * Route guard: Protege las rutas internas exigiendo que el usuario
+ * cuente con token JWT válido y sesión activa.
+ */
+function ProtectedRoute() {
+  const { isAuthenticated, token } = useAuthStore();
+  if (!isAuthenticated || !token) {
+    return <Navigate to="/login" replace />;
+  }
+  return <AppLayout />;
+}
+
+/**
+ * Evita mostrar la pantalla de login si el usuario ya está autenticado.
+ */
+function PublicOnlyRoute() {
+  const { isAuthenticated, token } = useAuthStore();
+  if (isAuthenticated && token) {
+    return <Navigate to="/" replace />;
+  }
+  return <LoginPage />;
+}
 
 export const router = createBrowserRouter([
   {
     path: '/login',
-    element: <LoginPage />,
+    element: <PublicOnlyRoute />,
   },
   {
     path: '/',
-    element: <AppLayout />,
+    element: <ProtectedRoute />,
     children: [
       {
         index: true,
@@ -73,4 +97,3 @@ export const router = createBrowserRouter([
     ],
   },
 ]);
-

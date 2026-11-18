@@ -26,11 +26,21 @@ class WebSocketService {
     this.isConnecting = true;
 
     try {
-      this.ws = new WebSocket(url);
+      const token = typeof window !== 'undefined' ? localStorage.getItem('NEXORA-token') : null;
+      let targetUrl = url;
+      if (token) {
+        const separator = targetUrl.includes('?') ? '&' : '?';
+        targetUrl = `${targetUrl}${separator}token=${encodeURIComponent(token)}`;
+      }
+
+      this.ws = new WebSocket(targetUrl);
 
       this.ws.onopen = () => {
         this.isConnecting = false;
         console.info('[NEXORA WS] Conectado al stream de eventos en tiempo real.');
+        if (token) {
+          this.send({ action: 'auth', token });
+        }
       };
 
       this.ws.onmessage = (event) => {

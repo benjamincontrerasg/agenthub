@@ -240,7 +240,8 @@ export async function buildApp(opts: { logger?: any } = {}) {
   // Also register at root level
   await fastify.register(registerAllRoutes);
 
-  // Auth routes (no prefix — /auth/login, /auth/register, /auth/me)
+  // Auth routes (registered under /v1 and at root)
+  await fastify.register(authRoutes, { prefix: '/v1' });
   await fastify.register(authRoutes);
 
   return fastify;
