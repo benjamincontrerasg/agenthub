@@ -20,6 +20,7 @@ import {
   Send,
   Globe,
   CreditCard,
+  Users,
 } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
@@ -35,6 +36,7 @@ import { notificationsService, NotificationChannel } from '@/services/notificati
 import { toast } from '@/stores/toast.store';
 import { ApiKeysVault } from './ApiKeysVault';
 import { BillingSettingsTab } from './BillingSettingsTab';
+import { TeamSettingsTab } from './TeamSettingsTab';
 
 export const SettingsPage: React.FC = () => {
   const {
@@ -54,7 +56,7 @@ export const SettingsPage: React.FC = () => {
   const initialTab = (searchParams.get('tab') as any) || 'apiKeys';
 
   const [activeTab, setActiveTab] = useState<
-    'apiKeys' | 'billing' | 'profile' | 'appearance' | 'preferences' | 'security' | 'backend' | 'localAgent' | 'notifications'
+    'apiKeys' | 'billing' | 'team' | 'profile' | 'appearance' | 'preferences' | 'security' | 'backend' | 'localAgent' | 'notifications'
   >(initialTab);
 
   const [testResult, setTestResult] = useState<string | null>(null);
@@ -160,6 +162,7 @@ export const SettingsPage: React.FC = () => {
   const tabs = [
     { id: 'apiKeys', label: 'Claves de API (LLMs)', icon: KeyRound },
     { id: 'billing', label: 'Planes & Facturación', icon: CreditCard },
+    { id: 'team', label: 'Equipo & Miembros', icon: Users },
     { id: 'security', label: 'Seguridad & Credenciales', icon: Shield },
     { id: 'backend', label: 'Conexión Backend', icon: Server },
     { id: 'localAgent', label: 'Local Agent & Sandbox', icon: Terminal },
@@ -241,6 +244,9 @@ export const SettingsPage: React.FC = () => {
 
           {/* SAAS BILLING & SUBSCRIPTIONS TAB */}
           {activeTab === 'billing' && <BillingSettingsTab />}
+
+          {/* SAAS MULTI-TENANT TEAM MANAGEMENT TAB */}
+          {activeTab === 'team' && <TeamSettingsTab />}
 
           {/* SECURITY & CREDENTIALS TAB */}
           {activeTab === 'security' && (
