@@ -20,6 +20,7 @@ import { settingsRoutes } from './routes/settings.routes.js';
 import { authRoutes } from './routes/auth.routes.js';
 import { auditRoutes } from './routes/audit.routes.js';
 import { notificationsRoutes } from './routes/notifications.routes.js';
+import { billingRoutes } from './routes/billing.routes.js';
 
 declare module 'fastify' {
   interface FastifyRequest {
@@ -93,9 +94,11 @@ export async function buildApp(opts: { logger?: any } = {}) {
     const isHealthCheck = (urlPath === '/health' || urlPath === '/v1/health') && method === 'GET';
     const isAuthLogin = (urlPath === '/auth/login' || urlPath === '/v1/auth/login') && method === 'POST';
     const isAuthRegister = (urlPath === '/auth/register' || urlPath === '/v1/auth/register') && method === 'POST';
+    const isBillingPlans = (urlPath === '/billing/plans' || urlPath === '/v1/billing/plans') && method === 'GET';
+    const isBillingWebhook = (urlPath === '/billing/webhook' || urlPath === '/v1/billing/webhook') && method === 'POST';
     const isWebSocket = urlPath === '/ws' || urlPath === '/v1/ws';
 
-    if (isHealthCheck || isAuthLogin || isAuthRegister || isWebSocket) {
+    if (isHealthCheck || isAuthLogin || isAuthRegister || isBillingPlans || isBillingWebhook || isWebSocket) {
       return;
     }
 
@@ -233,6 +236,7 @@ export async function buildApp(opts: { logger?: any } = {}) {
     await app.register(settingsRoutes);
     await app.register(auditRoutes);
     await app.register(notificationsRoutes);
+    await app.register(billingRoutes);
   };
 
   // Register routes under /v1

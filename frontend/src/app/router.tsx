@@ -1,4 +1,4 @@
-import { createBrowserRouter, Navigate } from 'react-router-dom';
+import { createBrowserRouter, Navigate, useLocation } from 'react-router-dom';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { DashboardPage } from '@/features/dashboard/DashboardPage';
 import { ProvidersPage } from '@/features/providers/ProvidersPage';
@@ -11,17 +11,25 @@ import { ExecutionsPage } from '@/features/executions/ExecutionsPage';
 import { AnalyticsPage } from '@/features/analytics/AnalyticsPage';
 import { SettingsPage } from '@/features/settings/SettingsPage';
 import { LoginPage } from '@/features/auth/LoginPage';
+import { LandingPage } from '@/features/landing/LandingPage';
 import { AuditPage } from '@/features/audit/AuditPage';
 import { useAuthStore } from '@/stores/auth.store';
 
 /**
- * Route guard: Protege las rutas internas exigiendo que el usuario
- * cuente con token JWT válido y sesión activa.
+ * Route guard: Protege las rutas internas.
+ * Si el visitante no está autenticado y visita la raíz '/',
+ * muestra la Landing Page pública comercial de NEXORA.
+ * Si intenta acceder a rutas profundas protegidas, lo redirige a /login.
  */
 function ProtectedRoute() {
   const { isAuthenticated, token } = useAuthStore();
+  const location = useLocation();
+
   if (!isAuthenticated || !token) {
-    return <Navigate to="/login" replace />;
+    if (location.pathname === '/' || location.pathname === '') {
+      return <LandingPage />;
+    }
+    return <Navigate to="/login" replace state={{ from: location }} />;
   }
   return <AppLayout />;
 }
@@ -38,6 +46,10 @@ function PublicOnlyRoute() {
 }
 
 export const router = createBrowserRouter([
+  {
+    path: '/landing',
+    element: <LandingPage />,
+  },
   {
     path: '/login',
     element: <PublicOnlyRoute />,
