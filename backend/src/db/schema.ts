@@ -279,6 +279,18 @@ export const auditLogs = sqliteTable('audit_logs', {
   timestamp: text('timestamp').notNull(),
 });
 
+// --- Enterprise Environment Variables & Secrets Vault ---
+
+export const secrets = sqliteTable('secrets', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull().unique(),
+  description: text('description'),
+  encryptedValue: text('encrypted_value').notNull(),
+  category: text('category', { enum: ['api_key', 'database', 'auth', 'webhook', 'custom'] }).notNull().default('custom'),
+  createdAt: text('created_at').notNull(),
+  updatedAt: text('updated_at').notNull(),
+});
+
 // --- Relations ---
 
 export const providersRelations = relations(providers, ({ many }) => ({

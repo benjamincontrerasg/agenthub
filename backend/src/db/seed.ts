@@ -37,6 +37,16 @@ export async function seedDatabase() {
       details TEXT,
       timestamp TEXT NOT NULL
     );
+
+    CREATE TABLE IF NOT EXISTS secrets (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL UNIQUE,
+      description TEXT,
+      encrypted_value TEXT NOT NULL,
+      category TEXT NOT NULL DEFAULT 'custom',
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
   `);
 
   // 1. Providers and Models
@@ -332,6 +342,49 @@ export async function seedDatabase() {
       data: JSON.stringify(initialSettings),
       updatedAt: new Date().toISOString(),
     }).run();
+  }
+
+  // 8. Secrets Vault
+  const existingSecrets = db.select().from(schema.secrets).all();
+  if (existingSecrets.length === 0) {
+    console.log('[Seed] Seeding initial encrypted environment secrets...');
+    const { encrypt } = await import('../lib/crypto.js');
+    const now = new Date().toISOString();
+    const defaultSecrets = [
+      {
+        id: 'sec-db-url',
+        name: 'DATABASE_URL',
+        description: 'Cadena de conexión a base de datos primaria',
+        value: 'sqlite://./data/nexora.db',
+        category: 'database' as const,
+      },
+      {
+        id: 'sec-ollama-host',
+        name: 'OLLAMA_HOST',
+        description: 'Host local de inferencia para modelos Ollama',
+        value: 'http://localhost:11434',
+        category: 'api_key' as const,
+      },
+      {
+        id: 'sec-webhook-secret',
+        name: 'WEBHOOK_SIGNING_SECRET',
+        description: 'Clave HMAC para validar webhooks entrantes de CI/CD',
+        value: 'whsec_9876543210abcdef9876543210fedcba',
+        category: 'webhook' as const,
+      },
+    ];
+
+    for (const s of defaultSecrets) {
+      db.insert(schema.secrets).values({
+        id: s.id,
+        name: s.name,
+        description: s.description,
+        encryptedValue: encrypt(s.value),
+        category: s.category,
+        createdAt: now,
+        updatedAt: now,
+      }).run();
+    }
   }
 
   console.log('[Seed] Database initialization completed successfully.');

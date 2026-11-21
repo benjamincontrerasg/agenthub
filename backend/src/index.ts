@@ -22,6 +22,7 @@ import { auditRoutes } from './routes/audit.routes.js';
 import { notificationsRoutes } from './routes/notifications.routes.js';
 import { billingRoutes } from './routes/billing.routes.js';
 import { teamRoutes } from './routes/team.routes.js';
+import { secretsRoutes } from './routes/secrets.routes.js';
 
 declare module 'fastify' {
   interface FastifyRequest {
@@ -248,6 +249,7 @@ export async function buildApp(opts: { logger?: any } = {}) {
     await app.register(notificationsRoutes);
     await app.register(billingRoutes);
     await app.register(teamRoutes);
+    await app.register(secretsRoutes);
   };
 
   // Register routes under /v1

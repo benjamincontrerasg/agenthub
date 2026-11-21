@@ -39,6 +39,7 @@ import { toast } from '@/stores/toast.store';
 import { ApiKeysVault } from './ApiKeysVault';
 import { BillingSettingsTab } from './BillingSettingsTab';
 import { TeamSettingsTab } from './TeamSettingsTab';
+import { SecretsVaultTab } from './SecretsVaultTab';
 
 export const SettingsPage: React.FC = () => {
   const {
@@ -58,7 +59,7 @@ export const SettingsPage: React.FC = () => {
   const initialTab = (searchParams.get('tab') as any) || 'apiKeys';
 
   const [activeTab, setActiveTab] = useState<
-    'apiKeys' | 'billing' | 'team' | 'profile' | 'appearance' | 'preferences' | 'security' | 'backend' | 'localAgent' | 'notifications'
+    'apiKeys' | 'secrets' | 'billing' | 'team' | 'profile' | 'appearance' | 'preferences' | 'security' | 'backend' | 'localAgent' | 'notifications'
   >(initialTab);
 
   const [testResult, setTestResult] = useState<string | null>(null);
@@ -180,6 +181,7 @@ export const SettingsPage: React.FC = () => {
 
   const tabs = [
     { id: 'apiKeys', label: 'Claves de API (LLMs)', icon: KeyRound },
+    { id: 'secrets', label: 'Bóveda de Secretos (Env)', icon: Lock },
     { id: 'billing', label: 'Planes & Facturación', icon: CreditCard },
     { id: 'team', label: 'Equipo & Miembros', icon: Users },
     { id: 'security', label: 'Seguridad & Credenciales', icon: Shield },
@@ -260,6 +262,9 @@ export const SettingsPage: React.FC = () => {
         <div className="md:col-span-9 space-y-6">
           {/* API KEYS VAULT TAB */}
           {activeTab === 'apiKeys' && <ApiKeysVault />}
+
+          {/* ZERO-TRUST SECRETS & ENV VAULT TAB */}
+          {activeTab === 'secrets' && <SecretsVaultTab />}
 
           {/* SAAS BILLING & SUBSCRIPTIONS TAB */}
           {activeTab === 'billing' && <BillingSettingsTab />}
