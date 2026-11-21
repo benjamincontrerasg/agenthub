@@ -23,10 +23,10 @@
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.45.4",
     "fastify": "^5.2.1",
-    "openai": "^4.85.4",
+    "openai": "^7.62.0",
     "uuid": "^11.1.0",
     "ws": "^8.18.0",
-    "zod": "^3.24.2"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.12",

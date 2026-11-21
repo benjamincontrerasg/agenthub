@@ -45,7 +45,7 @@ export const registerMCPServerSchema = z.object({
   transport: z.enum(['stdio', 'streamable-http']),
   commandOrEndpoint: z.string().min(1, 'Comando o endpoint es requerido'),
   args: z.array(z.string()).optional(),
-  env: z.record(z.string()).optional(),
+  env: z.record(z.string(), z.string()).optional(),
   allowedDirectories: z.array(z.string()).optional(),
 });
 
@@ -69,7 +69,7 @@ export const saveWorkflowSchema = z.object({
 });
 
 export const executeWorkflowSchema = z.object({
-  inputs: z.record(z.any()).optional(),
+  inputs: z.record(z.string(), z.any()).optional(),
 });
 
 export const sendMessageSchema = z.object({

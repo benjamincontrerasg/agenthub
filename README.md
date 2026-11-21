@@ -115,14 +115,14 @@ NEXORA/
 │
 ├── docs/                          # Documentación y capturas
 │   └── screenshots/               # Capturas del editor de grafos y dashboard
-├── .github/workflows/ci.yml      # CI/CD: lint, build, 39 tests, audit, CodeQL, Docker build
+├── .github/workflows/ci.yml      # CI/CD: lint, build, 109 tests, audit, CodeQL, Docker build
 ├── docker-compose.yml             # Despliegue containerizado multicapa
 └── package.json                   # Scripts unificados de ejecución
 ```
 
 ---
 
-## 🧪 Matriz Completa de Tests (39 Tests Automatizados)
+## 🧪 Matriz Completa de Tests (109 Tests Automatizados)
 
 El proyecto cuenta con suites de tests completas ejecutadas en Vitest para garantizar la fiabilidad del core:
 
@@ -131,14 +131,22 @@ El proyecto cuenta con suites de tests completas ejecutadas en Vitest para garan
 | **`bridge/`** | `src/__tests__/sandbox.test.ts` | 3 | Whitelist estricta de binarios (`node`, `python`, `npx`, `git`) y confinamiento de rutas en sandbox. |
 | **`bridge/`** | `src/__tests__/server.test.ts` | 4 | Endpoints locales en `127.0.0.1`, ping `/health` y autenticación obligatoria con `BRIDGE_TOKEN` Bearer. |
 | **`backend/`** | `src/lib/__tests__/crypto.test.ts` | 4 | Cifrado AES-256-GCM, IV/salt aleatorio, detección de manipulación y rotación multi-clave. |
+| **`backend/`** | `src/lib/__tests__/config.test.ts` | 4 | Validación estricta de `ENCRYPTION_KEY` y `JWT_SECRET`: longitud mínima, separación de dominios. |
 | **`backend/`** | `src/services/__tests__/provider.service.test.ts` | 5 | Cifrado en reposo, endpoints `/connect`, `/credentials` (DELETE), sincronización de modelo y 404s. |
 | **`backend/`** | `src/services/__tests__/agent.service.test.ts` | 2 | Recuperación relacional de agentes y ciclo de vida CRUD completo. |
 | **`backend/`** | `src/services/__tests__/mcp.service.test.ts` | 3 | Registro en estado `pending_validation`, activación y logs de herramientas. |
 | **`backend/`** | `src/services/__tests__/chat.service.test.ts` | 3 | Mensajería multi-agente, aprobación humana y respuesta WebSocket. |
-| **`frontend/`**| `src/lib/__tests__/workflow-layout.test.ts` | 5 | Algoritmo puro de grilla (máx 4 por fila, $\Delta x \ge 330$, $\Delta y \ge 240$) y detección de solapamiento. |
-| **`frontend/`**| `src/services/__tests__/providers.service.test.ts` | 6 | Modo simulación reactivo, connect/disconnect y **cero fugas de API Keys** en cliente o localStorage. |
+| **`backend/`** | `src/routes/__tests__/auth-protection.test.ts` | 22 | Autenticación JWT en todas las rutas REST y WebSocket, login/registro con scrypt, anti-enumeración. |
+| **`backend/`** | `src/routes/__tests__/cors.test.ts` | 4 | CORS estricto: orígenes permitidos vs. rechazados, `access-control-allow-credentials`. |
 | **`frontend/`**| `src/lib/__tests__/utils.test.ts` | 4 | Funciones de formateo de moneda, duración, números y fechas. |
-| **Total** | **11 Suites de Prueba** | **39** | **100% Pasados en Verde** |
+| **`frontend/`**| `src/services/__tests__/providers.service.test.ts` | 6 | Modo simulación reactivo, connect/disconnect y **cero fugas de API Keys** en cliente o localStorage. |
+| **`frontend/`**| `src/services/__tests__/agents.service.test.ts` | 4 | Servicio de agentes, listado y creación. |
+| **`frontend/`**| `src/services/__tests__/mcp.service.test.ts` | 5 | Validación y activación de servidores MCP. |
+| **`frontend/`**| `src/services/__tests__/workflows.service.test.ts` | 4 | Guardado y listado de workflows. |
+| **`frontend/`**| `src/stores/__tests__/agents.store.test.ts` | 3 | Store Zustand de agentes: CRUD y filtros. |
+| **`frontend/`**| `src/stores/__tests__/mcp.store.test.ts` | 3 | Store MCP: validación y activación. |
+| **`frontend/`**| `src/stores/__tests__/auth.store.test.ts` | 4 | Autenticación real: sin sesión por defecto, sin fallback offline, login y logout. |
+| **Total** | **18 Suites de Prueba** | **109** | **100% Pasados en Verde** |
 
 Para ejecutar todas las pruebas desde la raíz:
 ```bash
@@ -186,9 +194,27 @@ Para ejecutar servidores MCP que dependen de procesos locales STDIO:
 
 ---
 
-## 🔒 Autenticación y Multi-Tenancy (Roadmap de Producción)
+## 🔒 Autenticación y Multi-Tenancy
 
-> **Estado actual:** La versión de desarrollo es monousuario para agilizar el setup local. Para entornos de producción expuestos a la red, se ha diseñado el blueprint de arquitectura multi-inquilino.
+> **Estado actual:** La autenticación JWT con scrypt está implementada y protege todas las rutas REST y WebSocket. Las funcionalidades de multi-tenancy (aislamiento por `organization_id` y RBAC por rol) están **planificadas** para la siguiente iteración.
+
+### Autenticación Implementada (JWT + scrypt)
+
+Todas las rutas bajo `/v1` requieren un token JWT válido en el header `Authorization: Bearer <token>`. El canal WebSocket requiere autenticación por query param `?token=` o por primer mensaje `{ type: "auth", token }`.
+
+```mermaid
+flowchart TD
+    Client["Cliente Web / SDK"] -->|Bearer JWT| Gateway["Fastify API Gateway"]
+    Gateway --> AuthHook["preHandler: verifyJWT"]
+    AuthHook -->|Usuario autenticado| Services["Servicios de Negocio"]
+    Services --> DB[("SQLite (WAL mode)")]
+```
+
+- **Hashing de contraseñas:** `scrypt` con salt aleatorio de 16 bytes (sin dependencias externas).
+- **Anti-enumeración:** Login devuelve el mismo mensaje genérico tanto para usuario inexistente como para contraseña incorrecta.
+- **Separación de secretos:** `JWT_SECRET` (firma de tokens) y `ENCRYPTION_KEY` (cifrado de API keys) son claves independientes, ambas obligatorias ≥32 caracteres.
+
+### Multi-Tenancy (Planificado)
 
 ```mermaid
 flowchart TD
@@ -198,8 +224,8 @@ flowchart TD
     Services -->|tenant_id scoping| DB[("Base de Datos (Row-Level Security)")]
 ```
 
-- **Aislamiento por Organización:** Cada tabla incluye `organization_id: uuid`. Todas las consultas Drizzle se filtran automáticamente por el inquilino autenticado.
-- **Matriz de Roles (RBAC):**
+- **Aislamiento por Organización (planificado):** Cada tabla incluirá `organization_id: uuid`. Todas las consultas Drizzle se filtrarán automáticamente por el inquilino autenticado.
+- **Matriz de Roles — RBAC (planificado):**
   - **`Owner` / `Admin`:** Gestión de facturación, claves maestras y conexión de proveedores de IA.
   - **`Developer`:** Creación y modificación de agentes, herramientas y flujos de trabajo.
   - **`Viewer` / `Operator`:** Ejecución de flujos y visualización de analíticas sin acceso a credenciales sensibles.
@@ -228,19 +254,31 @@ cd nexora
 
 # Configurar variables del backend
 cp backend/.env.example backend/.env
+```
 
-# Generar una clave segura de 64 caracteres hex:
+Edita `backend/.env` y configura las siguientes variables **obligatorias**:
+
+| Variable | Descripción | Requisitos |
+| :--- | :--- | :--- |
+| `ENCRYPTION_KEY` | Clave maestra para cifrado AES-256-GCM de API keys | ≥ 32 caracteres, hex recomendado |
+| `JWT_SECRET` | Clave para firma y verificación de tokens JWT | ≥ 32 caracteres, **distinta** de `ENCRYPTION_KEY` |
+| `CORS_ORIGIN` | Orígenes permitidos para CORS (separados por coma) | ej. `http://localhost:5173,http://localhost:5174` |
+
+```bash
+# Generar claves criptográficamente seguras de 64 caracteres hex (256 bits):
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
-# Coloca la clave generada en ENCRYPTION_KEY dentro de backend/.env
 ```
 
 ### 2. Iniciar el Backend
 ```bash
 cd backend
 npm install
-npm run seed       # Inicializa la base de datos con datos base
-npm run dev        # Inicia Fastify en http://localhost:3001 (WS en ws://localhost:3001/ws)
+npm run db:push     # Crea/sincroniza las tablas en SQLite
+npm run seed        # Inicializa la base de datos con datos de prueba
+npm run dev         # Inicia Fastify en http://localhost:3001 (WS en ws://localhost:3001/ws)
 ```
+
+> ⚠️ **Importante:** Ejecuta `npm run db:push` **antes** de `npm run seed`. Si omites este paso, el seed fallará porque las tablas no existen.
 
 ### 3. Iniciar el Frontend
 ```bash
