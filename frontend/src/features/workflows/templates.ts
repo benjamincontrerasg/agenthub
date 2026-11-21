@@ -128,4 +128,92 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplate[] = [
       ],
     },
   },
+  {
+    id: 'template-ollama-local',
+    name: 'DevOps Local & Generación Privada (Ollama $0)',
+    description: 'Generación y ejecución de scripts locales con Ollama (Llama 3 / CodeLlama) sin salir a internet.',
+    category: 'DevOps & CI/CD',
+    badge: 'Ollama Local',
+    workflow: {
+      name: 'DevOps Privado con Modelo Local Ollama',
+      description: 'Inferencia offline a costo $0 para tareas de infraestructura y testing interno',
+      version: '1.0.0',
+      status: 'active',
+      nodes: [
+        {
+          id: 'ol-start',
+          type: 'start',
+          position: { x: 100, y: 150 },
+          data: { label: 'Evento de Commit Git', nodeType: 'start' },
+        },
+        {
+          id: 'ol-agent',
+          type: 'agent',
+          position: { x: 350, y: 150 },
+          data: { label: 'Ollama Dev Agent', nodeType: 'agent', providerId: 'ollama', description: 'Inferencia local Llama 3' },
+        },
+        {
+          id: 'ol-mcp',
+          type: 'mcp_tool',
+          position: { x: 600, y: 150 },
+          data: { label: 'MCP Run Tests', nodeType: 'mcp_tool', toolId: 'tool-run-tests' },
+        },
+        {
+          id: 'ol-end',
+          type: 'end',
+          position: { x: 850, y: 150 },
+          data: { label: 'Reporte Completado', nodeType: 'end' },
+        },
+      ],
+      edges: [
+        { id: 'oe-1', source: 'ol-start', target: 'ol-agent' },
+        { id: 'oe-2', source: 'ol-agent', target: 'ol-mcp' },
+        { id: 'oe-3', source: 'ol-mcp', target: 'ol-end' },
+      ],
+    },
+  },
+  {
+    id: 'template-multi-brain',
+    name: 'Investigación & Síntesis Multi-Cerebro (Gemini + Claude)',
+    description: 'Gemini 2.5 investiga y extrae información a alta velocidad, y Claude 3.7 sintetiza y valida el documento final.',
+    category: 'RAG & Knowledge',
+    badge: 'Multi-Brain',
+    workflow: {
+      name: 'Síntesis Documental Multi-Cerebro',
+      description: 'Colaboración híbrida de modelos especializados en búsqueda y redacción ejecutiva',
+      version: '1.0.0',
+      status: 'active',
+      nodes: [
+        {
+          id: 'mb-start',
+          type: 'start',
+          position: { x: 100, y: 150 },
+          data: { label: 'Prompt de Investigación', nodeType: 'start' },
+        },
+        {
+          id: 'mb-gemini',
+          type: 'agent',
+          position: { x: 350, y: 150 },
+          data: { label: 'Gemini Research Agent', nodeType: 'agent', providerId: 'gemini', description: 'Extracción rápida de contexto' },
+        },
+        {
+          id: 'mb-claude',
+          type: 'agent',
+          position: { x: 600, y: 150 },
+          data: { label: 'Claude Synthesizer Agent', nodeType: 'agent', providerId: 'anthropic', description: 'Razonamiento y redacción estructurada' },
+        },
+        {
+          id: 'mb-output',
+          type: 'output',
+          position: { x: 850, y: 150 },
+          data: { label: 'Publicación de Reporte Markdown', nodeType: 'output' },
+        },
+      ],
+      edges: [
+        { id: 'me-1', source: 'mb-start', target: 'mb-gemini' },
+        { id: 'me-2', source: 'mb-gemini', target: 'mb-claude' },
+        { id: 'me-3', source: 'mb-claude', target: 'mb-output' },
+      ],
+    },
+  },
 ];

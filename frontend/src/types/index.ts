@@ -125,6 +125,8 @@ export interface WorkflowNodeData {
   description?: string;
   nodeType: WorkflowNodeType;
   agentId?: string;
+  providerId?: string;
+  isExpanded?: boolean;
   toolId?: string;
   conditionExpr?: string;
   config?: Record<string, any>;

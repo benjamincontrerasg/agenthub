@@ -542,11 +542,12 @@ export const WorkflowBuilderPage: React.FC = () => {
                       size="sm"
                       className="shrink-0 text-caption"
                       onClick={() => {
-                        createWorkflow(tpl.workflow.name, tpl.workflow.description);
-                        const created = workflows[workflows.length - 1];
+                        const created = createWorkflow(tpl.workflow.name, tpl.workflow.description);
                         if (created) {
                           saveWorkflow(created.id, tpl.workflow.nodes as any, tpl.workflow.edges as any);
                           setActiveWorkflowId(created.id);
+                          setNodes(tpl.workflow.nodes as any);
+                          setEdges(tpl.workflow.edges as any);
                         }
                         setShowTemplatesModal(false);
                         toast.success('Plantilla Aplicada', `Pipeline "${tpl.name}" creado desde plantilla.`);

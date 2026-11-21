@@ -19,7 +19,9 @@ import {
   Trash2,
   Send,
   Globe,
+  CreditCard,
 } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -32,6 +34,7 @@ import { useSettingsStore } from '@/stores/settings.store';
 import { notificationsService, NotificationChannel } from '@/services/notifications.service';
 import { toast } from '@/stores/toast.store';
 import { ApiKeysVault } from './ApiKeysVault';
+import { BillingSettingsTab } from './BillingSettingsTab';
 
 export const SettingsPage: React.FC = () => {
   const {
@@ -47,9 +50,12 @@ export const SettingsPage: React.FC = () => {
     resetToDefaults,
   } = useSettingsStore();
 
+  const [searchParams] = useSearchParams();
+  const initialTab = (searchParams.get('tab') as any) || 'apiKeys';
+
   const [activeTab, setActiveTab] = useState<
-    'apiKeys' | 'profile' | 'appearance' | 'preferences' | 'security' | 'backend' | 'localAgent' | 'notifications'
-  >('apiKeys');
+    'apiKeys' | 'billing' | 'profile' | 'appearance' | 'preferences' | 'security' | 'backend' | 'localAgent' | 'notifications'
+  >(initialTab);
 
   const [testResult, setTestResult] = useState<string | null>(null);
   const [bridgeTestResult, setBridgeTestResult] = useState<string | null>(null);
@@ -153,6 +159,7 @@ export const SettingsPage: React.FC = () => {
 
   const tabs = [
     { id: 'apiKeys', label: 'Claves de API (LLMs)', icon: KeyRound },
+    { id: 'billing', label: 'Planes & Facturación', icon: CreditCard },
     { id: 'security', label: 'Seguridad & Credenciales', icon: Shield },
     { id: 'backend', label: 'Conexión Backend', icon: Server },
     { id: 'localAgent', label: 'Local Agent & Sandbox', icon: Terminal },
@@ -231,6 +238,9 @@ export const SettingsPage: React.FC = () => {
         <div className="md:col-span-9 space-y-6">
           {/* API KEYS VAULT TAB */}
           {activeTab === 'apiKeys' && <ApiKeysVault />}
+
+          {/* SAAS BILLING & SUBSCRIPTIONS TAB */}
+          {activeTab === 'billing' && <BillingSettingsTab />}
 
           {/* SECURITY & CREDENTIALS TAB */}
           {activeTab === 'security' && (
