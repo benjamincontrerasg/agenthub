@@ -320,6 +320,138 @@ export const AnalyticsPage: React.FC = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* LLM Tracing & Observability Section */}
+      <Card className="border-border-default bg-bg-card/70 overflow-hidden">
+        <CardHeader className="pb-3 border-b border-border-default/60">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div>
+              <CardTitle className="text-subtitle font-semibold text-fg-primary flex items-center gap-2">
+                <Activity className="h-4 w-4 text-emerald-400" />
+                Trazas de Inferencia & Observabilidad LLM en Vivo
+                <Badge variant="outline" className="border-emerald-500/30 text-emerald-400 font-mono text-[10px]">
+                  LangSmith / Langfuse Ready
+                </Badge>
+              </CardTitle>
+              <CardDescription className="text-caption text-fg-secondary">
+                Inspección granular de latencia, consumo de tokens y costo en cada llamada a modelo o herramienta.
+              </CardDescription>
+            </div>
+
+            {/* Savings Badge */}
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-blue-500/30 bg-blue-500/[0.08]">
+              <Cpu className="h-4 w-4 text-blue-400 shrink-0" />
+              <div className="text-caption">
+                <span className="text-fg-secondary">Ahorro Ollama Local: </span>
+                <span className="font-mono font-bold text-blue-300">$418.50 USD</span>
+              </div>
+            </div>
+          </div>
+        </CardHeader>
+
+        <CardContent className="pt-4">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-caption">
+              <thead>
+                <tr className="border-b border-border-default text-fg-secondary font-mono">
+                  <th className="pb-2.5">Traza ID</th>
+                  <th className="pb-2.5">Agente / Rol</th>
+                  <th className="pb-2.5">Modelo & Proveedor</th>
+                  <th className="pb-2.5">Latencia</th>
+                  <th className="pb-2.5">Tokens (Prompt / Comp)</th>
+                  <th className="pb-2.5">Costo</th>
+                  <th className="pb-2.5 text-right">Estado</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border-default/60 font-mono">
+                <tr className="hover:bg-bg-surface/30 transition-colors">
+                  <td className="py-2.5 text-fg-brand font-semibold">tr_8f91c0e2</td>
+                  <td className="py-2.5">
+                    <div className="flex items-center gap-1.5 font-sans">
+                      <span className="font-medium text-fg-primary">Architect Agent</span>
+                      <span className="text-[10px] text-fg-secondary">(Architect)</span>
+                    </div>
+                  </td>
+                  <td className="py-2.5">
+                    <span className="px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[11px]">
+                      GPT-4o (OpenAI)
+                    </span>
+                  </td>
+                  <td className="py-2.5 text-emerald-400">420ms</td>
+                  <td className="py-2.5 text-fg-secondary">1,240 / 380</td>
+                  <td className="py-2.5 text-fg-primary">$0.0081</td>
+                  <td className="py-2.5 text-right">
+                    <Badge variant="success" className="text-[10px] py-0">✓ Completed</Badge>
+                  </td>
+                </tr>
+
+                <tr className="hover:bg-bg-surface/30 transition-colors">
+                  <td className="py-2.5 text-fg-brand font-semibold">tr_4a29d11b</td>
+                  <td className="py-2.5">
+                    <div className="flex items-center gap-1.5 font-sans">
+                      <span className="font-medium text-fg-primary">Ollama_CP</span>
+                      <span className="text-[10px] text-fg-secondary">(Developer)</span>
+                    </div>
+                  </td>
+                  <td className="py-2.5">
+                    <span className="px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-300 border border-blue-500/20 text-[11px]">
+                      Llama 3.1 Local (Ollama)
+                    </span>
+                  </td>
+                  <td className="py-2.5 text-emerald-400">890ms</td>
+                  <td className="py-2.5 text-fg-secondary">2,100 / 640</td>
+                  <td className="py-2.5 text-blue-400 font-bold">$0.00 (Local)</td>
+                  <td className="py-2.5 text-right">
+                    <Badge variant="success" className="text-[10px] py-0">✓ Completed</Badge>
+                  </td>
+                </tr>
+
+                <tr className="hover:bg-bg-surface/30 transition-colors">
+                  <td className="py-2.5 text-fg-brand font-semibold">tr_12ee89bc</td>
+                  <td className="py-2.5">
+                    <div className="flex items-center gap-1.5 font-sans">
+                      <span className="font-medium text-fg-primary">Reviewer Agent</span>
+                      <span className="text-[10px] text-fg-secondary">(Reviewer)</span>
+                    </div>
+                  </td>
+                  <td className="py-2.5">
+                    <span className="px-1.5 py-0.5 rounded bg-orange-500/10 text-orange-400 border border-orange-500/20 text-[11px]">
+                      Claude 3.7 Sonnet (Anthropic)
+                    </span>
+                  </td>
+                  <td className="py-2.5 text-amber-400">1,120ms</td>
+                  <td className="py-2.5 text-fg-secondary">3,450 / 920</td>
+                  <td className="py-2.5 text-fg-primary">$0.0241</td>
+                  <td className="py-2.5 text-right">
+                    <Badge variant="success" className="text-[10px] py-0">✓ Completed</Badge>
+                  </td>
+                </tr>
+
+                <tr className="hover:bg-bg-surface/30 transition-colors">
+                  <td className="py-2.5 text-fg-brand font-semibold">tr_771ab3d0</td>
+                  <td className="py-2.5">
+                    <div className="flex items-center gap-1.5 font-sans">
+                      <span className="font-medium text-fg-primary">Research Agent</span>
+                      <span className="text-[10px] text-fg-secondary">(Research)</span>
+                    </div>
+                  </td>
+                  <td className="py-2.5">
+                    <span className="px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-300 border border-purple-500/20 text-[11px]">
+                      Gemini 2.5 Flash (Google)
+                    </span>
+                  </td>
+                  <td className="py-2.5 text-emerald-400">310ms</td>
+                  <td className="py-2.5 text-fg-secondary">4,800 / 510</td>
+                  <td className="py-2.5 text-fg-primary">$0.0019</td>
+                  <td className="py-2.5 text-right">
+                    <Badge variant="success" className="text-[10px] py-0">✓ Completed</Badge>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
