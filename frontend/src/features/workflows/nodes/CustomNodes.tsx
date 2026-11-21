@@ -149,7 +149,9 @@ export const AgentNode = memo((props: any) => {
 
   const providerId =
     rawProviderId ||
-    (label.includes('ollama') || agentId.includes('ollama') || agentRole.includes('ollama')
+    (label.includes('deepseek') || agentId.includes('deepseek') || agentRole.includes('deepseek')
+      ? 'deepseek'
+      : label.includes('ollama') || agentId.includes('ollama') || agentRole.includes('ollama')
       ? 'ollama'
       : label.includes('architect') || agentId.includes('architect')
       ? 'openai'
@@ -167,9 +169,66 @@ export const AgentNode = memo((props: any) => {
   const isOpenAI = providerId === 'openai';
   const isOllama = providerId === 'ollama';
   const isGemini = providerId === 'gemini';
+  const isDeepSeek = providerId === 'deepseek';
 
   // Solo activo si se está manteniendo presionado el ratón o arrastrando
   const isCurrentlyDraggingOrPressed = Boolean(dragging || isPressed);
+
+  // Estado Compacto para DeepSeek: logo ballena azul/cyan con fondo exterior transparente
+  if (isDeepSeek && !isExpanded) {
+    return (
+      <div
+        className="relative group cursor-grab active:cursor-grabbing transition-transform duration-150 transform hover:scale-105 active:scale-95"
+        onDoubleClick={(e) => {
+          e.stopPropagation();
+          setInternalExpanded(true);
+        }}
+        onMouseDown={(e) => {
+          if (e.button === 0) {
+            setIsPressed(true);
+          }
+        }}
+        onMouseUp={() => setIsPressed(false)}
+      >
+        <Handle
+          type="target"
+          position={Position.Left}
+          className="!bg-cyan-500 !w-3 !h-3 !border-2 !border-slate-900"
+        />
+
+        <div
+          className={`p-3 rounded-[12px] border-2 bg-bg-card/95 shadow-2xl backdrop-blur-md flex flex-col items-center justify-center gap-1.5 transition-all ${
+            isCurrentlyDraggingOrPressed
+              ? 'border-cyan-500 shadow-cyan-500/30 ring-2 ring-cyan-500/20'
+              : 'border-cyan-500/40 hover:border-cyan-500 hover:shadow-cyan-500/20'
+          }`}
+        >
+          {/* Logo DeepSeek */}
+          <div className="w-14 h-14 flex items-center justify-center p-0.5">
+            <img
+              src="/logos/deepseek-filled.png"
+              alt="DeepSeek"
+              className="w-full h-full object-contain select-none pointer-events-none drop-shadow-md transition-transform duration-150"
+            />
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="text-[11px] font-[510] text-cyan-300 font-mono tracking-tight px-1.5 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/20">
+              {data?.label || 'DeepSeek'}
+            </span>
+          </div>
+          <span className="text-[9px] text-[#8a8f98] font-sans tracking-wide">
+            Doble clic para expandir
+          </span>
+        </div>
+
+        <Handle
+          type="source"
+          position={Position.Right}
+          className="!bg-cyan-500 !w-3 !h-3 !border-2 !border-slate-900"
+        />
+      </div>
+    );
+  }
 
   // Estado Compacto para Gemini: estrella de 4 puntas degradada sobre fondo transparente
   if (isGemini && !isExpanded) {
@@ -422,14 +481,16 @@ export const AgentNode = memo((props: any) => {
             ? 'border-blue-500 ring-2 ring-blue-500/40 shadow-blue-500/30'
             : isGemini
             ? 'border-indigo-500 ring-2 ring-indigo-500/40 shadow-indigo-500/30'
+            : isDeepSeek
+            ? 'border-cyan-500 ring-2 ring-cyan-500/40 shadow-cyan-500/30'
             : 'border-border-brand/50'
         }
-        accentColor={isOpenAI ? 'text-fg-success' : isOllama ? 'text-blue-400' : isGemini ? 'text-[#e4f222]' : 'text-fg-brand'}
+        accentColor={isOpenAI ? 'text-fg-success' : isOllama ? 'text-blue-400' : isGemini ? 'text-[#e4f222]' : isDeepSeek ? 'text-cyan-400' : 'text-fg-brand'}
       >
         <Handle
           type="target"
           position={Position.Left}
-          className={`!w-2.5 !h-2.5 ${isOpenAI ? '!bg-emerald-500' : isOllama ? '!bg-blue-500' : isGemini ? '!bg-[#e4f222]' : '!bg-[#e4f222]'}`}
+          className={`!w-2.5 !h-2.5 ${isOpenAI ? '!bg-emerald-500' : isOllama ? '!bg-blue-500' : isGemini ? '!bg-[#e4f222]' : isDeepSeek ? '!bg-cyan-500' : '!bg-[#e4f222]'}`}
         />
         <p className="text-caption text-fg-secondary line-clamp-2">{data?.description || 'Ejecuta inferencia con LLM'}</p>
         
@@ -443,6 +504,8 @@ export const AgentNode = memo((props: any) => {
               ? 'bg-blue-500/15 border-blue-500/40'
               : isGemini
               ? 'bg-[#e4f222]/15 border-indigo-500/40'
+              : isDeepSeek
+              ? 'bg-cyan-500/15 border-cyan-500/40'
               : 'bg-bg-card/70 border-border-default'
           }`}>
             <ProviderLogo
@@ -460,9 +523,11 @@ export const AgentNode = memo((props: any) => {
                 ? 'text-blue-400 font-[510]'
                 : isGemini
                 ? 'text-[#e4f222] font-[510]'
+                : isDeepSeek
+                ? 'text-cyan-400 font-[510]'
                 : 'text-fg-secondary'
             }`}>
-              {isClaude ? 'Claude' : isOpenAI ? 'OpenAI' : isOllama ? 'Ollama' : isGemini ? 'Gemini' : providerId}
+              {isClaude ? 'Claude' : isOpenAI ? 'OpenAI' : isOllama ? 'Ollama' : isGemini ? 'Gemini' : isDeepSeek ? 'DeepSeek' : providerId}
             </span>
           </div>
           {data?.agentId && (
@@ -474,7 +539,7 @@ export const AgentNode = memo((props: any) => {
         <Handle
           type="source"
           position={Position.Right}
-          className={`!w-2.5 !h-2.5 ${isOpenAI ? '!bg-emerald-500' : isOllama ? '!bg-blue-500' : isGemini ? '!bg-[#e4f222]' : '!bg-[#e4f222]'}`}
+          className={`!w-2.5 !h-2.5 ${isOpenAI ? '!bg-emerald-500' : isOllama ? '!bg-blue-500' : isGemini ? '!bg-[#e4f222]' : isDeepSeek ? '!bg-cyan-500' : '!bg-[#e4f222]'}`}
         />
       </NodeWrapper>
     </div>

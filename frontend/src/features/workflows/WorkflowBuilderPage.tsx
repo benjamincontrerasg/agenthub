@@ -428,6 +428,14 @@ export const WorkflowBuilderPage: React.FC = () => {
         </span>
 
         <button
+          onClick={() => handleAddNode('start', 'Start Pipeline')}
+          className="flex items-center gap-2 px-2.5 py-1.5 rounded-[6px] text-caption font-medium text-fg-secondary hover:bg-bg-surface hover:text-[#ffffff] transition-colors cursor-pointer"
+        >
+          <Play className="h-3.5 w-3.5 text-fg-success" />
+          <span>Start Trigger</span>
+        </button>
+
+        <button
           onClick={() => handleAddNode('agent', 'AI Agent')}
           className="flex items-center gap-2 px-2.5 py-1.5 rounded-[6px] text-caption font-medium text-fg-secondary hover:bg-bg-surface hover:text-[#ffffff] transition-colors cursor-pointer"
         >
