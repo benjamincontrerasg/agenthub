@@ -22,6 +22,7 @@ import { useAuthStore } from '@/stores/auth.store';
 import { useAgents } from '@/features/agents/hooks';
 import { useMCPStore } from '@/stores/mcp.store';
 import { useWorkflows } from '@/features/workflows/hooks';
+import { useNotificationsStore } from '@/stores/notifications.store';
 import { isMockMode } from '@/services/providers.service';
 
 interface HeaderProps {
@@ -39,6 +40,7 @@ const sectionTitles: Record<string, { title: string; subtitle: string }> = {
   '/analytics': { title: 'Uso y Métricas', subtitle: 'Consumo de tokens, costos estimados y rendimiento de inferencia' },
   '/audit': { title: 'Auditoría Zero-Trust', subtitle: 'Trazabilidad inmutable de eventos, aprobaciones y cumplimiento' },
   '/settings': { title: 'Configuración', subtitle: 'Ajustes del sistema, seguridad y claves de cifrado' },
+  '/notifications': { title: 'Centro de Notificaciones', subtitle: 'Alertas en tiempo real, eventos de workflows y avisos de seguridad' },
 };
 
 export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
@@ -77,32 +79,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
     subtitle: 'Enterprise Multi-Agent Orchestration',
   };
 
-  const notifications = [
-    {
-      id: '1',
-      title: 'Aprobación requerida',
-      message: 'Developer Agent requiere autorización para escribir en disco local.',
-      time: 'Hace 3m',
-      type: 'warning',
-      actionUrl: '/chat',
-    },
-    {
-      id: '2',
-      title: 'Pipeline completado',
-      message: 'Autonomous Feature Pipeline finalizó con código 0.',
-      time: 'Hace 12m',
-      type: 'success',
-      actionUrl: '/executions',
-    },
-    {
-      id: '3',
-      title: 'MCP Server verificado',
-      message: 'Filesystem Server respondió al ping en 45ms.',
-      time: 'Hace 25m',
-      type: 'info',
-      actionUrl: '/mcp',
-    },
-  ];
+  const { notifications, unreadCount, markAsRead } = useNotificationsStore();
 
   // Filtered results
   const q = searchQuery.toLowerCase().trim();
@@ -178,44 +155,71 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
             className="relative flex h-9 w-9 items-center justify-center rounded-[6px] border border-border-default bg-bg-surface text-[#8a8f98] hover:bg-bg-surface hover:text-[#ffffff] transition-colors cursor-pointer"
           >
             <Bell className="h-4 w-4" />
-            <span className="absolute top-1.5 right-1.5 flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-bg-brand opacity-75"></span>
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-bg-brand"></span>
-            </span>
+            {unreadCount > 0 && (
+              <span className="absolute top-1.5 right-1.5 flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-bg-brand opacity-75"></span>
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-bg-brand"></span>
+              </span>
+            )}
           </button>
 
           {showNotifications && (
             <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-[12px] border border-border-default bg-bg-card p-4 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150">
               <div className="flex items-center justify-between pb-3 border-b border-border-default">
                 <span className="text-body font-[510] text-[#ffffff]">Notificaciones</span>
-                <span className="rounded-full bg-bg-brand-subtle px-2 py-0.5 text-caption text-fg-brand font-mono">
-                  3 nuevas
-                </span>
+                {unreadCount > 0 ? (
+                  <span className="rounded-full bg-bg-brand-subtle px-2 py-0.5 text-caption text-fg-brand font-mono">
+                    {unreadCount} nuevas
+                  </span>
+                ) : (
+                  <span className="text-caption text-fg-secondary">Al día</span>
+                )}
               </div>
-              <div className="mt-3 space-y-2.5 max-h-72 overflow-y-auto">
-                {notifications.map((n) => (
+              <div className="mt-3 space-y-2 max-h-72 overflow-y-auto">
+                {notifications.slice(0, 5).map((n) => (
                   <div
                     key={n.id}
                     onClick={() => {
+                      if (!n.read) markAsRead(n.id);
                       setShowNotifications(false);
-                      navigate(n.actionUrl);
+                      if (n.actionUrl) navigate(n.actionUrl);
                     }}
-                    className="p-2.5 rounded-[6px] border border-border-default/80 bg-bg-surface hover:bg-bg-surface/50 transition-colors cursor-pointer"
+                    className={`p-2.5 rounded-[6px] border transition-colors cursor-pointer ${
+                      n.read
+                        ? 'border-border-default/60 bg-bg-surface/40 hover:bg-bg-surface'
+                        : 'border-border-default bg-bg-surface hover:bg-bg-surface/80'
+                    }`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-caption font-[510] text-[#ffffff] flex items-center gap-1.5">
-                        {n.type === 'warning' ? (
-                          <AlertTriangle className="h-3 w-3 text-fg-warning" />
+                      <span className="text-caption font-[510] text-[#ffffff] flex items-center gap-1.5 truncate">
+                        {n.severity === 'warning' ? (
+                          <AlertTriangle className="h-3.5 w-3.5 text-fg-warning shrink-0" />
+                        ) : n.severity === 'error' ? (
+                          <X className="h-3.5 w-3.5 text-fg-error shrink-0" />
                         ) : (
-                          <CheckCircle2 className="h-3 w-3 text-fg-success" />
+                          <CheckCircle2 className="h-3.5 w-3.5 text-fg-success shrink-0" />
                         )}
-                        {n.title}
+                        <span className="truncate">{n.title}</span>
                       </span>
-                      <span className="text-caption text-fg-secondary">{n.time}</span>
+                      {!n.read && (
+                        <span className="h-1.5 w-1.5 rounded-full bg-fg-brand shrink-0" />
+                      )}
                     </div>
                     <p className="mt-1 text-caption text-fg-secondary line-clamp-2">{n.message}</p>
                   </div>
                 ))}
+              </div>
+              <div className="mt-3 pt-2.5 border-t border-border-default flex items-center justify-between">
+                <button
+                  onClick={() => {
+                    setShowNotifications(false);
+                    navigate('/notifications');
+                  }}
+                  className="text-caption font-medium text-fg-brand hover:underline flex items-center gap-1 cursor-pointer"
+                >
+                  Ver centro de notificaciones
+                  <ArrowRight className="h-3 w-3" />
+                </button>
               </div>
             </div>
           )}

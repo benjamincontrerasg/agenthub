@@ -13,6 +13,7 @@ import { SettingsPage } from '@/features/settings/SettingsPage';
 import { LoginPage } from '@/features/auth/LoginPage';
 import { LandingPage } from '@/features/landing/LandingPage';
 import { AuditPage } from '@/features/audit/AuditPage';
+import { NotificationsPage } from '@/features/notifications/NotificationsPage';
 import { useAuthStore } from '@/stores/auth.store';
 
 /**
@@ -101,6 +102,10 @@ export const router = createBrowserRouter([
       {
         path: 'audit',
         element: <AuditPage />,
+      },
+      {
+        path: 'notifications',
+        element: <NotificationsPage />,
       },
       {
         path: '*',

@@ -14,10 +14,12 @@ import {
   ChevronRight,
   Sparkles,
   ShieldCheck,
+  Bell,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { useChatStore } from '@/stores/chat.store';
+import { useNotificationsStore } from '@/stores/notifications.store';
 
 interface SidebarProps {
   collapsed: boolean;
@@ -31,6 +33,8 @@ interface NavItem {
   label: string;
   icon: React.ComponentType<{ className?: string }>;
   showBadge?: boolean;
+  badgeText?: string;
+  badgeVariant?: 'warning' | 'brand';
 }
 
 interface NavGroup {
@@ -46,6 +50,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const location = useLocation();
   const { conversations } = useChatStore();
+  const { unreadCount } = useNotificationsStore();
 
   // Contar aprobaciones pendientes reales en conversaciones
   const pendingApprovalsCount = conversations.reduce((acc, conv) => {
@@ -79,9 +84,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
           label: 'Chat Multi-Agente',
           icon: MessageSquare,
           showBadge: pendingApprovalsCount > 0,
+          badgeText: `${pendingApprovalsCount} pend.`,
+          badgeVariant: 'warning',
         },
         { path: '/executions', label: 'Centro de Ejecuciones', icon: Activity },
         { path: '/analytics', label: 'Uso y Métricas', icon: BarChart3 },
+        {
+          path: '/notifications',
+          label: 'Notificaciones',
+          icon: Bell,
+          showBadge: unreadCount > 0,
+          badgeText: `${unreadCount}`,
+          badgeVariant: 'brand',
+        },
       ],
     },
     {
@@ -190,15 +205,27 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       <span className="flex-1 truncate text-caption sm:text-body">{item.label}</span>
                     )}
 
-                    {/* Pending Approvals Counter Badge */}
+                    {/* Counter Badge */}
                     {!collapsed && item.showBadge && (
-                      <span className="ml-auto rounded-full bg-fg-warning/20 px-2 py-0.5 text-caption font-mono font-[510] text-fg-warning border border-fg-warning/40 animate-pulse">
-                        {pendingApprovalsCount} pend.
+                      <span
+                        className={cn(
+                          'ml-auto rounded-full px-2 py-0.5 text-caption font-mono font-[510] border',
+                          item.badgeVariant === 'warning'
+                            ? 'bg-fg-warning/20 text-fg-warning border-fg-warning/40 animate-pulse'
+                            : 'bg-bg-brand-subtle text-fg-brand border-border-brand'
+                        )}
+                      >
+                        {item.badgeText}
                       </span>
                     )}
 
                     {collapsed && item.showBadge && (
-                      <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-fg-warning" />
+                      <span
+                        className={cn(
+                          'absolute top-1 right-1 h-2 w-2 rounded-full',
+                          item.badgeVariant === 'warning' ? 'bg-fg-warning' : 'bg-fg-brand'
+                        )}
+                      />
                     )}
 
                     {isActive && (

@@ -119,19 +119,65 @@ export const useWorkflowsStore = create<WorkflowsState>()(
 
         set({ isSimulating: true });
 
-        // Iterate sequentially through the nodes to simulate visual execution
-        const nodeOrder = ['node-start', 'node-architect', 'node-dev', 'node-reviewer', 'node-condition', 'node-approval', 'node-output', 'node-end'];
+        // ── Dynamic graph traversal ──
+        // Build adjacency map from edges
+        const adjacency: Record<string, string[]> = {};
+        for (const edge of target.edges) {
+          if (!adjacency[edge.source]) adjacency[edge.source] = [];
+          adjacency[edge.source].push(edge.target);
+        }
 
-        for (const nodeId of nodeOrder) {
-          if (!get().isSimulating) break;
+        // Find start node(s): nodes with nodeType 'start', or nodes with no incoming edges
+        const incomingNodes = new Set(target.edges.map((e) => e.target));
+        let startNodeIds = target.nodes
+          .filter((n) => n.data.nodeType === 'start')
+          .map((n) => n.id);
+
+        if (startNodeIds.length === 0) {
+          // Fallback: nodes that have no incoming edges
+          startNodeIds = target.nodes
+            .filter((n) => !incomingNodes.has(n.id))
+            .map((n) => n.id);
+        }
+
+        if (startNodeIds.length === 0 && target.nodes.length > 0) {
+          startNodeIds = [target.nodes[0].id];
+        }
+
+        // BFS-based traversal to respect topological order
+        const visited = new Set<string>();
+        const queue: string[] = [...startNodeIds];
+
+        while (queue.length > 0 && get().isSimulating) {
+          const nodeId = queue.shift()!;
+          if (visited.has(nodeId)) continue;
+          visited.add(nodeId);
+
+          // Verify node exists in the workflow
+          const nodeExists = target.nodes.some((n) => n.id === nodeId);
+          if (!nodeExists) continue;
 
           set({ activeExecutionNodeId: nodeId });
           onProgress?.(nodeId, 'running');
 
-          // simulate step duration
-          await new Promise((r) => setTimeout(r, 1200));
+          // Simulate step duration (variable based on node type)
+          const nodeData = target.nodes.find((n) => n.id === nodeId)?.data;
+          const delay = nodeData?.nodeType === 'start' || nodeData?.nodeType === 'end'
+            ? 600
+            : nodeData?.nodeType === 'condition'
+              ? 800
+              : 1200;
+          await new Promise((r) => setTimeout(r, delay));
 
           onProgress?.(nodeId, 'completed');
+
+          // Enqueue successors
+          const successors = adjacency[nodeId] || [];
+          for (const succ of successors) {
+            if (!visited.has(succ)) {
+              queue.push(succ);
+            }
+          }
         }
 
         set({ isSimulating: false, activeExecutionNodeId: null });
