@@ -92,7 +92,9 @@ export const WorkflowBuilderPage: React.FC = () => {
   const [saveFeedback, setSaveFeedback] = useState<string | null>(null);
   const [showTemplatesModal, setShowTemplatesModal] = useState(false);
   const [showWebhookModal, setShowWebhookModal] = useState(false);
+  const [showMermaidModal, setShowMermaidModal] = useState(false);
   const [copiedWebhook, setCopiedWebhook] = useState(false);
+  const [copiedMermaid, setCopiedMermaid] = useState(false);
 
   // Sync state if active workflow changes
   React.useEffect(() => {
@@ -324,6 +326,16 @@ export const WorkflowBuilderPage: React.FC = () => {
             title="Crear desde plantilla"
           >
             <Sparkles className="mr-1 h-3.5 w-3.5 text-fg-brand" /> Plantillas
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-caption h-8"
+            onClick={() => setShowMermaidModal(true)}
+            title="Exportar como diagrama Mermaid / Documentación"
+          >
+            <GitBranch className="mr-1 h-3.5 w-3.5 text-purple-400" /> Mermaid
           </Button>
 
           <Button
@@ -644,6 +656,112 @@ export const WorkflowBuilderPage: React.FC = () => {
                 </Button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Mermaid Diagram Export Modal */}
+      {showMermaidModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setShowMermaidModal(false)}>
+          <div className="w-full max-w-2xl mx-4 max-h-[85vh] overflow-y-auto rounded-[12px] border border-border-default bg-bg-card shadow-2xl p-6" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <GitBranch className="h-5 w-5 text-purple-400" />
+                <h2 className="text-lg font-[510] text-fg-primary">Exportar Diagrama Mermaid</h2>
+                <Badge variant="outline" className="text-[10px] font-mono border-purple-500/30 text-purple-300">
+                  Markdown & GitHub Ready
+                </Badge>
+              </div>
+              <button
+                onClick={() => setShowMermaidModal(false)}
+                className="p-1.5 rounded-[6px] text-fg-secondary hover:text-fg-primary hover:bg-bg-surface transition-colors cursor-pointer"
+              >
+                <Square className="h-4 w-4" />
+              </button>
+            </div>
+
+            <p className="text-caption text-fg-secondary mb-4 leading-relaxed">
+              Copia este código Mermaid para incluir el diagrama interactivo de tu pipeline directamente en tus READMEs de GitHub, documentación técnica o tickets de Jira.
+            </p>
+
+            {(() => {
+              let mmd = 'graph LR\n';
+              nodes.forEach((n) => {
+                const rawLabel = String((n.data as any)?.label || n.id);
+                const label = rawLabel.replace(/["[\]()]/g, '');
+                const nodeType = (n.data as any)?.nodeType || n.type || 'node';
+                let icon = '⚙️';
+                if (nodeType === 'start' || nodeType === 'startNode') icon = '🚀';
+                if (nodeType === 'agent' || nodeType === 'agentNode') icon = '🤖';
+                if (nodeType === 'mcp_tool' || nodeType === 'mcpToolNode') icon = '🔧';
+                if (nodeType === 'condition' || nodeType === 'conditionNode') icon = '🔀';
+                if (nodeType === 'human_approval' || nodeType === 'approvalNode') icon = '✋';
+                if (nodeType === 'output' || nodeType === 'outputNode') icon = '📦';
+                if (nodeType === 'end' || nodeType === 'endNode') icon = '🏁';
+                mmd += `  ${n.id}["${icon} ${label}"]\n`;
+              });
+              edges.forEach((e) => {
+                const edgeLabel = e.sourceHandle === 'true' ? ' -- Sí --> ' : e.sourceHandle === 'false' ? ' -- No --> ' : ' --> ';
+                mmd += `  ${e.source}${edgeLabel}${e.target}\n`;
+              });
+
+              return (
+                <div className="space-y-4">
+                  <div className="relative">
+                    <pre className="p-4 rounded-[8px] bg-black/70 border border-border-default text-xs font-mono text-purple-300 leading-relaxed overflow-x-auto max-h-[300px]">
+                      {mmd}
+                    </pre>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 border-t border-border-default">
+                    <div className="flex items-center gap-2 w-full sm:w-auto">
+                      <Button
+                        variant="default"
+                        size="sm"
+                        className="text-caption bg-purple-600 hover:bg-purple-500 text-white font-semibold"
+                        onClick={() => {
+                          navigator.clipboard.writeText(`\`\`\`mermaid\n${mmd}\`\`\``);
+                          setCopiedMermaid(true);
+                          toast.success('Copiado al Portapapeles', 'Código Mermaid listo para pegar en GitHub.');
+                          setTimeout(() => setCopiedMermaid(false), 2000);
+                        }}
+                      >
+                        {copiedMermaid ? <Check className="mr-1.5 h-3.5 w-3.5" /> : <Copy className="mr-1.5 h-3.5 w-3.5" />}
+                        {copiedMermaid ? '¡Copiado!' : 'Copiar Mermaid'}
+                      </Button>
+
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-caption border-border-default"
+                        onClick={() => {
+                          const blob = new Blob([mmd], { type: 'text/plain' });
+                          const url = URL.createObjectURL(blob);
+                          const a = document.createElement('a');
+                          a.href = url;
+                          a.download = `${(currentWorkflow?.name || 'workflow').toLowerCase().replace(/[^a-z0-9]/g, '-')}.mmd`;
+                          a.click();
+                          URL.revokeObjectURL(url);
+                          toast.success('Archivo Descargado', 'Diagrama .mmd guardado.');
+                        }}
+                      >
+                        <Download className="mr-1.5 h-3.5 w-3.5" /> Descargar .mmd
+                      </Button>
+                    </div>
+
+                    <a
+                      href={`https://mermaid.live/edit#pako:${encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify({ code: mmd }))))) }`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-xs text-purple-400 hover:underline flex items-center gap-1 font-mono"
+                    >
+                      <span>Abrir en Mermaid Live Editor</span>
+                      <Globe className="h-3.5 w-3.5" />
+                    </a>
+                  </div>
+                </div>
+              );
+            })()}
           </div>
         </div>
       )}
