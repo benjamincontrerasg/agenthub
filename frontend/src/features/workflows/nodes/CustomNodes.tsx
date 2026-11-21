@@ -136,9 +136,11 @@ export const AgentNode = memo((props: any) => {
   const isExpanded = data?.isExpanded ?? internalExpanded;
   const matchedAgent = agents.find((a) => a.id === data?.agentId);
 
+  // El agente vinculado es la fuente de verdad del proveedor;
+  // data.providerId puede estar obsoleto si el usuario cambió de agente.
   const rawProviderId =
-    data?.providerId ||
     matchedAgent?.providerId ||
+    data?.providerId ||
     '';
 
   const label = (data?.label || matchedAgent?.name || '').toLowerCase();
