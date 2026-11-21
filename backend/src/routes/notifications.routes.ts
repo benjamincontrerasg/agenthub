@@ -1,5 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import { notificationsService } from '../services/notifications.service.js';
+import { emailService } from '../services/email.service.js';
 
 export async function notificationsRoutes(app: FastifyInstance) {
   // GET /notifications/channels - Listar canales configurados
@@ -63,5 +64,24 @@ export async function notificationsRoutes(app: FastifyInstance) {
       timestamp: new Date().toISOString(),
     });
     return reply.send(result);
+  });
+
+  // POST /notifications/test-email - Enviar email transaccional de prueba
+  app.post('/notifications/test-email', async (req, reply) => {
+    const { to } = (req.body as any) || {};
+    const recipient = to || 'admin@nexora.dev';
+
+    const result = await emailService.sendZeroTrustAlert(
+      recipient,
+      'Pipeline de Auditoría de Código',
+      'tool-fs-write',
+      'http://localhost:5173/chat'
+    );
+
+    return reply.send({
+      success: true,
+      message: `Email transaccional de prueba despachado a ${recipient}.`,
+      result,
+    });
   });
 }

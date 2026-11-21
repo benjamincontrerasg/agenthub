@@ -21,6 +21,7 @@ import {
   Globe,
   CreditCard,
   Users,
+  Mail,
 } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
@@ -33,6 +34,7 @@ import { Select } from '@/components/ui/select';
 import { CustomSelect } from '@/components/ui/custom-select';
 import { useSettingsStore } from '@/stores/settings.store';
 import { notificationsService, NotificationChannel } from '@/services/notifications.service';
+import { apiClient } from '@/services/api';
 import { toast } from '@/stores/toast.store';
 import { ApiKeysVault } from './ApiKeysVault';
 import { BillingSettingsTab } from './BillingSettingsTab';
@@ -71,6 +73,23 @@ export const SettingsPage: React.FC = () => {
   const [newChannelType, setNewChannelType] = useState<'slack' | 'discord' | 'webhook'>('slack');
   const [newChannelUrl, setNewChannelUrl] = useState('');
   const [isSendingTest, setIsSendingTest] = useState(false);
+  const [testEmailRecipient, setTestEmailRecipient] = useState('admin@nexora.dev');
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
+
+  const handleSendTestEmail = async () => {
+    setIsSendingEmail(true);
+    try {
+      const res = await apiClient<{ success: boolean; message: string }>('/notifications/test-email', {
+        method: 'POST',
+        body: JSON.stringify({ to: testEmailRecipient }),
+      });
+      toast.success('Email Despachado', res.message || `Alerta Zero-Trust enviada a ${testEmailRecipient}`);
+    } catch (err: any) {
+      toast.error('Fallo de Envío', err.message || 'No se pudo enviar el correo.');
+    } finally {
+      setIsSendingEmail(false);
+    }
+  };
 
   React.useEffect(() => {
     notificationsService.getChannels().then(setChannels).catch(console.error);
@@ -798,6 +817,52 @@ export const SettingsPage: React.FC = () => {
                         </div>
                       ))
                     )}
+                  </div>
+                </div>
+
+                {/* Transactional Email Service (Resend / SMTP) */}
+                <div className="pt-6 border-t border-border-default space-y-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                    <div>
+                      <h4 className="text-body font-[510] text-fg-primary flex items-center gap-2">
+                        <Mail className="h-4 w-4 text-emerald-400" />
+                        Servicio de Correo Transaccional (Resend / SMTP)
+                        <Badge variant="outline" className="text-[10px] font-mono text-emerald-400 border-emerald-500/30">
+                          Zero-Trust Alerting
+                        </Badge>
+                      </h4>
+                      <p className="text-caption text-fg-secondary">
+                        Despacha emails de bienvenida, invitaciones de equipo y alertas críticas cuando un pipeline se detiene en una puerta de Aprobación Humana.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="p-3.5 rounded-[12px] border border-border-default bg-bg-card/40 flex flex-col sm:flex-row items-center gap-3">
+                    <div className="flex-1 w-full">
+                      <label className="block text-[11px] font-mono text-fg-secondary mb-1">
+                        Destinatario de Prueba (Admin)
+                      </label>
+                      <Input
+                        type="email"
+                        value={testEmailRecipient}
+                        onChange={(e) => setTestEmailRecipient(e.target.value)}
+                        placeholder="admin@nexora.dev"
+                        className="text-caption h-8 font-mono"
+                      />
+                    </div>
+                    <div className="w-full sm:w-auto pt-3 sm:pt-4">
+                      <Button
+                        type="button"
+                        variant="default"
+                        size="sm"
+                        isLoading={isSendingEmail}
+                        onClick={handleSendTestEmail}
+                        className="w-full sm:w-auto text-caption bg-emerald-600 hover:bg-emerald-500 text-white font-semibold"
+                      >
+                        <Send className="mr-1.5 h-3.5 w-3.5" />
+                        Probar Alerta Zero-Trust
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </CardContent>
