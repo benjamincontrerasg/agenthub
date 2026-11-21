@@ -97,9 +97,18 @@ export async function buildApp(opts: { logger?: any } = {}) {
     const isAuthRegister = (urlPath === '/auth/register' || urlPath === '/v1/auth/register') && method === 'POST';
     const isBillingPlans = (urlPath === '/billing/plans' || urlPath === '/v1/billing/plans') && method === 'GET';
     const isBillingWebhook = (urlPath === '/billing/webhook' || urlPath === '/v1/billing/webhook') && method === 'POST';
+    const isWorkflowWebhook = /\/workflows\/[^/]+\/trigger$/.test(urlPath) && method === 'POST' && Boolean(request.headers['x-workflow-key']);
     const isWebSocket = urlPath === '/ws' || urlPath === '/v1/ws';
 
-    if (isHealthCheck || isAuthLogin || isAuthRegister || isBillingPlans || isBillingWebhook || isWebSocket) {
+    if (isHealthCheck || isAuthLogin || isAuthRegister || isBillingPlans || isBillingWebhook || isWorkflowWebhook || isWebSocket) {
+      if (isWorkflowWebhook) {
+        request.user = {
+          id: 'usr_webhook_trigger',
+          email: 'webhook@external.ci',
+          name: 'External Webhook CI/CD',
+          role: 'developer',
+        };
+      }
       return;
     }
 

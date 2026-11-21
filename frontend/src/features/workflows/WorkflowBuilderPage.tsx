@@ -54,6 +54,7 @@ import {
   Check,
 } from 'lucide-react';
 import { toast } from '@/stores/toast.store';
+import { apiClient } from '@/services/api';
 import { WORKFLOW_TEMPLATES, WorkflowTemplate } from './templates';
 
 const nodeTypes = {
@@ -603,18 +604,44 @@ export const WorkflowBuilderPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-caption font-[510] text-fg-secondary mb-1.5 uppercase tracking-wider">Ejemplo cURL</label>
+                <label className="block text-caption font-[510] text-fg-secondary mb-1.5 uppercase tracking-wider">Cabecera de Clave Secreta (CI/CD)</label>
+                <div className="flex items-center gap-2">
+                  <code className="flex-1 p-2 rounded-[6px] bg-black/60 border border-border-default text-caption font-mono text-emerald-400 break-all">
+                    X-Workflow-Key: whsec_{currentWorkflow.id.replace(/[^a-zA-Z0-9]/g, '')}_prod
+                  </code>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-caption font-[510] text-fg-secondary mb-1.5 uppercase tracking-wider">Ejemplo cURL para GitHub Actions o Terminal</label>
                 <pre className="p-3 rounded-[6px] bg-black/60 border border-border-default text-caption font-mono text-fg-secondary leading-relaxed whitespace-pre-wrap">
 {`curl -X POST \\
   http://localhost:3001/v1/workflows/${currentWorkflow.id}/trigger \\
   -H "Content-Type: application/json" \\
-  -H "Authorization: Bearer <JWT_TOKEN>" \\
-  -d '{"triggeredBy": "external-webhook"}'`}
+  -H "X-Workflow-Key: whsec_${currentWorkflow.id.replace(/[^a-zA-Z0-9]/g, '')}_prod" \\
+  -d '{"ref": "main", "author": "github-actions"}'`}
                 </pre>
               </div>
 
-              <div className="p-3 rounded-[6px] bg-bg-brand-subtle/20 border border-border-brand/30 text-caption text-fg-secondary">
-                <span className="font-[510] text-fg-brand">💡 Nota:</span> El webhook requiere autenticación JWT. Configura los headers de autorización apropiadamente.
+              <div className="flex items-center justify-between pt-2">
+                <Button
+                  variant="default"
+                  size="sm"
+                  className="w-full text-caption bg-[#e4f222] text-[#08090a] hover:bg-[#d6e41b] font-semibold"
+                  onClick={async () => {
+                    try {
+                      const res = await apiClient<any>(`/workflows/${currentWorkflow.id}/trigger`, {
+                        method: 'POST',
+                        body: JSON.stringify({ triggeredBy: 'manual-builder-test' }),
+                      });
+                      toast.success('Disparo Exitoso', `Ejecución iniciada: ${res.executionId}`);
+                    } catch (e: any) {
+                      toast.error('Error al disparar', e.message);
+                    }
+                  }}
+                >
+                  <Play className="mr-1.5 h-3.5 w-3.5" /> Disparar Webhook de Prueba en Vivo
+                </Button>
               </div>
             </div>
           </div>
